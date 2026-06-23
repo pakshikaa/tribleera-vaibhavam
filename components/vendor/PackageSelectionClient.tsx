@@ -58,7 +58,15 @@ export function PackageSelectionClient({ vendor }: { vendor: Vendor }) {
         )}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {vendor.packages.map((pkg) => (
-            <PackageCard key={pkg.id} pkg={pkg} selected={selectedId === pkg.id} onSelect={() => handleSelect(pkg.id)} />
+            <PackageCard
+              key={pkg.id}
+              pkg={pkg}
+              motif={vendor.motif}
+              tone={vendor.tone}
+              seed={vendor.id.length}
+              selected={selectedId === pkg.id}
+              onSelect={() => handleSelect(pkg.id)}
+            />
           ))}
         </div>
         </div>

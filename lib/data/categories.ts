@@ -11,7 +11,7 @@ export const categories: Category[] = [
     description: "Candid wedding photography and cinematic films from Jaffna's most trusted studios.",
     motif: "lotus",
     tone: "slate",
-    vendorCount: 3,
+    vendorCount: 5,
     imageUrl: getCategoryImage("photography", 0),
   },
   {
@@ -22,7 +22,7 @@ export const categories: Category[] = [
     description: "Custom wedding cakes and dessert tables, baked fresh for your celebration.",
     motif: "garland",
     tone: "gold",
-    vendorCount: 2,
+    vendorCount: 5,
     imageUrl: getCategoryImage("cakes", 0),
   },
   {
@@ -33,7 +33,7 @@ export const categories: Category[] = [
     description: "Floral mandap design, stage backdrops and full-venue decor transformations.",
     motif: "garland",
     tone: "rose",
-    vendorCount: 3,
+    vendorCount: 5,
     imageUrl: getCategoryImage("decoration", 0),
   },
   {
@@ -44,7 +44,7 @@ export const categories: Category[] = [
     description: "Bridal makeup, hairstyling and mehendi artistry for the whole wedding week.",
     motif: "paisley",
     tone: "burgundy",
-    vendorCount: 2,
+    vendorCount: 5,
     imageUrl: getCategoryImage("bridal-makeup", 0),
   },
   {
@@ -55,7 +55,7 @@ export const categories: Category[] = [
     description: "Handcrafted and digital wedding invitations, designed and printed in Jaffna.",
     motif: "knot",
     tone: "gold",
-    vendorCount: 2,
+    vendorCount: 5,
     imageUrl: getCategoryImage("invitation", 0),
   },
 ];

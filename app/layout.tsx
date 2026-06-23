@@ -4,7 +4,11 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { PageTransition } from "@/components/layout/PageTransition";
+import { ToastProvider } from "@/components/ui/Toast";
+import { CompareBar } from "@/components/vendor/CompareBar";
+import { CompareProvider } from "@/context/CompareContext";
 import { CartProvider } from "@/context/CartContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
 import "./globals.css";
 
@@ -74,18 +78,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
-        <CartProvider>
-          <ShortlistProvider>
-            <MotionProvider>
-              <Header />
-              <main id="main-content" className="min-h-screen pb-20 md:pb-0">
-                <PageTransition>{children}</PageTransition>
-              </main>
-              <Footer />
-              <MobileBottomNav />
-            </MotionProvider>
-          </ShortlistProvider>
-        </CartProvider>
+        <ToastProvider>
+          <NotificationProvider>
+            <CompareProvider>
+              <CartProvider>
+                <ShortlistProvider>
+                  <MotionProvider>
+                    <Header />
+                    <main id="main-content" className="min-h-screen pb-20 md:pb-0">
+                      <PageTransition>{children}</PageTransition>
+                    </main>
+                    <Footer />
+                    <CompareBar />
+                    <MobileBottomNav />
+                  </MotionProvider>
+                </ShortlistProvider>
+              </CartProvider>
+            </CompareProvider>
+          </NotificationProvider>
+        </ToastProvider>
       </body>
     </html>
   );

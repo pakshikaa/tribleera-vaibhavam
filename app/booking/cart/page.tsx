@@ -16,6 +16,11 @@ import { useCart } from "@/context/CartContext";
 export default function BookingCartPage() {
   const { items, removeItem, totals, hydrated } = useCart();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const groupedItems = items.reduce<Record<string, typeof items>>((acc, item) => {
+    const current = acc[item.categorySlug] ?? [];
+    acc[item.categorySlug] = [...current, item];
+    return acc;
+  }, {});
 
   return (
     <div className="bg-ivory">
@@ -50,8 +55,16 @@ export default function BookingCartPage() {
                 {items.length} categor{items.length !== 1 ? "ies" : "y"} selected
               </p>
               <div className="space-y-4">
-                {items.map((item) => (
-                  <CartItemCard key={item.categorySlug} item={item} onRemove={() => removeItem(item.categorySlug)} />
+                {Object.entries(groupedItems).map(([categorySlug, categoryItems]) => (
+                  <div key={categorySlug} className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-sm font-semibold capitalize text-burgundy-deep">{categorySlug.replace("-", " ")}</h3>
+                      <div className="h-px flex-1 bg-slate/10" />
+                    </div>
+                    {categoryItems.map((item) => (
+                      <CartItemCard key={item.categorySlug} item={item} onRemove={() => removeItem(item.categorySlug)} />
+                    ))}
+                  </div>
                 ))}
               </div>
 
@@ -61,6 +74,7 @@ export default function BookingCartPage() {
               >
                 <PlusCircle size={18} /> Add another category
               </Link>
+              <p className="mt-3 text-xs text-slate-soft">Only one vendor per category can be booked in a single checkout.</p>
 
               <div className="mt-8 flex items-start gap-3 rounded-[8px] border border-burgundy/15 bg-burgundy/5 p-5">
                 <ShieldCheck size={20} className="mt-0.5 shrink-0 text-burgundy" />

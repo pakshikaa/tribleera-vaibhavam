@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Lock, Landmark, Sparkles } from "lucide-react";
+import { Landmark, Lock, ShieldCheck, Sparkles } from "lucide-react";
 
 const FEATURES = [
   {
@@ -17,22 +17,28 @@ const FEATURES = [
   {
     icon: Landmark,
     title: "Tamil heritage, curated",
-    body: "Every vendor understands Jaffna ceremony traditions — from Poruwa to Kasi Yatra.",
+    body: "Every vendor understands Tamil ceremony rhythms - from muhurtham timing to reception flow.",
   },
   {
     icon: Sparkles,
     title: "Premium quality, always",
-    body: "Trust scores and verified reviews on every profile, so quality is never a guess.",
+    body: "Trust scores and verified reviews sit on every profile, so quality is never a guess.",
   },
 ];
 
-const container = {
+const containerVariants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
 };
-const item = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 32, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
+  },
 };
 
 export function WhyTribleera() {
@@ -40,34 +46,32 @@ export function WhyTribleera() {
     <section className="bg-gradient-to-b from-ink via-burgundy-950 to-ink py-24 md:py-32">
       <div className="mx-auto max-w-[1280px] px-5 md:px-10">
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7 }}
+          variants={itemVariants}
           className="mx-auto mb-16 max-w-lg text-center"
         >
-          <p className="mb-4 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">
+          <p className="text-overline mb-4 inline-flex items-center justify-center gap-2.5 text-gold">
             <span className="h-px w-7 bg-gold" />
             Why Tribleera
             <span className="h-px w-7 bg-gold" />
           </p>
-          <h2 className="font-display text-[28px] font-bold leading-[1.2] text-cream md:text-[40px]">
-            Trust, built into every booking.
-          </h2>
+          <h2 className="text-display-md text-cream">Trust, built into every booking.</h2>
         </motion.div>
 
         <motion.div
           initial="hidden"
-          whileInView="show"
+          whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          variants={container}
+          variants={containerVariants}
           className="grid grid-cols-1 gap-px overflow-hidden rounded-[16px] border border-gold/15 bg-gold/15 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {FEATURES.map((f) => (
-            <motion.div key={f.title} variants={item} className="bg-burgundy-950 p-8">
-              <f.icon size={28} className="mb-6 text-gold" strokeWidth={1.5} />
-              <h3 className="font-display text-lg font-semibold text-cream">{f.title}</h3>
-              <p className="mt-2.5 text-[13.5px] leading-relaxed text-cream-faint">{f.body}</p>
+          {FEATURES.map((feature) => (
+            <motion.div key={feature.title} variants={itemVariants} className="bg-burgundy-950 p-8">
+              <feature.icon size={28} className="mb-6 text-gold" strokeWidth={1.5} />
+              <h3 className="text-display-sm text-cream">{feature.title}</h3>
+              <p className="text-body-sm mt-2.5 text-cream-faint">{feature.body}</p>
             </motion.div>
           ))}
         </motion.div>

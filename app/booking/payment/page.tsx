@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock, ShieldCheck, ShoppingBag, CreditCard, Landmark, Smartphone, Check } from "lucide-react";
+import { Lock, ShieldCheck, ShoppingBag, CreditCard, Landmark, Smartphone, Check, Copy } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/Field";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { BookingSteps } from "@/components/booking/BookingSteps";
 import { PriceSummary } from "@/components/booking/PriceSummary";
+import { useToast } from "@/components/ui/Toast";
 import { formatLKR } from "@/lib/utils/format";
 import { lineItemBreakdown, generateBookingId } from "@/lib/utils/booking";
 import { getCategoryBySlug } from "@/lib/data/categories";
@@ -37,12 +38,17 @@ const PAYMENT_METHODS = [
     description: "Pay instantly via eZ Cash, FriMi or Genie.",
     icon: Smartphone,
   },
-];
+] as const;
 
 export default function PaymentSummaryPage() {
   const router = useRouter();
   const { items, totals, clear, hydrated } = useCart();
-  const [method, setMethod] = useState("card");
+  const { showToast } = useToast();
+  const [method, setMethod] = useState<(typeof PAYMENT_METHODS)[number]["id"]>("card");
+  const [slipUploaded, setSlipUploaded] = useState(false);
+  const [slipPreview, setSlipPreview] = useState<string | null>(null);
+  const [slipName, setSlipName] = useState("");
+  const fileInputId = useId();
 
   const {
     register,
@@ -54,6 +60,39 @@ export default function PaymentSummaryPage() {
     defaultValues: { name: "", phone: "", email: "", eventDate: "" },
   });
 
+  function handleSlipChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setSlipUploaded(false);
+      setSlipPreview(null);
+      setSlipName("");
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+      showToast("Upload a JPG, PNG, or PDF under 5MB.", "error");
+      setSlipUploaded(false);
+      setSlipPreview(null);
+      setSlipName("");
+      return;
+    }
+
+    setSlipUploaded(true);
+    setSlipName(file.name);
+
+    if (file.type === "application/pdf") {
+      setSlipPreview(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSlipPreview(typeof reader.result === "string" ? reader.result : null);
+    };
+    reader.readAsDataURL(file);
+  }
+
   function onSubmit(values: CustomerDetailsValues) {
     const bookingId = generateBookingId();
     const record = {
@@ -62,12 +101,13 @@ export default function PaymentSummaryPage() {
       totals,
       customer: values,
       paymentMethod: method,
+      depositSlipName: slipName || null,
       createdAt: new Date().toISOString(),
     };
     try {
       window.localStorage.setItem("tribleera-last-booking", JSON.stringify(record));
     } catch {
-      // session-only fallback — confirmation page handles a missing record gracefully
+      // session-only fallback; confirmation page handles a missing record gracefully
     }
 
     return new Promise<void>((resolve) => {
@@ -92,6 +132,10 @@ export default function PaymentSummaryPage() {
     );
   }
 
+  const bankReference = items[0]?.vendorId ? `${items[0].vendorId.slice(0, 3).toUpperCase()}-${items.length}` : "TRB-REF";
+  const submitLabel =
+    method === "bank" ? "Submit Booking & Deposit Slip" : `Pay ${formatLKR(totals.payableNow)} securely`;
+
   return (
     <div className="bg-ivory">
       <section className="border-b border-slate/8 bg-white py-8 md:py-10">
@@ -107,36 +151,10 @@ export default function PaymentSummaryPage() {
             <div>
               <h2 className="font-display text-xl">Your details</h2>
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Input
-                  label="Full name"
-                  required
-                  placeholder="Niranjala & Kajan"
-                  error={errors.name?.message}
-                  {...register("name")}
-                />
-                <Input
-                  label="Phone number"
-                  type="tel"
-                  required
-                  placeholder="+94 77 XXX XXXX"
-                  error={errors.phone?.message}
-                  {...register("phone")}
-                />
-                <Input
-                  label="Email address"
-                  type="email"
-                  required
-                  placeholder="you@example.com"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-                <Input
-                  label="Event date"
-                  type="date"
-                  required
-                  error={errors.eventDate?.message}
-                  {...register("eventDate")}
-                />
+                <Input label="Full name" required placeholder="Niranjala & Kajan" error={errors.name?.message} {...register("name")} />
+                <Input label="Phone number" type="tel" required placeholder="+94 77 XXX XXXX" error={errors.phone?.message} {...register("phone")} />
+                <Input label="Email address" type="email" required placeholder="you@example.com" error={errors.email?.message} {...register("email")} />
+                <Input label="Event date" type="date" required error={errors.eventDate?.message} {...register("eventDate")} />
               </div>
             </div>
 
@@ -144,7 +162,7 @@ export default function PaymentSummaryPage() {
               <h2 className="font-display text-xl">Itemised breakdown</h2>
               <div className="mt-4 space-y-3">
                 {items.map((item) => {
-                  const b = lineItemBreakdown(item.price);
+                  const breakdown = lineItemBreakdown(item.price);
                   const category = getCategoryBySlug(item.categorySlug);
                   return (
                     <div key={item.categorySlug} className="rounded-[8px] border border-slate/8 bg-white p-4">
@@ -158,19 +176,19 @@ export default function PaymentSummaryPage() {
                       <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate/8 pt-3 text-xs sm:grid-cols-4">
                         <div>
                           <p className="text-slate-soft">Advance (20%)</p>
-                          <p className="font-medium text-slate">{formatLKR(b.advanceAmount)}</p>
+                          <p className="font-medium text-slate">{formatLKR(breakdown.advanceAmount)}</p>
                         </div>
                         <div>
                           <p className="text-slate-soft">Platform fee (3%)</p>
-                          <p className="font-medium text-slate">{formatLKR(b.platformFee)}</p>
+                          <p className="font-medium text-slate">{formatLKR(breakdown.platformFee)}</p>
                         </div>
                         <div>
                           <p className="text-slate-soft">Payable now</p>
-                          <p className="font-medium text-burgundy-deep">{formatLKR(b.payableNow)}</p>
+                          <p className="font-medium text-burgundy-deep">{formatLKR(breakdown.payableNow)}</p>
                         </div>
                         <div>
                           <p className="text-slate-soft">Remaining</p>
-                          <p className="font-medium text-slate">{formatLKR(b.remainingBalance)}</p>
+                          <p className="font-medium text-slate">{formatLKR(breakdown.remainingBalance)}</p>
                         </div>
                       </div>
                     </div>
@@ -182,12 +200,13 @@ export default function PaymentSummaryPage() {
             <div>
               <h2 className="font-display text-xl">Payment method</h2>
               <div role="radiogroup" aria-label="Payment method" className="mt-4 space-y-3">
-                {PAYMENT_METHODS.map((m) => {
-                  const Icon = m.icon;
-                  const selected = method === m.id;
+                {PAYMENT_METHODS.map((paymentMethod) => {
+                  const Icon = paymentMethod.icon;
+                  const selected = method === paymentMethod.id;
+
                   return (
                     <label
-                      key={m.id}
+                      key={paymentMethod.id}
                       className={`flex cursor-pointer items-center gap-3.5 rounded-[4px] border px-4 py-3.5 transition-colors ${
                         selected ? "border-burgundy bg-burgundy/[0.03]" : "border-slate/15 hover:border-slate/30"
                       }`}
@@ -195,9 +214,9 @@ export default function PaymentSummaryPage() {
                       <input
                         type="radio"
                         name="method"
-                        value={m.id}
+                        value={paymentMethod.id}
                         checked={selected}
-                        onChange={() => setMethod(m.id)}
+                        onChange={() => setMethod(paymentMethod.id)}
                         className="sr-only"
                       />
                       <div
@@ -208,8 +227,8 @@ export default function PaymentSummaryPage() {
                         <Icon size={18} />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-slate">{m.label}</p>
-                        <p className="text-xs text-slate-soft">{m.description}</p>
+                        <p className="text-sm font-semibold text-slate">{paymentMethod.label}</p>
+                        <p className="text-xs text-slate-soft">{paymentMethod.description}</p>
                       </div>
                       {selected && (
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-burgundy text-white">
@@ -222,11 +241,71 @@ export default function PaymentSummaryPage() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" fullWidth icon={<Lock size={16} />} disabled={isSubmitting} className="md:hidden">
-              {isSubmitting ? "Processing payment…" : `Pay ${formatLKR(totals.payableNow)} securely`}
+            {method === "bank" && (
+              <div className="space-y-4 rounded-[8px] border border-burgundy/10 bg-white p-5">
+                <p className="text-sm text-slate-soft">
+                  After transferring, upload your deposit slip for admin verification.
+                </p>
+                <div className="rounded-[8px] bg-ivory p-4 text-sm text-slate-soft">
+                  <p>Bank: People&apos;s Bank of Sri Lanka</p>
+                  <p>Account Name: TRIBLEERA VAIBHAVAM PVT LTD</p>
+                  <p>Account Number: 123-4567-8901</p>
+                  <p>Branch: Jaffna Main Branch</p>
+                  <p>Reference: {bankReference}</p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="mt-3"
+                    icon={<Copy size={14} />}
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText("123-4567-8901");
+                        showToast("Account number copied.", "success");
+                      } catch {
+                        showToast("Clipboard access unavailable.", "error");
+                      }
+                    }}
+                  >
+                    Copy account number
+                  </Button>
+                </div>
+
+                <label
+                  htmlFor={fileInputId}
+                  className="flex cursor-pointer flex-col items-center justify-center rounded-[8px] border border-dashed border-burgundy/30 bg-burgundy/[0.03] px-5 py-8 text-center transition-colors hover:bg-burgundy/[0.06]"
+                >
+                  <span className="text-sm font-semibold text-burgundy-deep">Drop your deposit slip here or click to browse</span>
+                  <span className="mt-2 text-xs text-slate-soft">Accepts JPG, PNG, PDF. Max 5MB.</span>
+                  <input id={fileInputId} type="file" accept=".jpg,.jpeg,.png,.pdf" className="sr-only" onChange={handleSlipChange} />
+                </label>
+
+                {slipUploaded && (
+                  <div className="rounded-[8px] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                    <p>✓ Slip uploaded - admin will verify within 2 hours</p>
+                    <p className="mt-1 text-xs">{slipName}</p>
+                    {slipPreview && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={slipPreview} alt="Deposit slip preview" className="mt-3 max-h-48 rounded-[6px] object-cover" />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              size="lg"
+              fullWidth
+              icon={<Lock size={16} />}
+              disabled={isSubmitting || (method === "bank" && !slipUploaded)}
+              title={method === "bank" && !slipUploaded ? "Please upload your deposit slip to continue" : undefined}
+              className="md:hidden"
+            >
+              {isSubmitting ? "Processing payment..." : submitLabel}
             </Button>
             <p className="text-center text-[11px] leading-relaxed text-slate-soft md:hidden">
-              By clicking, you agree to TRIBLEERA&rsquo;s Escrow Terms of Service.
+              By clicking, you agree to TRIBLEERA&apos;s Escrow Terms of Service.
             </p>
           </form>
 
@@ -238,8 +317,8 @@ export default function PaymentSummaryPage() {
                 <div>
                   <p className="text-xs font-semibold text-burgundy-deep">TRIBLEERA Escrow Protection</p>
                   <p className="mt-1 text-xs leading-relaxed text-slate-soft">
-                    Your advance is held in a secure escrow account and released to vendors only as milestones are
-                    completed. Your remaining balance is settled directly with each vendor afterwards.
+                    Your advance is held in a secure escrow account and released to vendors only as milestones are completed.
+                    Your remaining balance is settled directly with each vendor afterwards.
                   </p>
                 </div>
               </div>
@@ -249,13 +328,14 @@ export default function PaymentSummaryPage() {
                 size="lg"
                 fullWidth
                 icon={<Lock size={16} />}
-                disabled={isSubmitting}
+                disabled={isSubmitting || (method === "bank" && !slipUploaded)}
+                title={method === "bank" && !slipUploaded ? "Please upload your deposit slip to continue" : undefined}
                 className="hidden md:flex"
               >
-                {isSubmitting ? "Processing payment…" : `Pay ${formatLKR(totals.payableNow)} securely`}
+                {isSubmitting ? "Processing payment..." : submitLabel}
               </Button>
               <p className="text-center text-[11px] leading-relaxed text-slate-soft">
-                By clicking, you agree to TRIBLEERA&rsquo;s Escrow Terms of Service.
+                By clicking, you agree to TRIBLEERA&apos;s Escrow Terms of Service.
               </p>
             </div>
           </aside>

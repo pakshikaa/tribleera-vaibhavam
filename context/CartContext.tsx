@@ -10,6 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useToast } from "@/components/ui/Toast";
 import { cartBreakdown } from "@/lib/utils/booking";
 
 const STORAGE_KEY = "tribleera-cart-v1";
@@ -29,6 +30,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<BookingLineItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     // One-time hydration from a browser-only store (localStorage) that cannot
@@ -55,8 +57,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, hydrated]);
 
   const addItem = useCallback((item: BookingLineItem) => {
-    setItems((prev) => [...prev.filter((i) => i.categorySlug !== item.categorySlug), item]);
-  }, []);
+    setItems((prev) => {
+      const duplicate = prev.some((existing) => existing.vendorId === item.vendorId && existing.packageId === item.packageId);
+      if (duplicate) {
+        showToast("This package is already in your cart.", "error");
+        return prev;
+      }
+
+      const existingCategory = prev.find((existing) => existing.categorySlug === item.categorySlug);
+      if (existingCategory) {
+        showToast(`You already have a ${item.categorySlug.replace("-", " ")} vendor in your cart. Remove it first to add another.`, "error");
+        return prev;
+      }
+
+      return [...prev, item];
+    });
+  }, [showToast]);
 
   const removeItem = useCallback((categorySlug: string) => {
     setItems((prev) => prev.filter((i) => i.categorySlug !== categorySlug));

@@ -31,6 +31,7 @@ export interface VendorPackage {
   price: number;
   description: string;
   inclusions: string[];
+  coverImageUrl?: string;
   recommended?: boolean;
 }
 
@@ -105,11 +106,17 @@ export interface Booking {
 export interface VendorBookingRequest {
   id: string;
   customerName: string;
+  customerPhone?: string;
+  customerEmail?: string;
   eventDate: string;
+  location?: string;
+  guestCount?: number;
+  budgetRange?: string;
   categorySlug: string;
   packageName: string;
   price: number;
   status: "new" | "accepted" | "declined";
+  rejectionReason?: string;
   receivedAt: string;
   message: string;
 }

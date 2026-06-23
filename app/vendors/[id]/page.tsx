@@ -93,7 +93,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
           </div>
           <div className="mt-2 flex items-end justify-between gap-4">
             <div>
-              <h1 className="font-display text-3xl text-white md:text-4xl">{vendor.name}</h1>
+              <h1 className="text-display-md text-white">{vendor.name}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-4 text-sm text-white/85">
                 <span className="flex items-center gap-1"><MapPin size={13} /> {vendor.location}</span>
                 <Rating value={vendor.trustScore} className="text-white" />
@@ -131,7 +131,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
         <div className="space-y-12">
           {/* About */}
           <div>
-            <SubHeading>About the Studio</SubHeading>
+            <SubHeading className="text-display-sm">About the Studio</SubHeading>
             <p className="mt-3 text-[15px] leading-relaxed text-slate-soft">{vendor.description}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {vendor.tags.map((t, i) => (
@@ -142,24 +142,24 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
           {/* Gallery with lightbox */}
           <div>
-            <SubHeading>Gallery</SubHeading>
+            <SubHeading className="text-display-sm">Gallery</SubHeading>
             <VendorGalleryClient images={imgs} />
             <p className="mt-3 text-xs text-slate-soft">
-              Portfolio preview - {vendor.name} will upload their own work once onboarded to TRIBLEERA.
+              Portfolio preview - {vendor.name} will add their own work once onboarded.
             </p>
           </div>
 
           {/* Packages */}
           <div>
             <div className="flex items-center justify-between">
-              <SubHeading>Curated Packages</SubHeading>
+              <SubHeading className="text-display-sm">Curated Packages</SubHeading>
               <Link href={`/vendors/${vendor.slug}/packages`} className="flex items-center gap-1 text-sm font-semibold text-burgundy hover:underline">
                 Compare all <ArrowRight size={14} />
               </Link>
             </div>
             <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
               {vendor.packages.map((pkg) => (
-                <PackageCard key={pkg.id} pkg={pkg} />
+                <PackageCard key={pkg.id} pkg={pkg} motif={vendor.motif} tone={vendor.tone} seed={vendor.id.length} />
               ))}
             </div>
             <Button href={`/vendors/${vendor.slug}/packages`} className="mt-6" fullWidth>
@@ -169,7 +169,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
           {/* Reviews */}
           <div>
-            <SubHeading>
+            <SubHeading className="text-display-sm">
               Reviews <span className="text-base font-normal text-slate-soft">({totalReviews} verified)</span>
             </SubHeading>
 

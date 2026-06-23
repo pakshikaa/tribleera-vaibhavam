@@ -245,3 +245,11 @@ unrelated dark "Gladiator" theme.
 - Added a saved tab to the mobile bottom nav and made vendor cards fully clickable while preserving shortlist interaction.
 - Improved package selection so choosing a package adds it to cart, shows a confirmation toast, and routes to the booking cart.
 - Added category vendor counts on the vendors page and expanded vendor reviews for stronger social proof.
+
+## V2 marketplace refresh
+
+- Expanded the marketplace to 25 vendors total, with 5 vendors in each launch category: photography, cakes, decoration, bridal makeup, and invitation.
+- Added a global typography scale in `app/globals.css` with display, body, caption, and overline utilities for more consistent premium layouts.
+- Added package-level cover images for every vendor tier and upgraded package cards with 16:9 imagery plus motif-art fallback.
+- Upgraded homepage motion with staggered reveal systems, floating hero particles, a scroll indicator, and animated hero stat count-ups.
+- Added a magnetic hover tilt to vendor cards, a softer crossfade gallery lightbox transition, and a homepage-only logo glow pulse.

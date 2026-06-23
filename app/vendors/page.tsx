@@ -38,7 +38,7 @@ function VendorResults({ searchParams }: { searchParams: SearchParams }) {
 
   return (
     <>
-      <p className="mb-6 text-sm text-slate-soft">
+      <p className="text-body-sm mb-6 text-slate-soft">
         <span className="font-semibold text-slate">{results.length}</span> verified vendor{results.length !== 1 ? "s" : ""}
         {categoryLabel ? ` in ${categoryLabel}` : " across all categories"}
       </p>
@@ -71,7 +71,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
             <span className="h-px w-5 bg-gold" />
             Vendor Directory
           </p>
-          <h1 className="font-display text-[30px] font-bold leading-[1.15] text-cream md:text-[46px]">
+          <h1 className="text-display-lg text-cream">
             {activeCat ? activeCat.name : "Find your perfect match."}
           </h1>
           {activeCat && (

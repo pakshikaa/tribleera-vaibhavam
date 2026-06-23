@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bell, Eye, CalendarDays, Pencil, TrendingUp } from "lucide-react";
+import { Bell, CalendarDays, Eye, Pencil, Sparkles, TrendingUp } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
@@ -10,6 +10,7 @@ import { VendorRequestsClient } from "@/components/dashboard/VendorRequestsClien
 import { formatLKR } from "@/lib/utils/format";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { vendorRequests } from "@/lib/data/vendorRequests";
+import { bookings } from "@/lib/data/bookings";
 
 export const metadata: Metadata = { title: "Vendor Dashboard" };
 
@@ -17,8 +18,17 @@ const VENDOR_SLUG = "pushpa-florals-and-decor";
 
 export default function VendorDashboardPage() {
   const vendor = getVendorBySlug(VENDOR_SLUG)!;
-  const newRequests = vendorRequests.filter((r) => r.status === "new").length;
+  const newRequests = vendorRequests.filter((request) => request.status === "new").length;
   const trustPercent = Math.round(vendor.trustScore * 20);
+  const vendorBookings = bookings.filter((booking) => booking.items.some((item) => item.vendorId === vendor.id));
+  const completedRevenue = vendorBookings
+    .filter((booking) => booking.status === "completed")
+    .reduce((sum, booking) => sum + booking.items.filter((item) => item.vendorId === vendor.id).reduce((itemSum, item) => itemSum + item.price, 0), 0);
+  const averageBookingValue = vendorBookings.length
+    ? Math.round(vendorBookings.reduce((sum, booking) => sum + booking.items.filter((item) => item.vendorId === vendor.id).reduce((itemSum, item) => itemSum + item.price, 0), 0) / vendorBookings.length)
+    : 0;
+  const monthlyTarget = 450000;
+  const monthlyProgress = Math.min(100, Math.round((completedRevenue / monthlyTarget) * 100));
 
   return (
     <div className="bg-ivory">
@@ -29,9 +39,7 @@ export default function VendorDashboardPage() {
               <MotifArt variant={vendor.motif} tone={vendor.tone} seed={vendor.id.length} />
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
-                Premium Partner Dashboard
-              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep">Premium Partner Dashboard</p>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-2xl text-burgundy-deep">Welcome back, {vendor.name}</h1>
                 {vendor.verified && <Badge tone="rose">Verified</Badge>}
@@ -39,9 +47,14 @@ export default function VendorDashboardPage() {
               <p className="text-sm text-slate-soft">{vendor.location}</p>
             </div>
           </div>
-          <Button variant="secondary" icon={<Pencil size={15} />}>
-            Edit profile
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button href="/dashboard/vendor/profile" variant="secondary" icon={<Pencil size={15} />}>
+              Edit profile
+            </Button>
+            <Button href="/dashboard/vendor/packages" variant="gold">
+              Manage packages
+            </Button>
+          </div>
         </Container>
       </section>
 
@@ -70,6 +83,7 @@ export default function VendorDashboardPage() {
               { id: "requests", label: "Booking Requests", count: vendorRequests.length },
               { id: "packages", label: "Packages", count: vendor.packages.length },
               { id: "availability", label: "Availability" },
+              { id: "analytics", label: "Analytics" },
             ]}
             panels={{
               requests: <VendorRequestsClient initial={vendorRequests} />,
@@ -81,11 +95,11 @@ export default function VendorDashboardPage() {
                       <p className="mt-1 font-display text-xl text-slate">{pkg.name}</p>
                       <p className="mt-2 font-display text-2xl text-burgundy-deep">{formatLKR(pkg.price)}</p>
                       <ul className="mt-4 space-y-1.5 text-sm text-slate-soft">
-                        {pkg.inclusions.slice(0, 3).map((i) => (
-                          <li key={i}>&bull; {i}</li>
+                        {pkg.inclusions.slice(0, 3).map((inclusion) => (
+                          <li key={inclusion}>• {inclusion}</li>
                         ))}
                       </ul>
-                      <Button variant="secondary" size="sm" className="mt-5" fullWidth icon={<Pencil size={13} />}>
+                      <Button href="/dashboard/vendor/packages" variant="secondary" size="sm" className="mt-5" fullWidth icon={<Pencil size={13} />}>
                         Edit package
                       </Button>
                     </div>
@@ -96,19 +110,83 @@ export default function VendorDashboardPage() {
                 <div className="rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
                   <p className="font-display text-lg text-burgundy-deep">Availability status</p>
                   <p className="mt-1 text-sm text-slate-soft">
-                    Currently accepting bookings, with 4 dates blocked. Manage your full calendar and booking status
-                    on the dedicated availability page.
+                    Currently accepting bookings, with 4 dates blocked. Manage your full calendar and booking status on the dedicated availability page.
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {["Dec 4, 2026", "Dec 12, 2026", "Jan 18, 2027", "Feb 2, 2027"].map((d) => (
-                      <Badge key={d} tone="danger">
-                        {d}
+                    {["Dec 4, 2026", "Dec 12, 2026", "Jan 18, 2027", "Feb 2, 2027"].map((date) => (
+                      <Badge key={date} tone="danger">
+                        {date}
                       </Badge>
                     ))}
                   </div>
                   <Button href="/dashboard/vendor/availability" size="sm" className="mt-5">
                     Manage availability
                   </Button>
+                </div>
+              ),
+              analytics: (
+                <div className="space-y-5">
+                  <div className="rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold uppercase tracking-wide text-slate-soft">Revenue Overview</p>
+                        <p className="mt-2 font-display text-4xl text-burgundy-deep">{formatLKR(completedRevenue)}</p>
+                      </div>
+                      <Badge tone="gold">↑ +12.5% from last month</Badge>
+                    </div>
+                    <div className="mt-5">
+                      <div className="flex items-center justify-between text-sm text-slate-soft">
+                        <span>Current month vs target</span>
+                        <span>{monthlyProgress}%</span>
+                      </div>
+                      <div className="mt-2 h-3 rounded-full bg-ivory">
+                        <div className="h-3 rounded-full bg-burgundy" style={{ width: `${monthlyProgress}%` }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <div className="rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
+                      <p className="font-display text-lg text-slate">Service Popularity</p>
+                      {[
+                        { label: "Essential Package", value: 45 },
+                        { label: "Signature Package", value: 35 },
+                        { label: "Heritage Package", value: 20 },
+                      ].map((row) => (
+                        <div key={row.label} className="mt-4">
+                          <div className="flex items-center justify-between text-sm text-slate-soft">
+                            <span>{row.label}</span>
+                            <span>{row.value}%</span>
+                          </div>
+                          <div className="mt-2 h-2 rounded-full bg-ivory">
+                            <div className="h-2 rounded-full bg-burgundy" style={{ width: `${row.value}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <StatCard label="Response Rate" value="99%" />
+                      <StatCard label="Booking Success" value="94%" />
+                      <StatCard label="Avg Booking Value" value={formatLKR(averageBookingValue)} />
+                      <StatCard label="Trust Score" value={vendor.trustScore.toFixed(1)} />
+                    </div>
+                  </div>
+
+                  <div className="rounded-[8px] border border-gold/20 bg-gold/10 p-6">
+                    <div className="flex items-start gap-3">
+                      <Sparkles size={18} className="mt-1 text-gold-deep" />
+                      <div>
+                        <p className="font-display text-xl text-burgundy-deep">Market Perspective</p>
+                        <p className="mt-2 text-sm leading-relaxed text-slate-soft">
+                          Your decoration packages are performing above 78% of similar vendors in {vendor.city}. Focus on updating your gallery to increase conversion.
+                        </p>
+                        <ul className="mt-4 space-y-2 text-sm text-slate-soft">
+                          <li>• Update your availability calendar - vendors with updated calendars appear 42% higher in searches.</li>
+                          <li>• Add client testimonial photos to your gallery (0 uploaded).</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ),
             }}
