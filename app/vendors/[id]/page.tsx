@@ -145,7 +145,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
             <SubHeading>Gallery</SubHeading>
             <VendorGalleryClient images={imgs} />
             <p className="mt-3 text-xs text-slate-soft">
-              Sample event photography shown until {vendor.name.split(" ")[0]} uploads their own portfolio.
+              Portfolio preview - {vendor.name} will upload their own work once onboarded to TRIBLEERA.
             </p>
           </div>
 

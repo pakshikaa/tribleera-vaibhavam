@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "How TRIBLEERA Protects You",
   description: "Learn how TRIBLEERA VAIBHAVAM's escrow system, vendor verification, and dispute resolution protect every couple and vendor.",
   alternates: { canonical: "/trust" },
+  openGraph: {
+    title: "How TRIBLEERA Protects You | TRIBLEERA VAIBHAVAM",
+    description: "Escrow protection, vendor verification, dispute resolution and refund policy - how TRIBLEERA keeps every booking safe.",
+    url: "/trust",
+  },
 };
 
 const REFUND_ROWS = [

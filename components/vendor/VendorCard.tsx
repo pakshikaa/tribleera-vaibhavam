@@ -11,11 +11,13 @@ import { ShortlistButton } from "@/components/vendor/ShortlistButton";
 export function VendorCard({ vendor }: { vendor: Vendor }) {
   const isTopRated = vendor.trustScore >= 4.8;
   return (
-    <Link
-      href={`/vendors/${vendor.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-burgundy/20 hover:shadow-lift"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden">
+    <div className="group relative flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-burgundy/20 hover:shadow-lift">
+      <Link
+        href={`/vendors/${vendor.slug}`}
+        aria-label={vendor.name}
+        className="absolute inset-0 z-0 rounded-[10px]"
+      />
+      <div className="pointer-events-none relative z-[1] aspect-[4/3] overflow-hidden">
         <div className="h-full w-full transition-transform duration-700 group-hover:scale-[1.06]">
           <SmartImage
             src={vendor.imageUrl}
@@ -46,7 +48,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
         <ShortlistButton
           slug={vendor.slug}
           size={16}
-          className="absolute right-3 top-3 h-8 w-8 bg-black/25 backdrop-blur-sm hover:bg-black/40"
+          className="absolute right-3 top-3 z-10 h-8 w-8 bg-black/25 backdrop-blur-sm hover:bg-black/40"
         />
 
         {/* Bottom overlay */}
@@ -64,7 +66,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-4 md:p-5">
+      <div className="pointer-events-none relative z-[1] flex flex-1 flex-col p-4 md:p-5">
         <p className="line-clamp-2 text-sm leading-relaxed text-slate-soft">{vendor.tagline}</p>
         <div className="mt-3 flex flex-wrap gap-1.5">
           {vendor.tags.slice(0, 2).map((tag) => (
@@ -81,7 +83,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
           </span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 

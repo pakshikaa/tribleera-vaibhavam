@@ -93,7 +93,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
                 variant={params.category === c.slug ? "gold" : "glass"}
                 size="sm"
               >
-                {c.name}
+                {c.name} ({vendors.filter((v) => v.categorySlug === c.slug && v.status === "approved").length})
               </Button>
             ))}
           </div>

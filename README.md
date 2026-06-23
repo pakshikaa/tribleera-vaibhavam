@@ -237,3 +237,11 @@ unrelated dark "Gladiator" theme.
 3. Add authentication and gate the three dashboards by role.
 4. Wire Cloudinary/S3 for real vendor photography (see decision #2 above).
 5. Connect a real payment gateway at `/booking/payment`.
+## Bug fixes
+
+- Removed public dashboard links from desktop and mobile navigation, replaced them with a temporary `Sign In` button, and kept shortlist/cart as icon-only actions.
+- Updated the homepage hero with honest trust stats, a simpler search flow, and clearer onboarding and trust nudges.
+- Fixed the vendor gallery note, trust page Open Graph metadata, and the wedding story CTA destination.
+- Added a saved tab to the mobile bottom nav and made vendor cards fully clickable while preserving shortlist interaction.
+- Improved package selection so choosing a package adds it to cart, shows a confirmation toast, and routes to the booking cart.
+- Added category vendor counts on the vendors page and expanded vendor reviews for stronger social proof.

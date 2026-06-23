@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { trustSectionImage } from "@/lib/data/images";
@@ -34,12 +35,12 @@ export function WeddingStory() {
             &ldquo;A heritage worth celebrating, a day worth remembering.&rdquo;
           </h2>
           <p className="mt-6 text-[15px] leading-relaxed text-cream-dim">
-            Inside Niranjala &amp; Kajan&rsquo;s Jaffna celebration &mdash; three vendors, one vision, and a
+            Inside Niranjala &amp; Kajan&apos;s Jaffna celebration - three vendors, one vision, and a
             wedding week planned entirely through Tribleera.
           </p>
-          <a href="#" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold-light hover:text-gold">
-            Read the full story →
-          </a>
+          <Link href="/trust" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold-light hover:text-gold">
+            See how TRIBLEERA protects your celebration →
+          </Link>
         </motion.div>
       </div>
     </section>

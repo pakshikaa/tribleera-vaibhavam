@@ -34,7 +34,7 @@ const INCLUSIONS: Record<
 
 const TIER_COPY = {
   essential: "Thoughtfully scoped for an intimate celebration without compromising on craft.",
-  signature: "Our most-booked package — complete coverage for a grand, full-day celebration.",
+  signature: "Our most-booked package - complete coverage for a grand, full-day celebration.",
   heritage: "The full TRIBLEERA experience. Every premium detail, handled end to end.",
 };
 
@@ -73,28 +73,30 @@ function buildPackages(vendorId: string, categorySlug: string, basePrice: number
   ];
 }
 
-const REVIEW_POOL: { author: string; rating: number; comment: string }[] = [
-  { author: "Priya & Kajan", rating: 5, comment: "From the first call to the big day, everything was effortless. Highly recommend booking through Tribleera." },
-  { author: "Tharani Selvam", rating: 4.8, comment: "Professional, punctual, and exactly as promised in the package. Worth every rupee we paid." },
-  { author: "Divya Yogeswaran", rating: 5, comment: "They understood our vision immediately and delivered beyond what we expected for the day." },
-  { author: "Arun Sivakumar", rating: 4.3, comment: "Communication could have been a little faster early on, but the final outcome was genuinely beautiful." },
-  { author: "Meena Rajaratnam", rating: 4.9, comment: "Booked through Tribleera and the whole process felt transparent — the escrow payment gave us real peace of mind." },
-  { author: "Suresh & Anitha", rating: 5, comment: "Our families are still talking about how smooth the day went. Thank you for the wonderful work." },
-  { author: "Kavitha Mohan", rating: 4.7, comment: "Premium quality, premium service. We compared a few vendors on the platform and this was clearly the best." },
-  { author: "Vimal Rajendran", rating: 4.4, comment: "A couple of timing hiccups, but the team resolved everything quietly before any guest noticed." },
+const REVIEW_POOL: { author: string; rating: number; comment: string; date: [number, number, number] }[] = [
+  { author: "Kavitha & Rajan", rating: 5, date: [2024, 1, 18], comment: "Our Nallur temple morning and the evening reception both ran exactly as planned. The TRIBLEERA booking flow made it easy to compare packages without awkward phone calls." },
+  { author: "Thilaga & Senthil", rating: 4.8, date: [2024, 5, 7], comment: "The team handled our engagement coverage with calm professionalism, and every deliverable matched what was promised on the platform." },
+  { author: "Malar & Krishnan", rating: 4.9, date: [2024, 8, 23], comment: "We were nervous about paying an advance online, but the TRIBLEERA process felt transparent and secure from start to finish." },
+  { author: "Nithya & Dinesh", rating: 4.6, date: [2024, 10, 12], comment: "Small timing delay during setup, but the vendor recovered fast and the final result looked beautiful in photos and in person." },
+  { author: "Shanthi & Murugan", rating: 5, date: [2025, 0, 29], comment: "Our families still mention how polished everything felt, from the welcome area to the final send-off. Worth the investment." },
+  { author: "Bharathi & Siva", rating: 4.7, date: [2025, 3, 14], comment: "They listened carefully to the brief and adapted details for our mixed Jaffna and Colombo guest list without losing the traditional feel." },
+  { author: "Arunaa & Jegan", rating: 5, date: [2025, 6, 3], comment: "We wanted a classic Tamil wedding look with modern finishing, and the vendor got that balance exactly right." },
+  { author: "Kirusha & Naveen", rating: 4.5, date: [2025, 8, 19], comment: "Communication was steady, pricing stayed clear, and the package inclusions were exactly what arrived on the event day." },
+  { author: "Harini & Pradeep", rating: 4.8, date: [2026, 1, 8], comment: "TRIBLEERA gave us confidence to book from abroad for our Jaffna ceremony. The vendor team followed through on every detail." },
+  { author: "Sujatha & Kishore", rating: 5, date: [2026, 4, 26], comment: "The bridal room schedule, family coordination, and reception handover were all handled smoothly. It genuinely reduced our stress." },
 ];
 
-function buildReviews(seed: number, n = 2): Review[] {
+function buildReviews(seed: number, n = 5): Review[] {
   const out: Review[] = [];
   for (let i = 0; i < n; i++) {
-    const idx = (seed * 3 + i * 5) % REVIEW_POOL.length;
-    const r = REVIEW_POOL[idx];
+    const idx = (seed * 2 + i) % REVIEW_POOL.length;
+    const review = REVIEW_POOL[idx];
     out.push({
       id: `rev-${seed}-${i}`,
-      author: r.author,
-      rating: r.rating,
-      date: new Date(2026, (seed + i * 2) % 6, 4 + ((seed * 7 + i) % 24)).toISOString(),
-      comment: r.comment,
+      author: review.author,
+      rating: review.rating,
+      date: new Date(review.date[0], review.date[1], review.date[2] + (seed % 3)).toISOString(),
+      comment: review.comment,
     });
   }
   return out;
@@ -128,7 +130,7 @@ const seeds: VendorSeed[] = [
     location: "Nallur, Jaffna",
     city: "Jaffna",
     tagline: "Editorial candid photography rooted in Jaffna's wedding traditions.",
-    description: "A five-member team known for unposed, story-led wedding photography across the peninsula — frames that read like a film still, built around Jaffna's Hindu and Christian ceremony traditions alike.",
+    description: "A five-member team known for unposed, story-led wedding photography across the peninsula - frames that read like a film still, built around Jaffna's Hindu and Christian ceremony traditions alike.",
     basePrice: 120000,
     trustScore: 4.9,
     verified: true,
@@ -142,12 +144,12 @@ const seeds: VendorSeed[] = [
   },
   {
     id: "lumiere-wedding-films",
-    name: "Lumière Wedding Films",
+    name: "Lumiere Wedding Films",
     categorySlug: "photography",
     location: "Wellawatte, Colombo",
     city: "Colombo",
     tagline: "Cinematic wedding films shot like a feature.",
-    description: "Lumière specialises in moody, colour-graded wedding films with a strong focus on Poruwa and Kasi Yatra ceremonies, paired with crisp traditional stills — frequently travelling up to Jaffna for destination weddings.",
+    description: "Lumiere specialises in moody, colour-graded wedding films with a strong focus on Poruwa and Kasi Yatra ceremonies, paired with crisp traditional stills - frequently travelling up to Jaffna for destination weddings.",
     basePrice: 145000,
     trustScore: 4.7,
     verified: true,
@@ -242,7 +244,7 @@ const seeds: VendorSeed[] = [
     location: "Bambalapitiya, Colombo",
     city: "Colombo",
     tagline: "Contemporary stagecraft for the design-led couple.",
-    description: "A Colombo studio merging clean modern stagecraft with traditional Tamil floral motifs — best known for their LED-lit reception stage designs.",
+    description: "A Colombo studio merging clean modern stagecraft with traditional Tamil floral motifs - best known for their LED-lit reception stage designs.",
     basePrice: 195000,
     trustScore: 4.6,
     verified: true,
@@ -337,7 +339,7 @@ const seeds: VendorSeed[] = [
     location: "Havelock Town, Colombo",
     city: "Colombo",
     tagline: "Minimal, modern invites for the design-led couple.",
-    description: "A small design studio crafting clean, contemporary invitation suites — including matching e-invites, save-the-dates and day-of signage.",
+    description: "A small design studio crafting clean, contemporary invitation suites - including matching e-invites, save-the-dates and day-of signage.",
     basePrice: 15000,
     trustScore: 4.5,
     verified: true,

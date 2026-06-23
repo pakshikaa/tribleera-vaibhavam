@@ -8,10 +8,10 @@ import { HeroSearch } from "@/components/home/HeroSearch";
 import { heroImage } from "@/lib/data/images";
 
 const STATS = [
-  { value: "50+", label: "Verified vendors" },
+  { value: "10", label: "Verified Jaffna studios" },
   { value: "4.8★", label: "Average trust score" },
-  { value: "100%", label: "Advance protected by escrow" },
-  { value: "5", label: "Cities, North & East" },
+  { value: "LKR 0", label: "Disputes so far" },
+  { value: "5", label: "Cities served" },
 ];
 
 const fadeUp = {
@@ -55,11 +55,13 @@ export function Hero() {
           className="mb-7 flex justify-center"
         >
           <motion.div
-            animate={{ boxShadow: [
-              "0 0 0 1px rgba(212,175,106,.35), 0 20px 60px rgba(212,175,106,.18)",
-              "0 0 0 1px rgba(212,175,106,.55), 0 20px 70px rgba(212,175,106,.34)",
-              "0 0 0 1px rgba(212,175,106,.35), 0 20px 60px rgba(212,175,106,.18)"
-            ]}}
+            animate={{
+              boxShadow: [
+                "0 0 0 1px rgba(212,175,106,.35), 0 20px 60px rgba(212,175,106,.18)",
+                "0 0 0 1px rgba(212,175,106,.55), 0 20px 70px rgba(212,175,106,.34)",
+                "0 0 0 1px rgba(212,175,106,.35), 0 20px 60px rgba(212,175,106,.18)",
+              ],
+            }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.1 }}
             className="rounded-[14px]"
           >
@@ -104,44 +106,59 @@ export function Hero() {
           variants={fadeUp}
           className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-cream-dim md:text-lg"
         >
-          Jaffna&rsquo;s most trusted photographers, decorators, bridal artists, cake ateliers and
-          invitation houses — verified, bookable, secure.
+          Jaffna&apos;s most trusted photographers, decorators, bridal artists, cake ateliers and
+          invitation houses - verified, bookable, secure.
         </motion.p>
 
-        {/* Airbnb-style search bar */}
-        <motion.div
-          custom={3}
-          initial="hidden"
-          animate="show"
-          variants={fadeUp}
-        >
+        <motion.div custom={3} initial="hidden" animate="show" variants={fadeUp}>
           <HeroSearch />
         </motion.div>
 
-        <motion.div
+        <motion.p
           custom={4}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mt-4 text-center text-xs text-cream-faint"
+        >
+          Not sure where to start?{" "}
+          <Button
+            href="/vendor/register"
+            variant="tertiary"
+            size="sm"
+            className="px-0 py-0 text-xs text-cream-faint hover:text-cream"
+          >
+            Take our 2-minute wedding setup
+          </Button>
+        </motion.p>
+
+        <motion.div
+          custom={5}
           initial="hidden"
           animate="show"
           variants={fadeUp}
           className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
         >
-          <Button href="/services" variant="glass" size="sm">Browse all services</Button>
+          <Button href="/services" variant="glass" size="sm">
+            Browse all services
+          </Button>
           <span className="text-xs text-cream-faint">·</span>
-          <Button href="/vendor/register" variant="glass" size="sm">Become a vendor</Button>
+          <Button href="/vendor/register" variant="glass" size="sm">
+            Become a vendor
+          </Button>
         </motion.div>
 
         <motion.p
-          custom={5}
+          custom={6}
           initial="hidden"
           animate="show"
           variants={fadeUp}
           className="mt-6 font-display text-base italic text-gold/80"
         >
-          தேர்வின் செம்மை, வைபவத்தின் பெருமை
+          Tradition in every choice, confidence in every booking
         </motion.p>
       </div>
 
-      {/* Floating glass stat bar */}
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}

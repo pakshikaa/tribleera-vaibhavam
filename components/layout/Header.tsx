@@ -3,9 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Menu, ShoppingBag, LayoutDashboard, ChevronDown, Heart } from "lucide-react";
+import { Heart, LogIn, Menu, ShoppingBag } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetClose } from "@/components/ui/sheet";
@@ -20,17 +19,10 @@ const NAV_LINKS = [
   { href: "/#how-it-works", label: "How it works" },
 ];
 
-const DASHBOARD_LINKS = [
-  { href: "/dashboard/customer", label: "Customer dashboard" },
-  { href: "/dashboard/vendor", label: "Vendor dashboard" },
-  { href: "/dashboard/admin", label: "Admin dashboard" },
-];
-
 export function Header() {
   const pathname = usePathname();
   const { items, hydrated } = useCart();
   const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
-  const [dashOpen, setDashOpen] = useState(false);
   const isHome = pathname === "/";
   const scrolled = useScrolled(40);
 
@@ -91,34 +83,6 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <div className="relative">
-            <button
-              onClick={() => setDashOpen((o) => !o)}
-              onBlur={() => setTimeout(() => setDashOpen(false), 150)}
-              className={cn(
-                "flex items-center gap-1.5 text-sm font-medium transition-colors",
-                dark ? "text-cream-dim hover:text-cream" : "text-slate-soft hover:text-burgundy"
-              )}
-            >
-              <LayoutDashboard size={16} />
-              Dashboards
-              <ChevronDown size={14} className={cn("transition-transform", dashOpen && "rotate-180")} />
-            </button>
-            {dashOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-lg border border-slate/10 bg-white py-1.5 shadow-lift animate-scale-in">
-                {DASHBOARD_LINKS.map((d) => (
-                  <Link
-                    key={d.href}
-                    href={d.href}
-                    className="block px-4 py-2.5 text-sm text-slate hover:bg-ivory hover:text-burgundy"
-                  >
-                    {d.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
           <Link
             href="/shortlist"
             aria-label="Your shortlist"
@@ -137,8 +101,9 @@ export function Header() {
 
           <Link
             href="/booking/cart"
+            aria-label="Your cart"
             className={cn(
-              "relative flex items-center gap-1.5 text-sm font-medium transition-colors",
+              "relative flex items-center transition-colors",
               dark ? "text-cream-dim hover:text-cream" : "text-slate-soft hover:text-burgundy"
             )}
           >
@@ -150,6 +115,9 @@ export function Header() {
             )}
           </Link>
 
+          <Button href="/dashboard/customer" variant={dark ? "glass" : "secondary"} size="sm" icon={<LogIn size={16} />}>
+            Sign In
+          </Button>
           <Button href="/vendor/register" variant={dark ? "glass" : "secondary"} size="sm">
             For Vendors
           </Button>
@@ -159,7 +127,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4 md:hidden">
-          <Link href="/booking/cart" className="relative">
+          <Link href="/booking/cart" aria-label="Your cart" className="relative">
             <ShoppingBag size={22} className={dark ? "text-cream" : "text-slate"} />
             {hydrated && items.length > 0 && (
               <span className="absolute -right-2 -top-2 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-burgundy-deep">
@@ -182,16 +150,6 @@ export function Header() {
                   </SheetClose>
                 ))}
                 <div className="my-3 h-px bg-slate/10" />
-                <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-slate-soft">
-                  Demo dashboards
-                </p>
-                {DASHBOARD_LINKS.map((d) => (
-                  <SheetClose key={d.href} asChild>
-                    <Link href={d.href} className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-white">
-                      {d.label}
-                    </Link>
-                  </SheetClose>
-                ))}
               </nav>
               <div className="mt-auto flex flex-col gap-3">
                 <Button href="/vendor/register" variant="secondary" fullWidth>
