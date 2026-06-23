@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand palette — TRIBLEERA VAIBHAVAM (light system: dashboards, forms, booking flow) */
+  --color-ivory: #FAF7F2;
+  --color-ivory-deep: #F1EAE0;
+  --color-white: #FFFFFF;
+
+  --color-burgundy: #7A1F3D;
+  --color-burgundy-deep: #5C0427;
+  --color-burgundy-tint: #9F3C59;
+
+  --color-gold: #D4AF6A;
+  --color-gold-deep: #B3863F;
+  --color-gold-pale: #F3E4C5;
+
+  --color-rose: #E8B4B8;
+  --color-rose-pale: #F8E6E7;
+
+  --color-slate: #1F2937;
+  --color-slate-soft: #4B5563;
+
+  --color-success: #2F6F4E;
+  --color-success-pale: #E3EFE7;
+  --color-warning: #9A6B14;
+  --color-warning-pale: #FBF0DA;
+  --color-danger: #A3271F;
+  --color-danger-pale: #F8E4E2;
+
+  /* Dark-luxury palette (marketing/storytelling surfaces: homepage, hero moments) */
+  --color-ink: #15040C;
+  --color-burgundy-950: #220714;
+  --color-burgundy-900: #380C1E;
+  --color-burgundy-800: #56102C;
+  --color-gold-light: #E9CE9C;
+  --color-cream: #F7EEE2;
+  --color-cream-dim: #C9BCAF;
+  --color-cream-faint: #8C7E73;
+  --color-glass-border: #D4AF6A47;
+
+  /* Typography */
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  /* Shadows */
+  --shadow-soft: 0 4px 20px rgba(31, 41, 55, 0.04), 0 12px 40px rgba(31, 41, 55, 0.08);
+  --shadow-lift: 0 8px 28px rgba(122, 31, 61, 0.10), 0 18px 50px rgba(31, 41, 55, 0.10);
+  --shadow-glow: 0 0 0 1px rgba(212, 175, 106, 0.35), 0 20px 60px rgba(212, 175, 106, 0.18);
+
+  /* Container */
+  --container-max: 1280px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-slate);
+    border-color: color-mix(in oklab, var(--color-slate) 12%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-slate);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    color: var(--color-burgundy-deep);
+  }
+
+  ::selection {
+    background-color: var(--color-gold-pale);
+    color: var(--color-burgundy-deep);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-burgundy);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  .shadow-lift {
+    box-shadow: var(--shadow-lift);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .bg-grain {
+    background-image: radial-gradient(rgba(31,41,55,0.035) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+  .glass {
+    background-color: rgb(247 238 226 / 0.06);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .glow-gold {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* Keyframes for tasteful, restrained motion */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.animate-fade-in { animation: fade-in 0.6s ease-out both; }
+.animate-slide-up { animation: slide-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }

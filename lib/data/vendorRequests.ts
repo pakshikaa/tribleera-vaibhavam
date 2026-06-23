@@ -1,0 +1,48 @@
+import { VendorBookingRequest } from "@/types";
+
+export const vendorRequests: VendorBookingRequest[] = [
+  {
+    id: "REQ-3391",
+    customerName: "Pirathap & Sangeetha",
+    eventDate: "2026-11-14",
+    categorySlug: "decoration",
+    packageName: "Signature",
+    price: 165000,
+    status: "new",
+    receivedAt: "2026-06-19T09:20:00+05:30",
+    message: "Looking for a full mandap + stage package. Can we visit this weekend to see your portfolio?",
+  },
+  {
+    id: "REQ-3388",
+    customerName: "Revathi Thurairajah",
+    eventDate: "2026-10-02",
+    categorySlug: "decoration",
+    packageName: "Heritage",
+    price: 288500,
+    status: "new",
+    receivedAt: "2026-06-18T18:42:00+05:30",
+    message: "Guest count is around 600. Want to confirm florals can be sourced locally for that scale.",
+  },
+  {
+    id: "REQ-3354",
+    customerName: "Niranjala & Kajan",
+    eventDate: "2026-12-04",
+    categorySlug: "decoration",
+    packageName: "Signature",
+    price: 165000,
+    status: "accepted",
+    receivedAt: "2026-06-02T10:31:00+05:30",
+    message: "Advance has been paid through Tribleera. Please block the date.",
+  },
+  {
+    id: "REQ-3301",
+    customerName: "Hari Gnanasekaran",
+    eventDate: "2026-09-19",
+    categorySlug: "decoration",
+    packageName: "Essential",
+    price: 90500,
+    status: "declined",
+    receivedAt: "2026-05-28T11:05:00+05:30",
+    message: "Date unfortunately overlaps with an existing booking.",
+  },
+];
