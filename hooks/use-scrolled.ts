@@ -1,24 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 /** True once the page has scrolled past `threshold` px. Passive-listener, rAF-throttled. */
 export function useScrolled(threshold = 24): boolean {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
+  const subscribe = (onStoreChange: () => void) => {
     let raf = 0;
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setScrolled(window.scrollY > threshold));
+      raf = requestAnimationFrame(onStoreChange);
     };
-    onScroll();
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [threshold]);
+  };
 
-  return scrolled;
+  const getSnapshot = () => window.scrollY > threshold;
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }

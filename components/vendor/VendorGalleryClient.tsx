@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { GalleryLightbox } from "@/components/vendor/GalleryLightbox";
 import { MotifVariant, MotifTone } from "@/types";
 
-interface GalleryImage { src?: string; alt: string; }
+interface GalleryImage {
+  src?: string;
+  alt: string;
+}
 
 export function VendorGalleryClient({
   images,
@@ -31,33 +34,44 @@ export function VendorGalleryClient({
         {images.map((img, i) => (
           <button
             key={i}
-            onClick={() => { setStartIndex(i); setOpen(true); }}
-            className="group relative aspect-square overflow-hidden rounded-[8px] shadow-soft"
-            aria-label={`Open gallery — ${img.alt}`}
+            onClick={() => {
+              setStartIndex(i);
+              setOpen(true);
+            }}
+            className="rounded-[8px]"
+            aria-label={`Open gallery - ${img.alt}`}
           >
-            <div className="h-full w-full transition-transform duration-500 group-hover:scale-[1.06]">
-              <SmartImage
-                src={img.src}
-                alt={img.alt}
-                fallbackVariant={motif}
-                fallbackTone={tone}
-                fallbackSeed={i + 1}
-                sizes="(max-width: 768px) 33vw, 220px"
-              />
-            </div>
-            <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
+            <motion.div whileHover="hover" className="group relative aspect-square overflow-hidden rounded-[8px] shadow-soft">
+              <motion.div
+                variants={{ hover: { scale: 1.08 } }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+                className="h-full w-full"
+              >
+                <SmartImage
+                  src={img.src}
+                  alt={img.alt}
+                  fallbackVariant={motif}
+                  fallbackTone={tone}
+                  fallbackSeed={i + 1}
+                  sizes="(max-width: 768px) 33vw, 220px"
+                />
+              </motion.div>
+
+              <motion.div
+                variants={{ hover: { opacity: 1 } }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center bg-ink/50"
+              >
+                <span className="font-display text-sm text-cream">View ↗</span>
+              </motion.div>
+            </motion.div>
           </button>
         ))}
       </div>
 
       <AnimatePresence>
-        {open && (
-          <GalleryLightbox
-            images={lightboxImages}
-            initialIndex={startIndex}
-            onClose={() => setOpen(false)}
-          />
-        )}
+        {open && <GalleryLightbox images={lightboxImages} initialIndex={startIndex} onClose={() => setOpen(false)} />}
       </AnimatePresence>
     </>
   );

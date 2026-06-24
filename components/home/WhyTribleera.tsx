@@ -68,8 +68,16 @@ export function WhyTribleera() {
           className="grid grid-cols-1 gap-px overflow-hidden rounded-[16px] border border-gold/15 bg-gold/15 sm:grid-cols-2 lg:grid-cols-4"
         >
           {FEATURES.map((feature) => (
-            <motion.div key={feature.title} variants={itemVariants} className="bg-burgundy-950 p-8">
-              <feature.icon size={28} className="mb-6 text-gold" strokeWidth={1.5} />
+            <motion.div
+              key={feature.title}
+              variants={itemVariants}
+              whileHover={{ boxShadow: "0 0 0 1px rgba(212,175,106,0.6), 0 20px 60px rgba(212,175,106,0.15)" }}
+              transition={{ duration: 0.3 }}
+              className="bg-burgundy-950 p-8"
+            >
+              <motion.div whileHover={{ y: -4, scale: 1.1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+                <feature.icon size={28} className="mb-6 text-gold" strokeWidth={1.5} />
+              </motion.div>
               <h3 className="text-display-sm text-cream">{feature.title}</h3>
               <p className="text-body-sm mt-2.5 text-cream-faint">{feature.body}</p>
             </motion.div>

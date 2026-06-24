@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -58,14 +59,19 @@
   }
 
   html {
+    font-size: 16px;
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     background-color: var(--color-ivory);
     color: var(--color-slate);
     font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4 {
@@ -73,24 +79,24 @@
   }
 
   h1 {
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    line-height: 1.05;
+    font-size: clamp(2rem, 5.5vw, 4.5rem);
+    line-height: 1.07;
     letter-spacing: -0.02em;
     font-family: var(--font-display);
     font-weight: 700;
   }
 
   h2 {
-    font-size: clamp(1.875rem, 3.5vw, 3rem);
-    line-height: 1.1;
+    font-size: clamp(1.6rem, 3.2vw, 2.75rem);
+    line-height: 1.12;
     letter-spacing: -0.015em;
     font-family: var(--font-display);
     font-weight: 700;
   }
 
   h3 {
-    font-size: clamp(1.25rem, 2vw, 1.75rem);
-    line-height: 1.2;
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    line-height: 1.22;
     font-family: var(--font-display);
     font-weight: 600;
   }
@@ -104,7 +110,12 @@
 
   p {
     font-size: 1rem;
-    line-height: 1.7;
+    line-height: 1.72;
+  }
+
+  .bg-ivory h1, .bg-ivory h2, .bg-ivory h3,
+  .bg-white h1, .bg-white h2, .bg-white h3 {
+    color: #1F2937;
   }
 
   ::selection {
@@ -121,7 +132,7 @@
 
 @layer utilities {
   .font-display {
-    font-family: var(--font-display);
+    font-family: var(--font-display) !important;
   }
   .font-body {
     font-family: var(--font-body);
@@ -200,9 +211,45 @@
   }
   .text-overline {
     font-size: 0.6875rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     font-weight: 700;
+    font-family: var(--font-body);
+  }
+  .dark-section h1,
+  .dark-section h2,
+  .dark-section h3 {
+    color: var(--color-cream);
+  }
+  .dark-section p {
+    color: rgba(247, 238, 226, 0.75);
+  }
+  .text-gold {
+    color: #D4AF6A !important;
+  }
+  .text-gold-light {
+    color: #E9CE9C !important;
+  }
+  .text-cream {
+    color: #F7EEE2 !important;
+  }
+  .text-cream-dim {
+    color: #C9BCAF !important;
+  }
+  .text-slate {
+    color: #1F2937 !important;
+  }
+  .text-slate-soft {
+    color: #4B5563 !important;
+  }
+  .text-burgundy-deep {
+    color: #5C0427 !important;
+  }
+  .marquee-track {
+    animation: marquee-left 30s linear infinite;
+  }
+  .marquee-track:hover {
+    animation-play-state: paused;
   }
 }
 
@@ -221,6 +268,10 @@
 @keyframes scale-in {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
+}
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

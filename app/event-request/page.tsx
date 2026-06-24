@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Users } from "lucide-react";
@@ -53,6 +53,19 @@ function calculateAdvance(budgetRange: EventRequestValues["budgetRange"]) {
   };
 }
 
+function createEventRequestRecord(formValues: EventRequestValues) {
+  const createdAt = new Date().toISOString();
+
+  return {
+    id: `EVT-${new Date(createdAt).getFullYear()}${createdAt.replace(/\D/g, "").slice(-5)}`,
+    createdAt,
+    customerId: "customer-niranjala-kajan",
+    status: "pending",
+    responses: [],
+    ...formValues,
+  };
+}
+
 export default function EventRequestPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -61,8 +74,8 @@ export default function EventRequestPage() {
     register,
     handleSubmit,
     setValue,
-    watch,
     trigger,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<EventRequestValues>({
     resolver: zodResolver(eventRequestSchema),
@@ -78,8 +91,23 @@ export default function EventRequestPage() {
     },
   });
 
-  const values = watch();
-  const summary = useMemo(() => calculateAdvance(values.budgetRange), [values.budgetRange]);
+  const values = useWatch({
+    control,
+    defaultValue: {
+      eventDate: "",
+      eventLocation: "Jaffna",
+      guestCount: 250,
+      budgetRange: "50k-150k",
+      isFlexibleDate: false,
+      selectedServices: [],
+      priorities: [],
+      specialRequirements: "",
+    },
+  });
+  const budgetRange = values.budgetRange ?? "50k-150k";
+  const selectedServices = values.selectedServices ?? [];
+  const priorities = values.priorities ?? [];
+  const summary = useMemo(() => calculateAdvance(budgetRange), [budgetRange]);
 
   async function nextStep() {
     const fieldsByStep: Record<number, (keyof EventRequestValues)[]> = {
@@ -96,7 +124,7 @@ export default function EventRequestPage() {
   }
 
   function toggleService(service: (typeof SERVICE_OPTIONS)[number]) {
-    const current = values.selectedServices ?? [];
+    const current = selectedServices;
     const exists = current.includes(service);
     setValue(
       "selectedServices",
@@ -106,7 +134,7 @@ export default function EventRequestPage() {
   }
 
   function togglePriority(priority: (typeof PRIORITIES)[number]) {
-    const current = values.priorities ?? [];
+    const current = priorities;
     if (current.includes(priority)) {
       setValue(
         "priorities",
@@ -126,16 +154,7 @@ export default function EventRequestPage() {
   }
 
   const onSubmit = handleSubmit((formValues) => {
-    const record = {
-      id: `EVT-${new Date().getFullYear()}${String(Date.now()).slice(-5)}`,
-      createdAt: new Date().toISOString(),
-      customerId: "customer-niranjala-kajan",
-      status: "pending",
-      responses: [],
-      ...formValues,
-    };
-
-    writeLocalStorage("tribleera-event-request", record);
+    writeLocalStorage("tribleera-event-request", createEventRequestRecord(formValues));
     router.push("/event-request/submitted");
   });
 
@@ -194,7 +213,7 @@ export default function EventRequestPage() {
                         type="button"
                         onClick={() => setValue("budgetRange", option.value, { shouldValidate: true })}
                         className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                          values.budgetRange === option.value
+                          budgetRange === option.value
                             ? "border-burgundy bg-burgundy text-white"
                             : "border-slate/15 text-slate hover:border-burgundy"
                         }`}
@@ -217,20 +236,20 @@ export default function EventRequestPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h2 className="font-display text-2xl text-slate">Select Services</h2>
-                  <p className="text-sm text-slate-soft">{values.selectedServices.length} services selected</p>
+                  <p className="text-sm text-slate-soft">{selectedServices.length} services selected</p>
                 </div>
                 <button
                   type="button"
                   onClick={() =>
                     setValue(
                       "selectedServices",
-                      values.selectedServices.length === SERVICE_OPTIONS.length ? [] : [...SERVICE_OPTIONS],
+                      selectedServices.length === SERVICE_OPTIONS.length ? [] : [...SERVICE_OPTIONS],
                       { shouldValidate: true }
                     )
                   }
                   className="text-sm font-semibold text-burgundy"
                 >
-                  {values.selectedServices.length === SERVICE_OPTIONS.length ? "Clear All" : "Select All"}
+                  {selectedServices.length === SERVICE_OPTIONS.length ? "Clear All" : "Select All"}
                 </button>
               </div>
               {errors.selectedServices?.message && (
@@ -240,7 +259,7 @@ export default function EventRequestPage() {
                 {categories
                   .filter((category) => SERVICE_OPTIONS.includes(category.slug as (typeof SERVICE_OPTIONS)[number]))
                   .map((category) => {
-                    const selected = values.selectedServices.includes(category.slug as (typeof SERVICE_OPTIONS)[number]);
+                    const selected = selectedServices.includes(category.slug as (typeof SERVICE_OPTIONS)[number]);
                     return (
                       <button
                         key={category.slug}
@@ -283,7 +302,7 @@ export default function EventRequestPage() {
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 {PRIORITIES.map((priority) => {
-                  const selectedIndex = values.priorities.indexOf(priority);
+                  const selectedIndex = priorities.indexOf(priority);
                   return (
                     <button
                       key={priority}
@@ -328,11 +347,11 @@ export default function EventRequestPage() {
                   <p className="text-sm text-slate-soft">Location <span className="ml-2 font-medium text-slate">{values.eventLocation}</span></p>
                   <p className="text-sm text-slate-soft">Guests <span className="ml-2 font-medium text-slate">{values.guestCount}</span></p>
                   <p className="text-sm text-slate-soft">
-                    Budget <span className="ml-2 font-medium text-slate">{BUDGET_OPTIONS.find((option) => option.value === values.budgetRange)?.label}</span>
+                    Budget <span className="ml-2 font-medium text-slate">{BUDGET_OPTIONS.find((option) => option.value === budgetRange)?.label}</span>
                   </p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {values.selectedServices.map((service) => (
+                  {selectedServices.map((service) => (
                     <span key={service} className="rounded-full bg-burgundy px-3 py-1 text-xs font-semibold text-white">
                       {categories.find((category) => category.slug === service)?.name ?? service}
                     </span>

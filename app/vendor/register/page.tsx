@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -27,7 +27,7 @@ export default function VendorRegisterPage() {
     register,
     handleSubmit,
     trigger,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<VendorRegisterInput>({
     resolver: zodResolver(vendorRegisterSchema),
@@ -44,7 +44,19 @@ export default function VendorRegisterPage() {
     },
   });
 
-  const values = watch();
+  const values = useWatch({
+    control,
+    defaultValue: {
+      businessName: "",
+      ownerName: "",
+      phone: "",
+      email: "",
+      category: categories[0].slug,
+      city: "",
+      experienceYears: 0,
+      about: "",
+    },
+  });
 
   async function goNext() {
     const valid = await trigger(STEP_FIELDS[step]);

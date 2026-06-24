@@ -51,11 +51,17 @@ export function BookingJourney() {
           className="relative grid grid-cols-2 gap-y-12 lg:grid-cols-4 lg:gap-0"
         >
           <div className="absolute left-[12.5%] right-[12.5%] top-[23px] hidden h-px bg-gradient-to-r from-transparent via-gold to-transparent lg:block" />
-          {STEPS.map((step) => (
+          {STEPS.map((step, index) => (
             <motion.div key={step.n} variants={itemVariants} className="relative px-3 text-center">
-              <div className="relative z-10 mx-auto mb-6 flex h-[46px] w-[46px] items-center justify-center rounded-full border border-gold/35 bg-ink font-display text-lg font-bold text-gold-light">
+              <motion.div
+                initial={{ scale: 0, rotate: -20, opacity: 0 }}
+                whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 200, damping: 15, delay: index * 0.15 }}
+                className="relative z-10 mx-auto mb-6 flex h-[46px] w-[46px] items-center justify-center rounded-full border border-gold/35 bg-ink font-display text-lg font-bold text-gold-light"
+              >
                 {step.n}
-              </div>
+              </motion.div>
               <h3 className="text-display-sm text-cream">{step.title}</h3>
               <p className="text-caption mt-2.5 text-cream-faint">{step.body}</p>
             </motion.div>

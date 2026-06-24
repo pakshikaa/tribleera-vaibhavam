@@ -58,8 +58,14 @@ export function FeaturedVendors() {
           variants={containerVariants}
           className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {featured.map((vendor) => (
-            <motion.div key={vendor.id} variants={itemVariants}>
+          {featured.map((vendor, index) => (
+            <motion.div
+              key={vendor.id}
+              initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.7, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] as const }}
+            >
               <Link
                 href={`/vendors/${vendor.slug}`}
                 className="group block overflow-hidden rounded-[14px] border border-gold/16 bg-burgundy-950 transition-colors duration-400 hover:border-gold/55"

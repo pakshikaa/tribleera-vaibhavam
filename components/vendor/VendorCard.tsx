@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { ArrowUpRight, MapPin, ShieldCheck, Star } from "lucide-react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Vendor } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { useCompare } from "@/context/CompareContext";
@@ -12,37 +13,38 @@ import { formatLKR } from "@/lib/utils/format";
 
 export function VendorCard({ vendor }: { vendor: Vendor }) {
   const isTopRated = vendor.trustScore >= 4.8;
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const smoothRotateX = useSpring(rotateX, { stiffness: 200, damping: 25 });
-  const smoothRotateY = useSpring(rotateY, { stiffness: 200, damping: 25 });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), { stiffness: 300, damping: 30 });
   const { add, remove, compareList, isComparing } = useCompare();
   const comparing = isComparing(vendor.slug);
   const canAddMore = compareList.length < 3;
 
   function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const rotateYValue = ((x - rect.width / 2) / (rect.width / 2)) * 4;
-    const rotateXValue = -((y - rect.height / 2) / (rect.height / 2)) * 4;
-    rotateX.set(rotateXValue);
-    rotateY.set(rotateYValue);
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
   }
 
   function handleMouseLeave() {
-    rotateX.set(0);
-    rotateY.set(0);
+    mouseX.set(0);
+    mouseY.set(0);
   }
 
   return (
     <motion.div
-      className="perspective-[1000px]"
+      ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ rotateX: smoothRotateX, rotateY: smoothRotateY }}
+      style={{ rotateX, rotateY, transformPerspective: 1000 }}
+      className="group flex flex-col"
     >
-      <div className="group relative flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-burgundy/20 hover:shadow-lift">
+      <div className="relative flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-burgundy/20 hover:shadow-lift">
         <Link href={`/vendors/${vendor.slug}`} aria-label={vendor.name} className="absolute inset-0 z-0 rounded-[10px]" />
         <div className="pointer-events-none relative z-[1] aspect-[4/3] overflow-hidden">
           <div className="h-full w-full transition-transform duration-700 group-hover:scale-[1.06]">

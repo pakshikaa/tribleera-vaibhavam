@@ -1,18 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, type RefObject } from "react";
+import { motion } from "framer-motion";
 import { HeroSearch } from "@/components/home/HeroSearch";
 import { Button } from "@/components/ui/Button";
 import { useCountUp } from "@/hooks/useCountUp";
 import { heroImage } from "@/lib/data/images";
 
 const STATS = [
-  { value: 25, label: "Verified studios across Sri Lanka", suffix: "", decimals: false },
-  { value: 4.8, label: "Average trust score", suffix: "★", decimals: true },
-  { value: 0, label: "Disputes on the platform so far", prefix: "LKR ", decimals: false },
-  { value: 5, label: "Cities - Jaffna, Colombo & beyond", suffix: "", decimals: false },
+  { value: "25", label: "Verified studios across Sri Lanka" },
+  { value: "4.8", label: "Average trust score" },
+  { value: "20%", label: "Advance only - 80% paid after service" },
+  { value: "5", label: "Cities - Jaffna, Colombo & beyond" },
 ];
 
 const PARTICLES = [
@@ -33,37 +33,41 @@ const fadeUp = {
   }),
 };
 
-function formatStat(value: number, prefix = "", suffix = "", decimals = false) {
-  const rendered = decimals ? value.toFixed(1) : Math.round(value).toString();
-  return `${prefix}${rendered}${suffix}`;
-}
-
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.06, 1.16]);
-
-  const countVendors = useCountUp(25);
-  const countScore = useCountUp(4.8);
-  const countDisputes = useCountUp(0);
-  const countCities = useCountUp(5);
-  const counters = [countVendors, countScore, countDisputes, countCities];
+  const { ref: ref1, count: c1 } = useCountUp(25);
+  const { ref: ref2, count: c2 } = useCountUp(4.8, 1500, 1);
+  const { ref: ref3, count: c3 } = useCountUp(20);
+  const { ref: ref4, count: c4 } = useCountUp(5);
 
   return (
     <section ref={sectionRef} className="relative overflow-hidden bg-ink pb-28 md:pb-36">
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div style={{ y, scale }} className="absolute inset-0 will-change-transform">
+        <motion.div
+          className="absolute inset-0 will-change-transform"
+          animate={{ scale: [1.06, 1.18], x: ["0%", "-3%"] }}
+          transition={{ duration: 18, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
+        >
           <Image
             src={heroImage}
-            alt="A Jaffna wedding celebration, richly decorated with flowers and warm light"
+            alt="A Jaffna wedding celebration"
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-55"
+            className="object-cover opacity-60"
           />
         </motion.div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_8%,rgba(122,31,61,0.35),transparent_60%)]" />
+        <motion.div
+          className="pointer-events-none absolute inset-0"
+          animate={{
+            background: [
+              "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(122,31,61,0.5), transparent 70%)",
+              "radial-gradient(ellipse 60% 50% at 70% 60%, rgba(122,31,61,0.4), transparent 70%)",
+              "radial-gradient(ellipse 60% 50% at 30% 30%, rgba(122,31,61,0.5), transparent 70%)",
+            ],
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-ink via-burgundy-950/55 to-ink" />
         <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-transparent to-ink/70" />
         {PARTICLES.map((particle, index) => (
@@ -105,13 +109,21 @@ export function Hero() {
           animate="show"
           variants={fadeUp}
           className="text-overline mb-5 inline-flex items-center justify-center gap-2.5 text-gold"
+          style={{ color: "#D4AF6A" }}
         >
           <span className="h-px w-7 bg-gold" />
           Tamil Heritage · Premium Wedding Concierge
           <span className="h-px w-7 bg-gold" />
         </motion.p>
 
-        <motion.h1 custom={1} initial="hidden" animate="show" variants={fadeUp} className="text-display-xl text-cream">
+        <motion.h1
+          custom={1}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="text-display-xl text-cream"
+          style={{ color: "#F7EEE2", textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}
+        >
           Plan Your <em className="font-semibold italic text-gold-light">Perfect</em>
           <br />
           Celebration
@@ -122,7 +134,8 @@ export function Hero() {
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="text-body-lg mx-auto mt-5 max-w-xl text-cream-dim"
+          className="text-body-lg mx-auto mt-5 max-w-xl text-white/75"
+          style={{ color: "rgba(247,238,226,0.8)" }}
         >
           Discover 25 verified Tamil wedding vendors across Sri Lanka - from photographers and decorators to bridal artists, invitation studios, and luxury cake makers.
         </motion.p>
@@ -160,6 +173,7 @@ export function Hero() {
           animate="show"
           variants={fadeUp}
           className="mt-6 font-display text-base italic text-gold/80"
+          style={{ color: "#D4AF6A" }}
         >
           Tradition in every choice, confidence in every booking
         </motion.p>
@@ -184,17 +198,54 @@ export function Hero() {
       >
         <div className="mx-auto max-w-[1280px]">
           <div className="glow-gold glass grid grid-cols-2 gap-y-7 rounded-[14px] px-6 py-7 lg:grid-cols-4 lg:gap-0 lg:px-10">
-            {STATS.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={`px-2 text-center lg:border-l lg:border-cream/10 lg:text-left ${index === 0 ? "lg:border-l-0 lg:pl-0" : ""}`}
+            <div className="px-2 text-center lg:pl-0 lg:text-left">
+              <p
+                ref={ref1 as RefObject<HTMLParagraphElement>}
+                className="font-display text-2xl font-bold text-gold-light md:text-3xl"
+                style={{ color: "#E9CE9C" }}
               >
-                <p className="font-display text-3xl font-bold text-gold-light md:text-4xl">
-                  <span ref={counters[index].ref}>{formatStat(counters[index].count, stat.prefix, stat.suffix, stat.decimals)}</span>
-                </p>
-                <p className="text-caption mt-1 text-cream-faint">{stat.label}</p>
-              </div>
-            ))}
+                {c1}+
+              </p>
+              <p className="text-caption mt-1 text-white/60" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {STATS[0].label}
+              </p>
+            </div>
+            <div className="px-2 text-center lg:border-l lg:border-cream/10 lg:text-left">
+              <p
+                ref={ref2 as RefObject<HTMLParagraphElement>}
+                className="font-display text-2xl font-bold text-gold-light md:text-3xl"
+                style={{ color: "#E9CE9C" }}
+              >
+                {c2}★
+              </p>
+              <p className="text-caption mt-1 text-white/60" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {STATS[1].label}
+              </p>
+            </div>
+            <div className="px-2 text-center lg:border-l lg:border-cream/10 lg:text-left">
+              <p
+                ref={ref3 as RefObject<HTMLParagraphElement>}
+                className="font-display text-2xl font-bold text-gold-light md:text-3xl"
+                style={{ color: "#E9CE9C" }}
+              >
+                {c3}%
+              </p>
+              <p className="text-caption mt-1 text-white/60" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {STATS[2].label}
+              </p>
+            </div>
+            <div className="px-2 text-center lg:border-l lg:border-cream/10 lg:text-left">
+              <p
+                ref={ref4 as RefObject<HTMLParagraphElement>}
+                className="font-display text-2xl font-bold text-gold-light md:text-3xl"
+                style={{ color: "#E9CE9C" }}
+              >
+                {c4}
+              </p>
+              <p className="text-caption mt-1 text-white/60" style={{ color: "rgba(255,255,255,0.6)" }}>
+                {STATS[3].label}
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>
