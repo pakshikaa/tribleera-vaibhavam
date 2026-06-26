@@ -77,7 +77,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
           sizes="100vw"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-burgundy-deep/85 via-burgundy-deep/15 to-transparent" />
+        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to top, rgba(92,4,39,0.95) 0%, rgba(92,4,39,0.65) 30%, rgba(21,4,12,0.30) 70%, transparent 100%)" }} />
         <Container className="relative flex h-full flex-col justify-end pb-6 md:pb-10">
           <div className="flex flex-wrap items-center gap-2">
             {vendor.verified && (
@@ -93,8 +93,8 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
           </div>
           <div className="mt-2 flex items-end justify-between gap-4">
             <div>
-              <h1 className="text-display-md text-white">{vendor.name}</h1>
-              <div className="mt-1.5 flex flex-wrap items-center gap-4 text-sm text-white/85">
+              <h1 className="text-display-md text-white" style={{ textShadow: "0 2px 20px rgba(21,4,12,0.8)" }}>{vendor.name}</h1>
+              <div className="mt-1.5 flex flex-wrap items-center gap-4 text-sm" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 8px rgba(21,4,12,0.6)" }}>
                 <span className="flex items-center gap-1"><MapPin size={13} /> {vendor.location}</span>
                 <Rating value={vendor.trustScore} className="text-white" />
               </div>

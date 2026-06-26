@@ -253,6 +253,12 @@
   .marquee-track:hover {
     animation-play-state: paused;
   }
+  .text-shadow-dark {
+    text-shadow: 0 2px 20px rgba(21,4,12,0.8), 0 1px 8px rgba(21,4,12,0.6);
+  }
+  .text-shadow-sm {
+    text-shadow: 0 1px 8px rgba(21,4,12,0.7);
+  }
 }
 
 /* Keyframes for tasteful, restrained motion */

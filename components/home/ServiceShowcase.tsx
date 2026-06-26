@@ -81,19 +81,20 @@ function ShowcaseCard({
         transition={{ duration: 0.7, ease: "easeInOut" }}
       />
       <div
-        className="absolute inset-0 bg-gradient-to-t from-ink via-ink/10 to-transparent"
-        style={{ backgroundImage: "linear-gradient(180deg, transparent 35%, rgba(21,4,12,0.94) 100%)" }}
+        className="absolute inset-0"
+        style={{ backgroundImage: "linear-gradient(to top, rgba(21,4,12,0.95) 0%, rgba(21,4,12,0.60) 35%, rgba(21,4,12,0.15) 65%, transparent 100%)" }}
       />
       <div className="absolute inset-x-0 bottom-0 z-10 p-5">
-        <p className="text-overline text-gold">{category.name}</p>
+        <p style={{ textShadow: "0 1px 6px rgba(21,4,12,0.7)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px", color: "#D4AF6A" }}>{category.name}</p>
         {big ? (
           <>
             <h3 className="text-display-sm mt-2 text-cream">{category.name}</h3>
-            <p className="mt-1 font-display text-base italic text-gold-light/80">{category.tamilName}</p>
+            <p className="mt-1 font-display text-base italic text-gold-light/80" style={{ fontFamily: "'Playfair Display', Georgia, serif", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}>{category.tamilName}</p>
           </>
         ) : null}
-        <span className="mt-2 flex translate-y-1.5 items-center gap-1 text-xs text-cream-dim opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-gold-light group-hover:opacity-100">
+        <span className="mt-2 flex translate-y-1.5 items-center gap-1 text-xs text-cream-dim opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-gold-light group-hover:opacity-100" style={{ textShadow: "0 1px 6px rgba(21,4,12,0.5)" }}>
           Explore studios <ArrowUpRight size={12} />
+
         </span>
       </div>
     </motion.div>

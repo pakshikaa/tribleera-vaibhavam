@@ -994,7 +994,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "northern-light-studios": {
-    imageUrl: u("photo-1519741497674-611481863552"),
+    imageUrl: u("photo-1543269865-cbf427effbad"),
     galleryUrls: [
       u("photo-1529634806980-85c3dd6d34ac"),
       u("photo-1606216794074-735e91aa2c92"),
@@ -1005,7 +1005,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "valli-visual-house": {
-    imageUrl: u("photo-1543269865-cbf427effbad"),
+    imageUrl: u("photo-1519741497674-611481863552"),
     galleryUrls: [
       u("photo-1519741497674-611481863552"),
       u("photo-1606216794074-735e91aa2c92"),
@@ -1016,7 +1016,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "pixel-and-petal-photography": {
-    imageUrl: u("photo-1516589178581-6cd7833ae3b2"),
+    imageUrl: u("photo-1583939003579-730e3918a45a"),
     galleryUrls: [
       u("photo-1606216794074-735e91aa2c92"),
       u("photo-1583939003579-730e3918a45a"),
@@ -1027,7 +1027,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "royal-icing-cake-house": {
-    imageUrl: u("photo-1464195244916-405fa0a82545"),
+    imageUrl: u("photo-1535254973040-607b474cb50d"),
     galleryUrls: [
       u("photo-1535254973040-607b474cb50d"),
       u("photo-1571115177098-24ec42ed204d"),
@@ -1038,7 +1038,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "sweet-nilavu-cakes": {
-    imageUrl: u("photo-1535254973040-607b474cb50d"),
+    imageUrl: u("photo-1571115177098-24ec42ed204d"),
     galleryUrls: [
       u("photo-1464195244916-405fa0a82545"),
       u("photo-1571115177098-24ec42ed204d"),
@@ -1060,7 +1060,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "amudham-cake-studio": {
-    imageUrl: u("photo-1486427944299-d1955d23e34d"),
+    imageUrl: u("photo-1563729784474-d77dbb933a9e"),
     galleryUrls: [
       u("photo-1571115177098-24ec42ed204d"),
       u("photo-1464195244916-405fa0a82545"),
@@ -1071,7 +1071,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "lotus-patisserie": {
-    imageUrl: u("photo-1571115177098-24ec42ed204d"),
+    imageUrl: u("photo-1464195244916-405fa0a82545"),
     galleryUrls: [
       u("photo-1464195244916-405fa0a82545"),
       u("photo-1488477181946-6428a0291777"),
@@ -1093,7 +1093,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "thiruvizha-decor-studio": {
-    imageUrl: u("photo-1478146059778-26028b07395a"),
+    imageUrl: u("photo-1519167758481-83f29c8e8ee0"),
     galleryUrls: [
       u("photo-1519225421980-715cb0215aed"),
       u("photo-1519167758481-83f29c8e8ee0"),
@@ -1137,7 +1137,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "anjali-bridal-studio": {
-    imageUrl: u("photo-1522335789203-aabd1fc54bc9"),
+    imageUrl: u("photo-1487412947147-5cebf100ffc2"),
     galleryUrls: [
       u("photo-1487412947147-5cebf100ffc2"),
       u("photo-1487412720507-e7ab37603c6f"),
@@ -1148,7 +1148,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "glow-by-niranjana": {
-    imageUrl: u("photo-1487412947147-5cebf100ffc2"),
+    imageUrl: u("photo-1522335789203-aabd1fc54bc9"),
     galleryUrls: [
       u("photo-1522335789203-aabd1fc54bc9"),
       u("photo-1583001931096-959e9a1a6223"),
@@ -1192,7 +1192,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "yaazh-invites-and-stationery": {
-    imageUrl: u("photo-1606293459339-aa5ce4a2d8c8"),
+    imageUrl: u("photo-1607344645866-009c320c5ab0"),
     galleryUrls: [
       u("photo-1607344645866-009c320c5ab0"),
       u("photo-1530103862676-de8c9debad1d"),
@@ -1203,7 +1203,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "inked-petals-studio": {
-    imageUrl: u("photo-1607344645866-009c320c5ab0"),
+    imageUrl: u("photo-1606293459339-aa5ce4a2d8c8"),
     galleryUrls: [
       u("photo-1606293459339-aa5ce4a2d8c8"),
       u("photo-1583461937668-44f39b145a28"),
@@ -1225,7 +1225,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "manram-design-studio": {
-    imageUrl: u("photo-1586953208448-b95a79798f07"),
+    imageUrl: u("photo-1530103862676-de8c9debad1d"),
     galleryUrls: [
       u("photo-1565043589221-1a6fd9ae45c7"),
       u("photo-1607344645866-009c320c5ab0"),
@@ -1236,7 +1236,7 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
     ],
   },
   "kumari-paperie": {
-    imageUrl: u("photo-1583461937668-44f39b145a28"),
+    imageUrl: u("photo-1586953208448-b95a79798f07"),
     galleryUrls: [
       u("photo-1586953208448-b95a79798f07"),
       u("photo-1565043589221-1a6fd9ae45c7"),

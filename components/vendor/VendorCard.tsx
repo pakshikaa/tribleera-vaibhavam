@@ -57,7 +57,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
               sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 25vw"
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate/60 via-slate/5 to-transparent" />
+          <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to top, rgba(21,4,12,1) 0%, rgba(21,4,12,0.75) 30%, rgba(21,4,12,0.20) 60%, transparent 100%)" }} />
           <motion.div
             className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
             initial={{ x: "-100%", opacity: 0 }}
@@ -107,12 +107,12 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
 
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
             <div>
-              <p className="font-display text-sm font-semibold text-white">{vendor.name}</p>
-              <p className="mt-0.5 flex items-center gap-1 text-[11px] text-white/70">
+              <p className="font-display text-sm font-semibold text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif", textShadow: "0 1px 12px rgba(21,4,12,0.8)" }}>{vendor.name}</p>
+              <p className="mt-0.5 flex items-center gap-1 text-[11px] text-white/70" style={{ textShadow: "0 1px 8px rgba(21,4,12,0.6)" }}>
                 <MapPin size={10} /> {vendor.location}
               </p>
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-1 backdrop-blur-sm">
+            <div className="flex items-center gap-1 rounded-full bg-black/40 border border-white/15 px-2 py-1 backdrop-blur-sm">
               <Star size={11} className="fill-gold text-gold" />
               <span className="text-[11px] font-semibold text-white">{vendor.trustScore.toFixed(1)}</span>
             </div>

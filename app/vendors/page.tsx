@@ -71,13 +71,13 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
             <span className="h-px w-5 bg-gold" />
             Vendor Directory
           </p>
-          <h1 className="text-display-lg text-cream">
+          <h1 className="text-display-lg text-cream drop-shadow-[0_2px_12px_rgba(21,4,12,0.8)]">
             {activeCat ? activeCat.name : "Find your perfect match."}
           </h1>
           {activeCat && (
             <p className="mt-2 font-display text-base italic text-gold/80">{activeCat.name}</p>
           )}
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-cream-dim">
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-cream-dim drop-shadow-[0_2px_12px_rgba(21,4,12,0.8)]">
             {activeCat ? activeCat.description : "All verified studios across Jaffna, Colombo and beyond — filtered by trust score, city and price."}
           </p>
 

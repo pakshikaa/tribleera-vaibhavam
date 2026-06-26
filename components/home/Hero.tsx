@@ -52,8 +52,11 @@ export function Hero() {
           />
         </motion.div>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/35 to-black/75" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(212,175,106,0.14),transparent_35%),radial-gradient(circle_at_80%_40%,rgba(212,175,106,0.08),transparent_30%)]" />
+        <div className="absolute inset-0 bg-ink/55" />
+        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 20%, rgba(21,4,12,0.55) 100%)" }} />
+        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to top, rgba(21,4,12,0.90) 0%, rgba(21,4,12,0.40) 50%, transparent 100%)" }} />
+        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to bottom, rgba(21,4,12,0.60) 0%, transparent 30%)" }} />
+        <div className="absolute inset-0 bg-burgundy-950/20" />
 
         {PARTICLES.map((particle, index) => (
           <motion.span
@@ -89,7 +92,7 @@ export function Hero() {
           animate="show"
           variants={fadeUp}
           className="font-display font-bold leading-[1.04] tracking-tight text-cream"
-          style={{ fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)" }}
+          style={{ fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)", textShadow: "0 2px 30px rgba(21,4,12,0.8), 0 4px 60px rgba(21,4,12,0.6)" }}
         >
           Plan Your{" "}
           <em className="not-italic text-gold-light" style={{ fontStyle: "italic" }}>
@@ -105,8 +108,8 @@ export function Hero() {
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="mx-auto mt-5 max-w-[500px] leading-relaxed text-white/75"
-          style={{ fontSize: "clamp(0.95rem, 1.6vw, 1.125rem)" }}
+          className="mx-auto mt-5 max-w-[500px] leading-relaxed"
+          style={{ fontSize: "clamp(0.95rem, 1.6vw, 1.125rem)", color: "rgba(247,238,226,0.85)", textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}
         >
           Jaffna&rsquo;s most trusted photographers, decorators, bridal artists,
           cake ateliers and invitation houses — verified, bookable, secure.
@@ -118,7 +121,8 @@ export function Hero() {
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="mt-4 font-display text-[1.05rem] italic text-gold/75"
+          className="mt-4 font-display text-[1.05rem] italic"
+          style={{ color: "#D4AF6A", textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}
         >
           தேர்வின் செம்மை, வைபவத்தின் பெருமை
         </motion.p>
@@ -179,8 +183,14 @@ export function Hero() {
                 key={stat.value}
                 className={`p-4 text-center lg:text-left${i > 0 ? " lg:border-l lg:border-cream/10" : ""}`}
               >
-                <p className="text-3xl font-semibold text-gold-light md:text-4xl">{stat.value}</p>
-                <p className="mt-2 text-sm text-cream/70">{stat.label}</p>
+                <p
+                  className="font-display font-bold"
+                  style={{ color: "#E9CE9C", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: "700", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}
+                >{stat.value}</p>
+                <p
+                  className="mt-2"
+                  style={{ color: "rgba(247,238,226,0.55)", fontSize: "11px", letterSpacing: "0.02em" }}
+                >{stat.label}</p>
               </div>
             ))}
           </div>

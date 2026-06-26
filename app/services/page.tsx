@@ -30,10 +30,10 @@ export default function ServicesPage() {
             Phase One
             <span className="h-px w-7 bg-gold" />
           </p>
-          <h1 className="font-display text-[34px] font-bold leading-[1.1] text-cream md:text-[54px]">
+          <h1 className="font-display text-[34px] font-bold leading-[1.1] text-cream md:text-[54px]" style={{ textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}>
             What does your<br />celebration need?
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-cream-dim">
+          <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-cream-dim" style={{ textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}>
             Five curated service categories — each hand-vetted for craftsmanship, cultural understanding
             and reliability. Choose a category to see matching Jaffna studios.
           </p>

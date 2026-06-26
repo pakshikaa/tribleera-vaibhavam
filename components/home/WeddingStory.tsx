@@ -16,7 +16,10 @@ export function WeddingStory() {
           fallbackTone="burgundy"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/55 to-ink/10" />
+        <div
+          className="absolute inset-0"
+          style={{ backgroundImage: "linear-gradient(to right, rgba(21,4,12,0.97) 0%, rgba(21,4,12,0.80) 35%, rgba(21,4,12,0.40) 60%, rgba(21,4,12,0.10) 100%)" }}
+        />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1280px] px-5 md:px-10">
@@ -31,7 +34,10 @@ export function WeddingStory() {
             <span className="h-px w-7 bg-gold" />
             Wedding Stories
           </p>
-          <h2 className="font-display text-[28px] font-semibold italic leading-[1.35] text-cream md:text-[40px]">
+          <h2
+            className="font-display text-[28px] font-semibold italic leading-[1.35] text-cream md:text-[40px]"
+            style={{ textShadow: "0 2px 20px rgba(21,4,12,0.6)" }}
+          >
             &ldquo;A heritage worth celebrating, a day worth remembering.&rdquo;
           </h2>
           <p className="mt-6 text-[15px] leading-relaxed text-cream-dim">

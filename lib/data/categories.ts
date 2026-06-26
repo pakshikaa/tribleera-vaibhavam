@@ -24,7 +24,7 @@ export const categories: Category[] = [
     motif: "garland",
     tone: "gold",
     vendorCount: 5,
-    imageUrl: img("photo-1464195244916-405fa0a82545"),
+    imageUrl: img("photo-1535254973040-607b474cb50d"),
   },
   {
     id: "cat-decoration",
@@ -46,7 +46,7 @@ export const categories: Category[] = [
     motif: "paisley",
     tone: "burgundy",
     vendorCount: 5,
-    imageUrl: img("photo-1522335789203-aabd1fc54bc9"),
+    imageUrl: img("photo-1487412947147-5cebf100ffc2"),
   },
   {
     id: "cat-invitation",
@@ -57,7 +57,7 @@ export const categories: Category[] = [
     motif: "knot",
     tone: "gold",
     vendorCount: 5,
-    imageUrl: img("photo-1606293459339-aa5ce4a2d8c8"),
+    imageUrl: img("photo-1607344645866-009c320c5ab0"),
   },
 ];
 
