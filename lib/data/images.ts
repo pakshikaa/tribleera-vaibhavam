@@ -39,11 +39,11 @@ export const trustSectionImage = u("photo-1519167758481-83f29c8e8ee0", 1600);
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),
-  u("photo-1583939003579-730e3918a45a"),
   u("photo-1519741497674-611481863552"),
-  u("photo-1519225421980-715cb0215aed"),
-  u("photo-1522335789203-aabd1fc54bc9"),
-  u("photo-1606293459339-aa5ce4a2d8c8"),
+  u("photo-1465495976277-4387d4b0b4c6"),
+  u("photo-1529634806980-85c3dd6d34ac"),
+  u("photo-1478146059778-26028b07395a"),
+  u("photo-1487412947147-5cebf100ffc2"),
 ];
 
 export function getCategoryImage(categorySlug: string, index = 0): string | undefined {

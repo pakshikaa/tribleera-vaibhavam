@@ -17,19 +17,19 @@ export function ServiceShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mb-16 max-w-xl"
+          className="mb-14 text-center"
         >
-          <p className="text-overline mb-4 inline-flex items-center gap-2.5 text-gold">
-            <span className="h-px w-7 bg-gold" />
-            Phase One Services
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-gold">
+            ── Phase One Services ──
           </p>
-          <h2 className="text-display-md text-cream">
-            Five crafts, each
-            <br />
-            worth celebrating.
+          <h2
+            className="font-display font-bold leading-[1.12] text-cream"
+            style={{ fontSize: "clamp(1.9rem, 3.4vw, 2.8rem)" }}
+          >
+            Five crafts, each worth celebrating.
           </h2>
-          <p className="text-body-sm mt-4 text-cream-dim">
-            Every category is hand-vetted for craftsmanship - no directory padding, no unverified listings.
+          <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-cream/65">
+            Every category is hand-vetted — no directory padding, no unverified listings.
           </p>
         </motion.div>
 

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Menu, ShoppingBag } from "lucide-react";
+import { Bell, Heart, LogIn, Menu, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { NotificationPanel } from "@/components/ui/NotificationPanel";
@@ -19,15 +19,14 @@ const NAV_LINKS = [
   { href: "/vendors", label: "Vendors" },
   { href: "/#how-it-works", label: "How it works" },
   { href: "/event-request", label: "Plan Your Wedding", accent: true },
-  { href: "/dashboard/customer", label: "Sign In" },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const { items, hydrated } = useCart();
   const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
-  const isHome = pathname === "/";
   const scrolled = useScrolled(40);
+  const isHome = pathname === "/";
   const homeAtTop = isHome && !scrolled;
   const homeScrolled = isHome && scrolled;
 
@@ -47,6 +46,7 @@ export function Header() {
       )}
     >
       <Container className="flex h-16 items-center justify-between md:h-20">
+        {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <motion.span
             whileHover={{ scale: 1.05 }}
@@ -82,6 +82,7 @@ export function Header() {
           </span>
         </Link>
 
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
@@ -91,11 +92,11 @@ export function Header() {
                 "relative text-[13px] font-medium tracking-wide transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-gold after:transition-all after:duration-300 hover:after:w-full",
                 link.accent
                   ? isHome
-                    ? "text-gold font-semibold hover:text-gold-light"
-                    : "text-gold-deep font-semibold hover:text-burgundy"
+                    ? "font-semibold text-gold hover:text-gold-light"
+                    : "font-semibold text-gold-deep hover:text-burgundy"
                   : isHome
-                    ? "text-white/80 font-medium hover:text-white"
-                    : "text-slate/80 font-medium hover:text-burgundy"
+                    ? "font-medium text-white/80 hover:text-white"
+                    : "font-medium text-slate/80 hover:text-burgundy"
               )}
             >
               {link.label}
@@ -103,18 +104,33 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <NotificationPanel
-            triggerClassName={cn(
-              isHome ? "text-white/80 hover:bg-white/10 hover:text-white" : "text-slate/70 hover:bg-burgundy/5 hover:text-burgundy"
+        {/* Desktop right section */}
+        <div className="hidden items-center gap-1 md:flex">
+          {/* Notification bell */}
+          <button
+            aria-label="Notifications"
+            className={cn(
+              "relative rounded-lg p-2 transition-colors",
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
-          />
+          >
+            <Bell size={20} strokeWidth={1.75} />
+            <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-burgundy-deep">
+              3
+            </span>
+          </button>
+
+          {/* Shortlist heart */}
           <Link
             href="/shortlist"
             aria-label="Your shortlist"
             className={cn(
               "relative rounded-lg p-2 transition-colors",
-              isHome ? "text-white/80 hover:bg-white/10 hover:text-white" : "text-slate/70 hover:bg-burgundy/5 hover:text-burgundy"
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
           >
             <Heart size={20} strokeWidth={1.75} />
@@ -125,12 +141,15 @@ export function Header() {
             )}
           </Link>
 
+          {/* Cart */}
           <Link
             href="/booking/cart"
             aria-label="Your cart"
             className={cn(
               "relative rounded-lg p-2 transition-colors",
-              isHome ? "text-white/80 hover:bg-white/10 hover:text-white" : "text-slate/70 hover:bg-burgundy/5 hover:text-burgundy"
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
           >
             <ShoppingBag size={20} strokeWidth={1.75} />
@@ -141,7 +160,21 @@ export function Header() {
             )}
           </Link>
 
-          <div className={cn("mx-2 h-5 w-px", isHome ? "bg-white/25" : "bg-slate/20")} />
+          {/* Sign In */}
+          <Link
+            href="/dashboard/customer"
+            className={cn(
+              "flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium transition-colors",
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:text-burgundy"
+            )}
+          >
+            <LogIn size={15} />
+            Sign In
+          </Link>
+
+          <div className={cn("mx-2 h-5 w-px", isHome ? "bg-white/20" : "bg-slate/15")} />
 
           <Button
             href="/vendor/register"
@@ -155,11 +188,12 @@ export function Header() {
           >
             For Vendors
           </Button>
-          <Button href="/services" variant="gold" size="sm">
+          <Button href="/services" variant={isHome ? "gold" : "primary"} size="sm">
             Start Planning
           </Button>
         </div>
 
+        {/* Mobile right */}
         <div className="flex items-center gap-4 md:hidden">
           <NotificationPanel
             triggerClassName={cn(
@@ -170,7 +204,7 @@ export function Header() {
           <Link href="/booking/cart" aria-label="Your cart" className="relative">
             <ShoppingBag size={22} className={isHome ? "text-white" : "text-slate"} />
             {hydrated && items.length > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-burgundy-deep">
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-burgundy-deep">
                 {items.length}
               </span>
             )}

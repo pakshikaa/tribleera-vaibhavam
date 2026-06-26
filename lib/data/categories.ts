@@ -1,7 +1,8 @@
 import { Category } from "@/types";
-import { getCategoryImage } from "./images";
 
-// Phase 1 — the five services TRIBLEERA VAIBHAVAM launches with in Jaffna.
+const img = (id: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=90`;
+
 export const categories: Category[] = [
   {
     id: "cat-photography",
@@ -12,7 +13,7 @@ export const categories: Category[] = [
     motif: "lotus",
     tone: "slate",
     vendorCount: 5,
-    imageUrl: getCategoryImage("photography", 0),
+    imageUrl: img("photo-1606216794074-735e91aa2c92"),
   },
   {
     id: "cat-cakes",
@@ -23,7 +24,7 @@ export const categories: Category[] = [
     motif: "garland",
     tone: "gold",
     vendorCount: 5,
-    imageUrl: getCategoryImage("cakes", 0),
+    imageUrl: img("photo-1464195244916-405fa0a82545"),
   },
   {
     id: "cat-decoration",
@@ -34,7 +35,7 @@ export const categories: Category[] = [
     motif: "garland",
     tone: "rose",
     vendorCount: 5,
-    imageUrl: getCategoryImage("decoration", 0),
+    imageUrl: img("photo-1519225421980-715cb0215aed"),
   },
   {
     id: "cat-bridal-makeup",
@@ -45,7 +46,7 @@ export const categories: Category[] = [
     motif: "paisley",
     tone: "burgundy",
     vendorCount: 5,
-    imageUrl: getCategoryImage("bridal-makeup", 0),
+    imageUrl: img("photo-1522335789203-aabd1fc54bc9"),
   },
   {
     id: "cat-invitation",
@@ -56,12 +57,10 @@ export const categories: Category[] = [
     motif: "knot",
     tone: "gold",
     vendorCount: 5,
-    imageUrl: getCategoryImage("invitation", 0),
+    imageUrl: img("photo-1606293459339-aa5ce4a2d8c8"),
   },
 ];
 
-// Shown in a muted "coming soon" section — not bookable yet, not part of
-// Phase 1 filtering/search, per the product brief.
 export const comingSoonCategories: Category[] = [
   {
     id: "cat-venues",

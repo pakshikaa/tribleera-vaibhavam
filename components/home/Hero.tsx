@@ -17,13 +17,13 @@ const PARTICLES = [
 ];
 
 const STATS = [
-  { value: "25", label: "Verified studios across Sri Lanka" },
+  { value: "25+", label: "Verified studios" },
   { value: "4.8★", label: "Average trust score" },
-  { value: "20%", label: "Advance only — 80% paid after service" },
-  { value: "5", label: "Cities — Jaffna, Colombo & beyond" },
+  { value: "20%", label: "Advance — 80% after service" },
+  { value: "5", label: "Cities across Sri Lanka" },
 ];
 
-const reveal = {
+const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   show: (index: number) => ({
     opacity: 1,
@@ -66,103 +66,106 @@ export function Hero() {
         ))}
       </div>
 
-      {/* Hero content */}
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-5 pt-20 pb-8 md:px-10 md:pt-24 md:pb-10 lg:pb-40 lg:px-12">
-        <motion.div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center lg:items-start lg:text-left">
+      {/* Hero content — centered */}
+      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-28 text-center md:px-10 md:pt-36">
 
-          {/* 1 — Eyebrow */}
-          <motion.p
-            custom={0}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="mb-5 inline-flex items-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold"
-          >
-            <span className="h-px w-7 bg-gold" />
-            Tamil Heritage · Premium Wedding Concierge
-            <span className="h-px w-7 bg-gold" />
-          </motion.p>
+        {/* 1 — Eyebrow */}
+        <motion.p
+          custom={0}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mb-6 inline-flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-[0.25em] text-gold"
+        >
+          <span className="h-px w-8 bg-gold/60" />
+          Tamil Heritage · Premium Wedding Concierge
+          <span className="h-px w-8 bg-gold/60" />
+        </motion.p>
 
-          {/* 2 — Headline */}
-          <motion.h1
-            custom={1}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.04em] text-cream sm:text-6xl md:text-7xl lg:text-7xl"
-          >
-            Plan Your{" "}
-            <em className="font-semibold italic text-gold-light">Perfect</em>
-            <br />
-            Celebration
-          </motion.h1>
+        {/* 2 — Headline */}
+        <motion.h1
+          custom={1}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="font-display font-bold leading-[1.04] tracking-tight text-cream"
+          style={{ fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)" }}
+        >
+          Plan Your{" "}
+          <em className="not-italic text-gold-light" style={{ fontStyle: "italic" }}>
+            Perfect
+          </em>
+          <br />
+          Celebration
+        </motion.h1>
 
-          {/* 3 — Subtitle */}
-          <motion.p
-            custom={2}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="mt-6 max-w-lg text-base leading-relaxed text-cream/80 sm:text-[17px]"
-          >
-            Jaffna&rsquo;s most trusted photographers, decorators, bridal artists, cake ateliers and invitation houses — verified, bookable, secure.
-          </motion.p>
+        {/* 3 — Subtitle */}
+        <motion.p
+          custom={2}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mx-auto mt-5 max-w-[500px] leading-relaxed text-white/75"
+          style={{ fontSize: "clamp(0.95rem, 1.6vw, 1.125rem)" }}
+        >
+          Jaffna&rsquo;s most trusted photographers, decorators, bridal artists,
+          cake ateliers and invitation houses — verified, bookable, secure.
+        </motion.p>
 
-          {/* 4 — Tamil tagline */}
-          <motion.p
-            custom={3}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="mt-4 font-display text-base italic text-gold/80"
-          >
-            தேர்வின் செம்மை, வைபவத்தின் பெருமை
-          </motion.p>
+        {/* 4 — Tamil tagline */}
+        <motion.p
+          custom={3}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mt-4 font-display text-[1.05rem] italic text-gold/75"
+        >
+          தேர்வின் செம்மை, வைபவத்தின் பெருமை
+        </motion.p>
 
-          {/* 5 — CTA buttons */}
-          <motion.div
-            custom={4}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-center lg:justify-start"
-          >
-            <Button href="/vendors" variant="gold" size="lg" className="min-w-[180px]">
-              Find Vendors
-            </Button>
-            <Button href="/event-request" variant="glass" size="lg" className="min-w-[180px]">
-              Plan Your Wedding
-            </Button>
-          </motion.div>
-
-          {/* 6 — Search bar */}
-          <motion.div
-            custom={5}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="mt-12 w-full"
-          >
-            <HeroSearch />
-          </motion.div>
-
-          {/* 7 — Helper nudge */}
-          <motion.p
-            custom={6}
-            initial="hidden"
-            animate="show"
-            variants={reveal}
-            className="mt-5 text-sm text-cream/50"
-          >
-            Not sure where to start?{" "}
-            <Link href="/event-request" className="text-gold/80 underline-offset-2 hover:underline">
-              Take our 2-minute wedding setup →
-            </Link>
-          </motion.p>
+        {/* 5 — CTA buttons */}
+        <motion.div
+          custom={4}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
+        >
+          <Button href="/vendors" variant="gold" size="lg">
+            Find Vendors
+          </Button>
+          <Button href="/event-request" variant="glass" size="lg">
+            Plan Your Wedding
+          </Button>
         </motion.div>
+
+        {/* 6 — Search bar */}
+        <motion.div
+          custom={5}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mt-8"
+        >
+          <HeroSearch />
+        </motion.div>
+
+        {/* 7 — Helper nudge */}
+        <motion.p
+          custom={6}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="mt-4 text-[12px] text-white/45"
+        >
+          Not sure where to start?{" "}
+          <Link href="/event-request" className="underline underline-offset-2 hover:text-gold/70">
+            Take our 2-minute wedding setup →
+          </Link>
+        </motion.p>
       </div>
 
-      {/* 8 — Stats bar (lg only, absolute bottom) */}
+      {/* Stats bar — absolute bottom, lg only */}
       <motion.div
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
@@ -170,9 +173,12 @@ export function Hero() {
         className="absolute inset-x-0 bottom-7 z-20 hidden px-5 lg:block lg:px-10"
       >
         <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {STATS.map((stat) => (
-              <div key={stat.value} className="rounded-[18px] bg-white/5 p-4 text-center">
+          <div className="grid grid-cols-2 gap-y-6 lg:grid-cols-4 lg:gap-0">
+            {STATS.map((stat, i) => (
+              <div
+                key={stat.value}
+                className={`p-4 text-center lg:text-left${i > 0 ? " lg:border-l lg:border-cream/10" : ""}`}
+              >
                 <p className="text-3xl font-semibold text-gold-light md:text-4xl">{stat.value}</p>
                 <p className="mt-2 text-sm text-cream/70">{stat.label}</p>
               </div>
