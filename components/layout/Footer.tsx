@@ -76,7 +76,7 @@ export function Footer() {
         </div>
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-cream/10 pt-7 text-xs text-cream-faint md:flex-row">
           <p>© 2026 Tribleera Vaibhavam, Jaffna, Sri Lanka. All rights reserved.</p>
-          <p className="font-display text-sm text-cream-dim">தேர்வின் செம்மை, வைபவத்தின் பெருமை</p>
+          <p className="font-display text-sm text-cream-dim">Chosen with care, celebrated with grandeur.</p>
         </div>
       </Container>
     </footer>

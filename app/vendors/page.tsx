@@ -75,7 +75,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
             {activeCat ? activeCat.name : "Find your perfect match."}
           </h1>
           {activeCat && (
-            <p className="mt-2 font-display text-base italic text-gold/80">{activeCat.tamilName}</p>
+            <p className="mt-2 font-display text-base italic text-gold/80">{activeCat.name}</p>
           )}
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-cream-dim">
             {activeCat ? activeCat.description : "All verified studios across Jaffna, Colombo and beyond — filtered by trust score, city and price."}

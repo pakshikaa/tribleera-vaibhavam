@@ -285,7 +285,7 @@ export default function EventRequestPage() {
                         </div>
                         <div className="p-4">
                           <p className="font-display text-lg text-slate">{category.name}</p>
-                          <p className="text-sm text-slate-soft">{category.tamilName}</p>
+                          <p className="text-sm text-slate-soft">{category.name}</p>
                         </div>
                       </button>
                     );

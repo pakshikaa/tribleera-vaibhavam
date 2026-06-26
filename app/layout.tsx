@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
-    description: "தேர்வின் செம்மை, வைபவத்தின் பெருமை — curated vendors for your Jaffna wedding.",
+    description: "Chosen with care, celebrated with grandeur - curated vendors for your Jaffna wedding.",
     type: "website",
     locale: "en_LK",
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { categories } from "@/lib/data/categories";
@@ -56,14 +57,14 @@ function ShowcaseCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.94, y: 30 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.94, y: 30, filter: "blur(4px)" }}
+      whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] as const }}
       className={`group relative h-[240px] overflow-hidden rounded-[14px] border border-gold/15 transition-colors duration-500 hover:border-gold/55 sm:h-full ${className}`}
     >
       <Link href={`/vendors?category=${category.slug}`} className="absolute inset-0 z-10" aria-label={category.name} />
-      <motion.div className="absolute inset-0 h-full w-full" whileHover={{ scale: 1.09 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}>
+      <motion.div className="absolute inset-0 h-full w-full" whileHover={{ scale: 1.08 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] as const }}>
         <SmartImage
           src={category.imageUrl}
           alt={category.description}
@@ -85,9 +86,14 @@ function ShowcaseCard({
       />
       <div className="absolute inset-x-0 bottom-0 z-10 p-5">
         <p className="text-overline text-gold">{category.name}</p>
-        {big ? <h3 className="text-display-sm mt-2 text-cream">{category.tamilName}</h3> : null}
-        <span className="mt-2 flex translate-y-1.5 items-center gap-1.5 text-xs text-cream-dim opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-gold-light group-hover:opacity-100">
-          Explore studios →
+        {big ? (
+          <>
+            <h3 className="text-display-sm mt-2 text-cream">{category.name}</h3>
+            <p className="mt-1 font-display text-base italic text-gold-light/80">{category.tamilName}</p>
+          </>
+        ) : null}
+        <span className="mt-2 flex translate-y-1.5 items-center gap-1 text-xs text-cream-dim opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-gold-light group-hover:opacity-100">
+          Explore studios <ArrowUpRight size={12} />
         </span>
       </div>
     </motion.div>

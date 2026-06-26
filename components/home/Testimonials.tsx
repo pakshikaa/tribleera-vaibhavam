@@ -51,7 +51,13 @@ export function Testimonials() {
           </h2>
         </motion.div>
 
-        <div className="overflow-hidden">
+        <div
+          className="overflow-hidden"
+          style={{
+            maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
+          }}
+        >
           <div className="marquee-track flex w-max gap-6">
             {doubled.map((review, index) => (
               <div
@@ -59,7 +65,7 @@ export function Testimonials() {
                 className="w-[380px] shrink-0 rounded-[14px] border border-gold/15 bg-burgundy-950/60 p-7 backdrop-blur-sm"
               >
                 <Quote size={22} className="mb-5 text-gold/40" />
-                <p className="text-body-sm flex-1 leading-relaxed text-cream-dim">&ldquo;{review.quote}&rdquo;</p>
+                <p className="text-body-sm flex-1 italic leading-relaxed text-cream-dim">&ldquo;{review.quote}&rdquo;</p>
                 <div className="mt-7 flex items-center justify-between border-t border-cream/10 pt-5">
                   <div>
                     <p className="text-sm font-semibold text-cream">{review.name}</p>

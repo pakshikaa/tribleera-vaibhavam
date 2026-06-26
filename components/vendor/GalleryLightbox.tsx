@@ -12,7 +12,7 @@ interface GalleryLightboxProps {
 }
 
 const imageVariants = {
-  enter: { opacity: 0, scale: 0.95 },
+  enter: { opacity: 0, scale: 0.9 },
   center: { opacity: 1, scale: 1 },
   exit: { opacity: 0, scale: 1.05 },
 };

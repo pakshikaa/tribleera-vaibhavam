@@ -11,7 +11,7 @@ const STEPS = [
 
 const containerVariants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.05 } },
 };
 
 const itemVariants = {
@@ -55,11 +55,23 @@ export function BookingJourney() {
             <motion.div key={step.n} variants={itemVariants} className="relative px-3 text-center">
               <motion.div
                 initial={{ scale: 0, rotate: -20, opacity: 0 }}
-                whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
+                whileInView={{ scale: [0, 1.2, 1], rotate: [-20, 0, 0], opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ type: "spring", stiffness: 200, damping: 15, delay: index * 0.15 }}
+                transition={{
+                  scale: { duration: 0.6, times: [0, 0.55, 1], ease: "easeOut" },
+                  rotate: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                  opacity: { duration: 0.2 },
+                  delay: index * 0.15,
+                }}
                 className="relative z-10 mx-auto mb-6 flex h-[46px] w-[46px] items-center justify-center rounded-full border border-gold/35 bg-ink font-display text-lg font-bold text-gold-light"
               >
+                {index === 0 && (
+                  <motion.span
+                    animate={{ scale: [1, 1.7, 1], opacity: [0.55, 0, 0.55] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 rounded-full border border-gold/45"
+                  />
+                )}
                 {step.n}
               </motion.div>
               <h3 className="text-display-sm text-cream">{step.title}</h3>
