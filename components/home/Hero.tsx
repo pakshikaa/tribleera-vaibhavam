@@ -1,11 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { type RefObject } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { HeroSearch } from "@/components/home/HeroSearch";
 import { Button } from "@/components/ui/Button";
-import { useCountUp } from "@/hooks/useCountUp";
 import { heroImage } from "@/lib/data/images";
 
 const PARTICLES = [
@@ -15,6 +14,13 @@ const PARTICLES = [
   { size: "h-3 w-3", top: "46%", right: "22%", path: [-14, 10, -14], duration: 7.2, delay: 0.5 },
   { size: "h-1.5 w-1.5", top: "62%", left: "12%", path: [-6, 6, -6], duration: 4.4, delay: 1.2 },
   { size: "h-2.5 w-2.5", top: "70%", right: "10%", path: [-16, 12, -16], duration: 7.8, delay: 0.3 },
+];
+
+const STATS = [
+  { value: "25", label: "Verified studios across Sri Lanka" },
+  { value: "4.8★", label: "Average trust score" },
+  { value: "20%", label: "Advance only — 80% paid after service" },
+  { value: "5", label: "Cities — Jaffna, Colombo & beyond" },
 ];
 
 const reveal = {
@@ -27,11 +33,9 @@ const reveal = {
 };
 
 export function Hero() {
-  const { ref: vendorsRef, count: vendors } = useCountUp(25);
-  const { ref: ratingRef, count: rating } = useCountUp(4.8, 1800, 1);
-
   return (
     <section className="relative min-h-screen overflow-hidden bg-ink text-white">
+      {/* Background image — Ken Burns + parallax */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute inset-0 will-change-transform"
@@ -62,64 +66,103 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-between px-5 pt-20 pb-8 md:px-10 md:pt-24 md:pb-10 lg:px-12">
-        <motion.div className="flex items-center justify-between gap-4 py-4">
-          <motion.div
-            className="inline-flex items-center justify-center rounded-full border border-gold/30 bg-black/30 p-4 shadow-[0_0_50px_rgba(212,175,106,0.2)]"
-            animate={{
-              scale: [1, 1.06, 1],
-              boxShadow: [
-                "0 0 24px rgba(212,175,106,0.25)",
-                "0 0 48px rgba(212,175,106,0.45)",
-                "0 0 24px rgba(212,175,106,0.25)",
-              ],
-            }}
-            transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Image
-              src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA VAIBHAVAM mark"
-              width={72}
-              height={72}
-              className="rounded-full"
-            />
-          </motion.div>
-
-          <div className="hidden items-center gap-3 rounded-full border border-gold/15 bg-black/25 px-4 py-2 text-xs uppercase tracking-[0.28em] text-gold/80 shadow-soft md:flex">
-            Premium Tamil wedding marketplace
-          </div>
-        </motion.div>
-
+      {/* Hero content */}
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-5 pt-20 pb-8 md:px-10 md:pt-24 md:pb-10 lg:pb-40 lg:px-12">
         <motion.div className="mx-auto flex w-full max-w-5xl flex-col items-center text-center lg:items-start lg:text-left">
-          <motion.span custom={0} initial="hidden" animate="show" variants={reveal} className="inline-flex rounded-full border border-gold/25 bg-white/10 px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-gold shadow-[0_0_40px_rgba(212,175,106,0.1)]">
-            Exclusively curated · Tamil luxury · verified vendors
-          </motion.span>
 
-          <motion.h1 custom={1} initial="hidden" animate="show" variants={reveal} className="mt-8 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.04em] text-cream sm:text-6xl md:text-7xl lg:text-7xl">
-            Cinematic weddings for the modern Tamil couple
-          </motion.h1>
-
-          <motion.p custom={2} initial="hidden" animate="show" variants={reveal} className="mt-6 max-w-2xl text-base leading-8 text-cream/80 sm:text-lg">
-            Discover premium vendors, seamless planning, and elegant celebrations designed to honour heritage with a luxurious, contemporary edge.
+          {/* 1 — Eyebrow */}
+          <motion.p
+            custom={0}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="mb-5 inline-flex items-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold"
+          >
+            <span className="h-px w-7 bg-gold" />
+            Tamil Heritage · Premium Wedding Concierge
+            <span className="h-px w-7 bg-gold" />
           </motion.p>
 
-          <motion.div custom={3} initial="hidden" animate="show" variants={reveal} className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+          {/* 2 — Headline */}
+          <motion.h1
+            custom={1}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.04em] text-cream sm:text-6xl md:text-7xl lg:text-7xl"
+          >
+            Plan Your{" "}
+            <em className="font-semibold italic text-gold-light">Perfect</em>
+            <br />
+            Celebration
+          </motion.h1>
+
+          {/* 3 — Subtitle */}
+          <motion.p
+            custom={2}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="mt-6 max-w-lg text-base leading-relaxed text-cream/80 sm:text-[17px]"
+          >
+            Jaffna&rsquo;s most trusted photographers, decorators, bridal artists, cake ateliers and invitation houses — verified, bookable, secure.
+          </motion.p>
+
+          {/* 4 — Tamil tagline */}
+          <motion.p
+            custom={3}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="mt-4 font-display text-base italic text-gold/80"
+          >
+            தேர்வின் செம்மை, வைபவத்தின் பெருமை
+          </motion.p>
+
+          {/* 5 — CTA buttons */}
+          <motion.div
+            custom={4}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-center lg:justify-start"
+          >
             <Button href="/vendors" variant="gold" size="lg" className="min-w-[180px]">
-              Find vendors
+              Find Vendors
             </Button>
             <Button href="/event-request" variant="glass" size="lg" className="min-w-[180px]">
-              Request a bespoke plan
+              Plan Your Wedding
             </Button>
           </motion.div>
 
-          <motion.div custom={4} initial="hidden" animate="show" variants={reveal} className="mt-12 w-full">
+          {/* 6 — Search bar */}
+          <motion.div
+            custom={5}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="mt-12 w-full"
+          >
             <HeroSearch />
           </motion.div>
-        </motion.div>
 
-        <div />
+          {/* 7 — Helper nudge */}
+          <motion.p
+            custom={6}
+            initial="hidden"
+            animate="show"
+            variants={reveal}
+            className="mt-5 text-sm text-cream/50"
+          >
+            Not sure where to start?{" "}
+            <Link href="/event-request" className="text-gold/80 underline-offset-2 hover:underline">
+              Take our 2-minute wedding setup →
+            </Link>
+          </motion.p>
+        </motion.div>
       </div>
 
+      {/* 8 — Stats bar (lg only, absolute bottom) */}
       <motion.div
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
@@ -128,30 +171,15 @@ export function Hero() {
       >
         <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-[18px] bg-white/5 p-4 text-center">
-              <p ref={vendorsRef as RefObject<HTMLParagraphElement>} className="text-3xl font-semibold text-gold-light md:text-4xl">
-                {vendors}+
-              </p>
-              <p className="mt-2 text-sm text-cream/70">Premium verified vendors</p>
-            </div>
-            <div className="rounded-[18px] bg-white/5 p-4 text-center">
-              <p ref={ratingRef as RefObject<HTMLParagraphElement>} className="text-3xl font-semibold text-gold-light md:text-4xl">
-                {rating}★
-              </p>
-              <p className="mt-2 text-sm text-cream/70">Average vendor rating</p>
-            </div>
-            <div className="rounded-[18px] bg-white/5 p-4 text-center">
-              <p className="text-3xl font-semibold text-gold-light md:text-4xl">15+</p>
-              <p className="mt-2 text-sm text-cream/70">Luxury services curated</p>
-            </div>
-            <div className="rounded-[18px] bg-white/5 p-4 text-center">
-              <p className="text-3xl font-semibold text-gold-light md:text-4xl">98%</p>
-              <p className="mt-2 text-sm text-cream/70">Couples recommend us</p>
-            </div>
+            {STATS.map((stat) => (
+              <div key={stat.value} className="rounded-[18px] bg-white/5 p-4 text-center">
+                <p className="text-3xl font-semibold text-gold-light md:text-4xl">{stat.value}</p>
+                <p className="mt-2 text-sm text-cream/70">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </motion.div>
     </section>
   );
 }
-
