@@ -112,71 +112,61 @@ export function Header() {
         </nav>
 
         {/* Desktop right section */}
-        <div className="hidden items-center gap-1.5 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
 
-          {/* Notification */}
-          <button
-            type="button"
-            aria-label="View notifications"
-            className={cn(
-              "relative rounded-lg p-2 transition-colors",
-              isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
-            )}
-          >
-            <Bell size={18} strokeWidth={1.75} />
-            <span
-              aria-label="3 unread notifications"
-              className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
+          {/* Icon cluster — bell · shortlist · cart */}
+          <div className="flex items-center gap-1.5">
+
+            {/* Notification bell */}
+            <button
+              type="button"
+              aria-label="View notifications"
+              className={cn(
+                "relative rounded-lg p-2 transition-colors",
+                isHome
+                  ? "text-white/70 hover:bg-white/10 hover:text-white"
+                  : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              )}
             >
-              3
-            </span>
-          </button>
-
-          {/* Shortlist */}
-          <Link
-            href="/shortlist"
-            aria-label="Your shortlist"
-            className={cn(
-              "relative rounded-lg p-2 transition-colors",
-              isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
-            )}
-          >
-            <Heart size={18} strokeWidth={1.75} />
-            {slHydrated && shortlistCount > 0 && (
-              <span
-                aria-label={`${shortlistCount} saved vendors`}
-                className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white"
-              >
-                {shortlistCount}
+              <Bell size={18} strokeWidth={1.75} />
+              <span className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep">
+                3
               </span>
-            )}
-          </Link>
+            </button>
 
-          {/* Cart */}
-          <Link
-            href="/booking/cart"
-            aria-label="Your cart"
-            className={cn(
-              "relative rounded-lg p-2 transition-colors",
-              isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
-            )}
-          >
-            <ShoppingBag size={18} strokeWidth={1.75} />
-            {hydrated && items.length > 0 && (
-              <span
-                aria-label={`${items.length} items in cart`}
-                className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
-              >
-                {items.length}
-              </span>
-            )}
-          </Link>
+            {/* Shortlist */}
+            <Link
+              href="/shortlist"
+              aria-label="Your shortlist"
+              className={cn(
+                "relative rounded-lg p-2 transition-colors",
+                isHome
+                  ? "text-white/70 hover:bg-white/10 hover:text-white"
+                  : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              )}
+            ><Heart size={18} strokeWidth={1.75} />{slHydrated && shortlistCount > 0 && (
+                <span className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white">
+                  {shortlistCount}
+                </span>
+              )}<span className="sr-only">Your shortlist</span></Link>
+
+            {/* Cart */}
+            <Link
+              href="/booking/cart"
+              aria-label="Your cart"
+              className={cn(
+                "relative rounded-lg p-2 transition-colors",
+                isHome
+                  ? "text-white/70 hover:bg-white/10 hover:text-white"
+                  : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              )}
+            ><ShoppingBag size={18} strokeWidth={1.75} />{hydrated && items.length > 0 && (
+                <span className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep">
+                  {items.length}
+                </span>
+              )}<span className="sr-only">Your cart</span></Link>
+
+          </div>
 
           {/* Sign In */}
           <Link
