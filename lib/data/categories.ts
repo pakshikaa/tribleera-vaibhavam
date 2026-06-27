@@ -46,7 +46,7 @@ export const categories: Category[] = [
     motif: "paisley",
     tone: "burgundy",
     vendorCount: 5,
-    imageUrl: img("photo-1487412947147-5cebf100ffc2"),
+    imageUrl: img("photo-1522335789203-aabd1fc54bc9"),
   },
   {
     id: "cat-invitation",
