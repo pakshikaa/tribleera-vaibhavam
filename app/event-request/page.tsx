@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Users } from "lucide-react";
+import { Check, ImageIcon, Users } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Input, Select, Textarea } from "@/components/ui/Field";
@@ -69,6 +69,7 @@ function createEventRequestRecord(formValues: EventRequestValues) {
 export default function EventRequestPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [inspirationFiles, setInspirationFiles] = useState<File[]>([]);
   const today = new Date().toISOString().split("T")[0];
   const {
     register,
@@ -332,6 +333,32 @@ export default function EventRequestPage() {
                 error={errors.specialRequirements?.message}
                 {...register("specialRequirements")}
               />
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate">
+                  Inspiration images{" "}
+                  <span className="font-normal text-slate-soft">(optional)</span>
+                </label>
+                <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[8px] border border-dashed border-burgundy/30 bg-burgundy/[0.03] px-5 py-6 text-center transition-colors hover:bg-burgundy/[0.06]">
+                  <ImageIcon size={22} className="text-burgundy/50" />
+                  <span className="text-sm font-medium text-slate">Drop inspiration photos here or click to browse</span>
+                  <span className="text-xs text-slate-soft">JPG, PNG, WebP — up to 5 images</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="sr-only"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files ?? []).slice(0, 5);
+                      setInspirationFiles(files);
+                    }}
+                  />
+                </label>
+                {inspirationFiles.length > 0 && (
+                  <p className="mt-2 text-xs text-slate-soft">
+                    {inspirationFiles.length} file{inspirationFiles.length !== 1 ? "s" : ""} selected
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

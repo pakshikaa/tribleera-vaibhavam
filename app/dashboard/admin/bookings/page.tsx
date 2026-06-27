@@ -3,9 +3,8 @@ import { Wallet, TrendingUp, ClipboardList, AlertCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StatCard } from "@/components/ui/StatCard";
-import { Table, THead, Th, Td, Tr } from "@/components/ui/Table";
-import { BookingStatusBadge } from "@/components/dashboard/StatusBadge";
-import { formatLKR, formatDateShort } from "@/lib/utils/format";
+import { AdminBookingTabsClient } from "@/components/dashboard/AdminBookingTabsClient";
+import { formatLKR } from "@/lib/utils/format";
 import { bookings } from "@/lib/data/bookings";
 
 export const metadata: Metadata = { title: "Booking & Payment Monitoring — Admin" };
@@ -42,37 +41,7 @@ export default function AdminBookingsPage() {
         </div>
 
         <div className="mt-10">
-          <Table>
-            <THead>
-              <Th>Booking ID</Th>
-              <Th>Customer</Th>
-              <Th>Date</Th>
-              <Th>Items</Th>
-              <Th>Service total</Th>
-              <Th>Platform fee</Th>
-              <Th>Payable now</Th>
-              <Th>Status</Th>
-            </THead>
-            <tbody>
-              {bookings.map((b) => (
-                <Tr key={b.id}>
-                  <Td className="font-medium text-burgundy-deep">{b.id}</Td>
-                  <Td>
-                    {b.customerName}
-                    <span className="block text-xs text-slate-soft">{b.customerCity}</span>
-                  </Td>
-                  <Td>{formatDateShort(b.eventDate)}</Td>
-                  <Td>{b.items.length}</Td>
-                  <Td>{formatLKR(b.serviceTotal)}</Td>
-                  <Td>{formatLKR(b.platformFee)}</Td>
-                  <Td className="font-medium">{formatLKR(b.payableNow)}</Td>
-                  <Td>
-                    <BookingStatusBadge status={b.status} />
-                  </Td>
-                </Tr>
-              ))}
-            </tbody>
-          </Table>
+          <AdminBookingTabsClient bookings={bookings} />
         </div>
       </Container>
     </div>

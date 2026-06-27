@@ -246,17 +246,27 @@ export default function PaymentSummaryPage() {
                 <p className="text-sm text-slate-soft">
                   After transferring, upload your deposit slip for admin verification.
                 </p>
-                <div className="rounded-[8px] bg-ivory p-4 text-sm text-slate-soft">
-                  <p>Bank: People&apos;s Bank of Sri Lanka</p>
-                  <p>Account Name: TRIBLEERA VAIBHAVAM PVT LTD</p>
-                  <p>Account Number: 123-4567-8901</p>
-                  <p>Branch: Jaffna Main Branch</p>
-                  <p>Reference: {bankReference}</p>
+                <div className="rounded-[8px] border border-slate/10 bg-ivory p-4 text-sm">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-soft">Transfer to this account</p>
+                  <dl className="divide-y divide-slate/8">
+                    {[
+                      ["Bank", "People's Bank of Sri Lanka"],
+                      ["Account Name", "TRIBLEERA VAIBHAVAM PVT LTD"],
+                      ["Account Number", "123-4567-8901"],
+                      ["Branch", "Jaffna Main Branch"],
+                      ["Reference", bankReference],
+                    ].map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between py-2">
+                        <dt className="text-slate-soft">{key}</dt>
+                        <dd className="font-medium text-slate">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                   <Button
                     type="button"
                     variant="secondary"
                     size="sm"
-                    className="mt-3"
+                    className="mt-3 w-full"
                     icon={<Copy size={14} />}
                     onClick={async () => {
                       try {
@@ -269,6 +279,9 @@ export default function PaymentSummaryPage() {
                   >
                     Copy account number
                   </Button>
+                  <p className="mt-2 text-[11px] text-slate-soft">
+                    Use your booking reference as the transfer description so our team can match your payment instantly.
+                  </p>
                 </div>
 
                 <label

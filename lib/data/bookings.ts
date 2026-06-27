@@ -69,6 +69,66 @@ export const bookings: Booking[] = [
     "pending",
     [item("lumiere-wedding-films", "lumiere-wedding-films-essential")]
   ),
+  buildBooking(
+    "TRB-20260135",
+    "Kavitha & Murali",
+    "Colombo",
+    "2026-11-15",
+    "2026-06-05T11:00:00+05:30",
+    "confirmed",
+    [item("jaffna-frames-studio", "jaffna-frames-studio-essential")]
+  ),
+  buildBooking(
+    "TRB-20260122",
+    "Priya & Vasan",
+    "Jaffna",
+    "2026-10-28",
+    "2026-05-28T09:30:00+05:30",
+    "advance_paid",
+    [
+      item("anjali-bridal-studio", "anjali-bridal-studio-essential"),
+      item("lotus-patisserie", "lotus-patisserie-signature"),
+    ]
+  ),
+  buildBooking(
+    "TRB-20260109",
+    "Thiviya & Sathees",
+    "Jaffna",
+    "2026-12-20",
+    "2026-06-01T14:00:00+05:30",
+    "pending",
+    [item("vanam-decor-co", "vanam-decor-co-signature")]
+  ),
+  buildBooking(
+    "TRB-20260088",
+    "Malini & Rajan",
+    "Batticaloa",
+    "2026-09-12",
+    "2026-04-15T10:00:00+05:30",
+    "completed",
+    [item("lumiere-wedding-films", "lumiere-wedding-films-signature")]
+  ),
+  buildBooking(
+    "TRB-20260071",
+    "Ananthi & Suresh",
+    "Vavuniya",
+    "2026-11-22",
+    "2026-04-02T16:30:00+05:30",
+    "confirmed",
+    [
+      item("koovagam-press", "koovagam-press-signature"),
+      item("thiruvizha-decor-studio", "thiruvizha-decor-studio-essential"),
+    ]
+  ),
+  buildBooking(
+    "TRB-20260043",
+    "Dhivya & Kumar",
+    "Kandy",
+    "2026-10-05",
+    "2026-03-20T08:45:00+05:30",
+    "cancelled",
+    [item("glow-by-niranjana", "glow-by-niranjana-essential")]
+  ),
 ];
 
 export function getBookingsForCustomer(name: string) {

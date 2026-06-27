@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
+import { CheckCircle2, ArrowRight, ArrowLeft, UploadCloud } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Input, Textarea, Select } from "@/components/ui/Field";
@@ -22,6 +22,8 @@ const STEP_FIELDS: (keyof VendorRegisterInput)[][] = [
 export default function VendorRegisterPage() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [portfolio, setPortfolio] = useState<File[]>([]);
+  const [portfolioError, setPortfolioError] = useState("");
 
   const {
     register,
@@ -60,7 +62,13 @@ export default function VendorRegisterPage() {
 
   async function goNext() {
     const valid = await trigger(STEP_FIELDS[step]);
-    if (valid) setStep((s) => s + 1);
+    if (!valid) return;
+    if (step === 1 && portfolio.length < 3) {
+      setPortfolioError("Please upload at least 3 portfolio images.");
+      return;
+    }
+    setPortfolioError("");
+    setStep((s) => s + 1);
   }
 
   function onSubmit() {
@@ -201,6 +209,36 @@ export default function VendorRegisterPage() {
                   error={errors.about?.message}
                   {...register("about")}
                 />
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-slate">
+                    Portfolio images <span className="text-danger">*</span>{" "}
+                    <span className="font-normal text-slate-soft">(minimum 3)</span>
+                  </label>
+                  <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[8px] border border-dashed border-burgundy/30 bg-burgundy/[0.03] px-5 py-6 text-center transition-colors hover:bg-burgundy/[0.06]">
+                    <UploadCloud size={22} className="text-burgundy/50" />
+                    <span className="text-sm font-medium text-slate">Upload your best work</span>
+                    <span className="text-xs text-slate-soft">JPG, PNG, WebP — upload at least 3 photos</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="sr-only"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files ?? []);
+                        setPortfolio(files);
+                        setPortfolioError("");
+                      }}
+                    />
+                  </label>
+                  {portfolio.length > 0 && (
+                    <p className="mt-2 text-xs text-slate-soft">
+                      {portfolio.length} file{portfolio.length !== 1 ? "s" : ""} selected
+                    </p>
+                  )}
+                  {portfolioError && (
+                    <p className="mt-1 text-sm text-danger">{portfolioError}</p>
+                  )}
+                </div>
               </>
             )}
 

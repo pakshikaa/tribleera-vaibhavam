@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  MapPin, ShieldCheck, Phone, MessageCircle,
+  MapPin, ShieldCheck,
   Clock, Award, Users, ArrowRight, Star,
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -18,6 +18,7 @@ import { ShortlistButton } from "@/components/vendor/ShortlistButton";
 import { PriceCalculator } from "@/components/vendor/PriceCalculator";
 import { SimilarVendors } from "@/components/vendor/SimilarVendors";
 import { ShareButton } from "@/components/vendor/ShareButton";
+import { VendorContactClient } from "@/components/vendor/VendorContactClient";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { getVendorBySlug, vendors } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
@@ -273,17 +274,12 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
                 <Button href={`/vendors/${vendor.slug}/packages`} variant="gold" fullWidth>
                   View packages
                 </Button>
-                <a
-                  href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#25D366] px-5 py-2.5 text-[15px] font-semibold text-white transition-all hover:bg-[#22C55E] hover:-translate-y-0.5"
-                >
-                  <MessageCircle size={16} /> Chat on WhatsApp
-                </a>
-                <Button href={`tel:${vendor.phone}`} variant="secondary" icon={<Phone size={15} />} fullWidth>
-                  Call vendor
-                </Button>
+                <VendorContactClient
+                  vendorId={vendor.id}
+                  phone={vendor.phone}
+                  whatsapp={vendor.whatsapp}
+                  packagesHref={`/vendors/${vendor.slug}/packages`}
+                />
               </div>
             </div>
             <div className="rounded-[8px] border border-gold/20 bg-gold/5 p-4">

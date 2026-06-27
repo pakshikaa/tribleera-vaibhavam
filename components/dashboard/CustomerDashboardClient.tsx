@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CalendarClock, ClipboardList, MapPin, Wallet } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
@@ -297,6 +298,16 @@ export function CustomerDashboardClient() {
                               ? "Awaiting response - usually within 24 hours"
                               : response.rejectionReason ?? "Not available for your date"}
                         </p>
+                        {response.status === "rejected" && (
+                          <div className="mt-3">
+                            <Link
+                              href={`/vendors?category=${vendor?.categorySlug ?? ""}`}
+                              className="inline-flex items-center gap-1.5 rounded-[4px] bg-burgundy px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-burgundy-deep"
+                            >
+                              Choose another {getCategoryBySlug(vendor?.categorySlug ?? "")?.name ?? "vendor"} vendor →
+                            </Link>
+                          </div>
+                        )}
                         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                           <p className="text-xs text-slate-soft">
                             Responds by {formatDate(new Date(new Date(eventRequest.createdAt).getTime() + 24 * 60 * 60 * 1000))}
