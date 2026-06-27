@@ -35,12 +35,12 @@ const fadeUp = {
 export function Hero() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-ink text-white">
-      {/* Background image — Ken Burns + parallax */}
+      {/* Background image — Ken Burns */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute inset-0 will-change-transform"
-          animate={{ scale: [1.05, 1.18, 1.05], x: ["0%", "-4%", "0%"] }}
-          transition={{ duration: 18, ease: "linear", repeat: Infinity }}
+          animate={{ scale: [1.05, 1.18], x: ["0%", "-2.5%"] }}
+          transition={{ duration: 20, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
         >
           <Image
             src={heroImage}
@@ -48,14 +48,13 @@ export function Hero() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center opacity-90"
+            className="object-cover object-center opacity-70"
           />
         </motion.div>
 
-        <div className="absolute inset-0 bg-ink/55" />
-        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 20%, rgba(21,4,12,0.55) 100%)" }} />
-        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to top, rgba(21,4,12,0.90) 0%, rgba(21,4,12,0.40) 50%, transparent 100%)" }} />
-        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to bottom, rgba(21,4,12,0.60) 0%, transparent 30%)" }} />
+        <div className="absolute inset-0 bg-ink/45" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top,rgba(21,4,12,0.95) 0%,rgba(21,4,12,0.60) 30%,rgba(21,4,12,0.20) 60%,transparent 100%)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom,rgba(21,4,12,0.70) 0%,transparent 30%)" }} />
         <div className="absolute inset-0 bg-burgundy-950/20" />
 
         {PARTICLES.map((particle, index) => (
@@ -177,7 +176,7 @@ export function Hero() {
         className="absolute inset-x-0 bottom-7 z-20 hidden px-5 lg:block lg:px-10"
       >
         <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
-          <div className="grid grid-cols-2 gap-y-6 lg:grid-cols-4 lg:gap-0">
+          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
             {STATS.map((stat, i) => (
               <div
                 key={stat.value}

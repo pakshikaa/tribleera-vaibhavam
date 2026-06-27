@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { ToastProvider } from "@/components/ui/Toast";
 import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
 import { BackToTop } from "@/components/ui/BackToTop";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { CompareBar } from "@/components/vendor/CompareBar";
 import { CompareProvider } from "@/context/CompareContext";
 import { CartProvider } from "@/context/CartContext";
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartProvider>
                 <ShortlistProvider>
                   <MotionProvider>
+                    <ScrollProgress />
                     <Header />
                     <main id="main-content" className="min-h-screen pb-20 md:pb-0">
                       <PageTransition>{children}</PageTransition>

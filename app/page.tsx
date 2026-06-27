@@ -3,7 +3,6 @@ import { Hero } from "@/components/home/Hero";
 import { ServiceShowcase } from "@/components/home/ServiceShowcase";
 import { WhyTribleera } from "@/components/home/WhyTribleera";
 import { FeaturedVendors } from "@/components/home/FeaturedVendors";
-import { VaibhavamSignature } from "@/components/home/VaibhavamSignature";
 import { WeddingStory } from "@/components/home/WeddingStory";
 import { Testimonials } from "@/components/home/Testimonials";
 import { BookingJourney } from "@/components/home/BookingJourney";
@@ -27,7 +26,6 @@ export default function HomePage() {
       <Hero />
       <ServiceShowcase />
       <WhyTribleera />
-      <VaibhavamSignature />
       <FeaturedVendors />
       <WeddingStory />
       <Testimonials />

@@ -17,7 +17,7 @@ import { VendorMobileBookBar } from "@/components/vendor/VendorMobileBookBar";
 import { ShortlistButton } from "@/components/vendor/ShortlistButton";
 import { PriceCalculator } from "@/components/vendor/PriceCalculator";
 import { SimilarVendors } from "@/components/vendor/SimilarVendors";
-import { ShareVendorButton } from "@/components/vendor/ShareVendorButton";
+import { ShareButton } from "@/components/vendor/ShareButton";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { getVendorBySlug, vendors } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
@@ -103,7 +103,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
           sizes="100vw"
           priority
         />
-        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(to top, rgba(92,4,39,0.95) 0%, rgba(92,4,39,0.65) 30%, rgba(21,4,12,0.30) 70%, transparent 100%)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top,rgba(92,4,39,0.97) 0%,rgba(92,4,39,0.70) 28%,rgba(21,4,12,0.30) 65%,transparent 100%)" }} />
         <Container className="relative flex h-full flex-col justify-end pb-6 md:pb-10">
           <div className="flex flex-wrap items-center gap-2">
             {vendor.verified && (
@@ -131,7 +131,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
                 size={22}
                 className="mb-1 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 shrink-0"
               />
-              <ShareVendorButton vendorName={vendor.name} />
+              <ShareButton vendorName={vendor.name} />
             </div>
           </div>
         </Container>

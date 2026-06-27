@@ -223,6 +223,9 @@
   .dark-section h3 {
     color: var(--color-cream);
   }
+  .dark-section h1 {
+    text-shadow: 0 2px 20px rgba(21,4,12,0.8), 0 1px 8px rgba(21,4,12,0.6);
+  }
   .dark-section p {
     color: rgba(247, 238, 226, 0.75);
   }

@@ -3,11 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Bell, Heart, LogIn, Menu, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { NotificationPanel } from "@/components/ui/NotificationPanel";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/context/CartContext";
 import { useShortlist } from "@/context/ShortlistContext";
@@ -26,7 +26,14 @@ export function Header() {
   const { items, hydrated } = useCart();
   const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
   const scrolled = useScrolled(40);
-  const isHome = pathname === "/";
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  const isHome = mounted ? pathname === "/" : false;
   const homeAtTop = isHome && !scrolled;
   const homeScrolled = isHome && scrolled;
 
@@ -105,54 +112,67 @@ export function Header() {
         </nav>
 
         {/* Desktop right section */}
-        <div className="hidden items-center gap-1 md:flex">
-          {/* Notification bell */}
+        <div className="hidden items-center gap-1.5 md:flex">
+
+          {/* Notification */}
           <button
             type="button"
-            aria-label="Notifications"
+            aria-label="View notifications"
             className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
-              isHome ? "text-white/70 hover:text-white hover:bg-white/10"
-                     : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
+              "relative rounded-lg p-2 transition-colors",
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
           >
             <Bell size={18} strokeWidth={1.75} />
-            <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-burgundy-deep">
+            <span
+              aria-label="3 unread notifications"
+              className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
+            >
               3
             </span>
           </button>
 
-          {/* Shortlist - icon only */}
+          {/* Shortlist */}
           <Link
             href="/shortlist"
             aria-label="Your shortlist"
             className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
-              isHome ? "text-white/70 hover:text-white hover:bg-white/10"
-                     : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
+              "relative rounded-lg p-2 transition-colors",
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
           >
             <Heart size={18} strokeWidth={1.75} />
             {slHydrated && shortlistCount > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold text-white">
+              <span
+                aria-label={`${shortlistCount} saved vendors`}
+                className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white"
+              >
                 {shortlistCount}
               </span>
             )}
           </Link>
 
-          {/* Cart - icon only */}
+          {/* Cart */}
           <Link
             href="/booking/cart"
             aria-label="Your cart"
             className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
-              isHome ? "text-white/70 hover:text-white hover:bg-white/10"
-                     : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
+              "relative rounded-lg p-2 transition-colors",
+              isHome
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
           >
             <ShoppingBag size={18} strokeWidth={1.75} />
             {hydrated && items.length > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-burgundy-deep">
+              <span
+                aria-label={`${items.length} items in cart`}
+                className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
+              >
                 {items.length}
               </span>
             )}
@@ -162,47 +182,45 @@ export function Header() {
           <Link
             href="/dashboard/customer"
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium transition-colors",
+              "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               isHome
                 ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:text-burgundy"
+                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
           >
-            <LogIn size={15} />
+            <LogIn size={15} strokeWidth={1.75} />
             Sign In
           </Link>
 
-          <div className={cn("mx-2 h-5 w-px", isHome ? "bg-white/20" : "bg-slate/15")} />
+          {/* Divider */}
+          <div className={cn("h-5 w-px", isHome ? "bg-white/15" : "bg-slate/15")} />
 
+          {/* For Vendors */}
           <Button
             href="/vendor/register"
             variant={isHome ? "glass" : "secondary"}
             size="sm"
-            className={
-              isHome
-                ? "rounded-[4px] border border-white/40 px-4 py-2 text-sm font-semibold text-white hover:border-white/60 hover:bg-white/10"
-                : undefined
-            }
           >
             For Vendors
           </Button>
-          <Button href="/services" variant={isHome ? "gold" : "primary"} size="sm">
-            Start Planning
+
+          {/* Primary CTA */}
+          <Button
+            href="/vendors"
+            variant={isHome ? "gold" : "primary"}
+            size="sm"
+          >
+            Find Vendors
           </Button>
+
         </div>
 
         {/* Mobile right */}
-        <div className="flex items-center gap-4 md:hidden">
-          <NotificationPanel
-            triggerClassName={cn(
-              "relative",
-              isHome ? "text-white hover:text-white" : "text-slate hover:text-burgundy"
-            )}
-          />
+        <div className="flex items-center gap-3 md:hidden">
           <Link href="/booking/cart" aria-label="Your cart" className="relative">
             <ShoppingBag size={22} className={isHome ? "text-white" : "text-slate"} />
             {hydrated && items.length > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-burgundy-deep">
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold leading-none text-burgundy-deep">
                 {items.length}
               </span>
             )}
@@ -212,44 +230,34 @@ export function Header() {
               <Menu size={24} className={isHome ? "text-white" : "text-slate"} />
             </SheetTrigger>
             <SheetContent>
-              <SheetTitle className="mb-8">Menu</SheetTitle>
-              <nav className="flex flex-col gap-1">
-                {NAV_LINKS.map((link) => (
+              <SheetTitle>Menu</SheetTitle>
+              <nav className="mt-6 flex flex-col gap-1">
+                {[
+                  { href: "/services", label: "Services" },
+                  { href: "/vendors", label: "Vendors" },
+                  { href: "/#how-it-works", label: "How it works" },
+                  { href: "/event-request", label: "Plan Your Wedding" },
+                  { href: "/about", label: "About" },
+                  { href: "/contact", label: "Contact" },
+                  { href: "/faq", label: "FAQ" },
+                ].map((link) => (
                   <SheetClose key={link.href} asChild>
                     <Link
                       href={link.href}
-                      className={cn(
-                        "rounded-md px-3 py-3 text-[15px] font-medium hover:bg-white",
-                        link.accent ? "text-burgundy" : "text-slate"
-                      )}
+                      className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory hover:text-burgundy"
                     >
                       {link.label}
                     </Link>
                   </SheetClose>
                 ))}
-                <div className="my-3 h-px bg-slate/10" />
-                <SheetClose asChild>
-                  <Link href="/about" className="rounded-md px-3 py-3 text-[15px] font-medium text-slate hover:bg-white">
-                    About
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link href="/contact" className="rounded-md px-3 py-3 text-[15px] font-medium text-slate hover:bg-white">
-                    Contact
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link href="/faq" className="rounded-md px-3 py-3 text-[15px] font-medium text-slate hover:bg-white">
-                    FAQ
-                  </Link>
-                </SheetClose>
               </nav>
-              <div className="mt-auto flex flex-col gap-3">
+              <div className="my-4 h-px bg-slate/10" />
+              <div className="flex flex-col gap-3">
                 <Button href="/vendor/register" variant="secondary" fullWidth>
                   Register as Vendor
                 </Button>
-                <Button href="/services" variant="primary" fullWidth>
-                  Start Planning
+                <Button href="/vendors" variant="primary" fullWidth>
+                  Find Vendors
                 </Button>
               </div>
             </SheetContent>

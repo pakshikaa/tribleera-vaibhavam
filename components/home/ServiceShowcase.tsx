@@ -75,26 +75,26 @@ function ShowcaseCard({
         />
       </motion.div>
       <motion.div
-        className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/8 to-transparent"
+        className="absolute inset-0 pointer-events-none"
         initial={{ x: "-100%", opacity: 0 }}
         whileHover={{ x: "100%", opacity: 1 }}
-        transition={{ duration: 0.7, ease: "easeInOut" }}
+        transition={{ duration: 0.65, ease: "easeInOut" }}
+        style={{ background: "linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.08) 50%,transparent 60%)" }}
       />
       <div
-        className="absolute inset-0"
-        style={{ backgroundImage: "linear-gradient(to top, rgba(21,4,12,0.95) 0%, rgba(21,4,12,0.60) 35%, rgba(21,4,12,0.15) 65%, transparent 100%)" }}
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "linear-gradient(to top,rgba(21,4,12,0.97) 0%,rgba(21,4,12,0.80) 22%,rgba(21,4,12,0.35) 52%,transparent 100%)" }}
       />
       <div className="absolute inset-x-0 bottom-0 z-10 p-5">
-        <p style={{ textShadow: "0 1px 6px rgba(21,4,12,0.7)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px", color: "#D4AF6A" }}>{category.name}</p>
+        <p style={{ color: "#D4AF6A", textShadow: "0 1px 8px rgba(21,4,12,1)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px" }}>{category.name}</p>
         {big ? (
           <>
-            <h3 className="text-display-sm mt-2 text-cream">{category.name}</h3>
-            <p className="mt-1 font-display text-base italic text-gold-light/80" style={{ fontFamily: "'Playfair Display', Georgia, serif", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}>{category.tamilName}</p>
+            <h3 className="text-display-sm mt-2" style={{ color: "#F7EEE2", textShadow: "0 2px 16px rgba(21,4,12,1)" }}>{category.name}</h3>
+            <p className="mt-1 font-display text-base italic" style={{ color: "#E9CE9C", fontFamily: "'Playfair Display', Georgia, serif", textShadow: "0 1px 8px rgba(21,4,12,1)" }}>{category.tamilName}</p>
           </>
         ) : null}
-        <span className="mt-2 flex translate-y-1.5 items-center gap-1 text-xs text-cream-dim opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:text-gold-light group-hover:opacity-100" style={{ textShadow: "0 1px 6px rgba(21,4,12,0.5)" }}>
+        <span className="mt-2 flex translate-y-1.5 items-center gap-1 text-xs opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100" style={{ color: "#E9CE9C", textShadow: "0 1px 6px rgba(21,4,12,0.9)" }}>
           Explore studios <ArrowUpRight size={12} />
-
         </span>
       </div>
     </motion.div>
