@@ -159,10 +159,13 @@ export function Hero() {
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="mt-4 text-[12px] text-white/45"
+          className="mt-4 text-center text-[12.5px] text-white/60"
         >
           Not sure where to start?{" "}
-          <Link href="/event-request" className="underline underline-offset-2 hover:text-gold/70">
+          <Link
+            href="/event-request"
+            className="font-semibold text-gold/80 underline underline-offset-2 hover:text-gold transition-colors"
+          >
             Take our 2-minute wedding setup →
           </Link>
         </motion.p>
