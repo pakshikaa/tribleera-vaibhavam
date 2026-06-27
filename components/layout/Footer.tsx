@@ -1,8 +1,26 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Camera, Globe2, PlayCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { categories } from "@/lib/data/categories";
+
+function InstagramIcon({ size = 15 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ size = 15 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
 
 const COLUMNS = [
   {
@@ -18,13 +36,40 @@ const COLUMNS = [
     links: categories.map((c) => ({ href: `/vendors?category=${c.slug}`, label: c.name })),
   },
   {
-    title: "Support",
+    title: "Company",
     links: [
+      { href: "/about", label: "About us" },
+      { href: "/contact", label: "Contact" },
+      { href: "/faq", label: "FAQ" },
       { href: "/#how-it-works", label: "How it works" },
-      { href: "/trust", label: "Escrow protection" },
-      { href: "/dashboard/customer", label: "Customer dashboard" },
-      { href: "/booking/cart", label: "View cart" },
     ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { href: "/terms", label: "Terms & Conditions" },
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/trust", label: "Escrow protection" },
+      { href: "/faq", label: "FAQ" },
+    ],
+  },
+];
+
+const SOCIAL = [
+  {
+    href: "https://instagram.com/tribleera",
+    label: "TRIBLEERA on Instagram",
+    Icon: InstagramIcon,
+  },
+  {
+    href: "https://facebook.com/tribleera",
+    label: "TRIBLEERA on Facebook",
+    Icon: FacebookIcon,
+  },
+  {
+    href: "https://wa.me/94771234567",
+    label: "TRIBLEERA on WhatsApp",
+    Icon: ({ size }: { size?: number }) => <MessageCircle size={size} />,
   },
 ];
 
@@ -32,7 +77,7 @@ export function Footer() {
   return (
     <footer className="border-t border-gold/15 bg-ink text-cream">
       <Container className="py-14 md:py-20">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5">
               <Image
@@ -49,13 +94,17 @@ export function Footer() {
               cake ateliers and invitation houses, bookable with full price transparency.
             </p>
             <div className="mt-5 flex gap-3">
-              {[Camera, Globe2, PlayCircle].map((Icon, i) => (
-                <span
-                  key={i}
+              {SOCIAL.map(({ href, label, Icon }) => (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-cream/15 text-cream-dim transition-colors hover:border-gold hover:text-gold"
                 >
-                  <Icon size={16} />
-                </span>
+                  <Icon size={15} />
+                </a>
               ))}
             </div>
           </div>
@@ -64,7 +113,7 @@ export function Footer() {
               <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-gold">{col.title}</p>
               <ul className="space-y-3">
                 {col.links.map((l) => (
-                  <li key={l.href}>
+                  <li key={l.href + l.label}>
                     <Link href={l.href} className="text-sm text-cream-dim hover:text-cream">
                       {l.label}
                     </Link>

@@ -281,6 +281,10 @@
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

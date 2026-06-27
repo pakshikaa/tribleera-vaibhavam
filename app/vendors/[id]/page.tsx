@@ -15,6 +15,9 @@ import { PackageCard } from "@/components/vendor/PackageCard";
 import { VendorGalleryClient } from "@/components/vendor/VendorGalleryClient";
 import { VendorMobileBookBar } from "@/components/vendor/VendorMobileBookBar";
 import { ShortlistButton } from "@/components/vendor/ShortlistButton";
+import { PriceCalculator } from "@/components/vendor/PriceCalculator";
+import { SimilarVendors } from "@/components/vendor/SimilarVendors";
+import { ShareVendorButton } from "@/components/vendor/ShareVendorButton";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { getVendorBySlug, vendors } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
@@ -66,6 +69,29 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
   return (
     <div className="bg-ivory pb-24 md:pb-0">
+      {/* Breadcrumb */}
+      <nav aria-label="Breadcrumb" className="bg-ivory border-b border-slate/8">
+        <Container className="py-2">
+          <ol className="flex items-center gap-2 text-xs text-slate-soft">
+            <li><Link href="/" className="hover:text-burgundy">Home</Link></li>
+            <li className="text-slate/30">/</li>
+            <li><Link href="/vendors" className="hover:text-burgundy">Vendors</Link></li>
+            <li className="text-slate/30">/</li>
+            {category && (
+              <>
+                <li>
+                  <Link href={`/vendors?category=${vendor.categorySlug}`} className="hover:text-burgundy">
+                    {category.name}
+                  </Link>
+                </li>
+                <li className="text-slate/30">/</li>
+              </>
+            )}
+            <li className="max-w-[200px] truncate font-medium text-slate">{vendor.name}</li>
+          </ol>
+        </Container>
+      </nav>
+
       {/* Hero banner */}
       <section className="relative h-[260px] overflow-hidden md:h-[360px]">
         <SmartImage
@@ -99,11 +125,14 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
                 <Rating value={vendor.trustScore} className="text-white" />
               </div>
             </div>
-            <ShortlistButton
-              slug={vendor.slug}
-              size={22}
-              className="mb-1 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 shrink-0"
-            />
+            <div className="flex items-center gap-2">
+              <ShortlistButton
+                slug={vendor.slug}
+                size={22}
+                className="mb-1 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 shrink-0"
+              />
+              <ShareVendorButton vendorName={vendor.name} />
+            </div>
           </div>
         </Container>
       </section>
@@ -257,6 +286,12 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
                 </Button>
               </div>
             </div>
+            <div className="rounded-[8px] border border-gold/20 bg-gold/5 p-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gold-deep">
+                Quick cost estimate
+              </p>
+              <PriceCalculator startingPrice={vendor.startingPrice} />
+            </div>
             <div className="rounded-[8px] border border-burgundy/15 bg-burgundy/5 p-4">
               <p className="text-xs font-semibold text-burgundy-deep">🔒 TRIBLEERA Escrow Protection</p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-soft">
@@ -266,6 +301,9 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
           </div>
         </aside>
       </Container>
+
+      {/* Similar vendors */}
+      <SimilarVendors categorySlug={vendor.categorySlug} currentSlug={vendor.slug} />
 
       {/* Mobile bottom booking bar */}
       <VendorMobileBookBar vendor={vendor} />

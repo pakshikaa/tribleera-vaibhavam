@@ -108,32 +108,31 @@ export function Header() {
         <div className="hidden items-center gap-1 md:flex">
           {/* Notification bell */}
           <button
+            type="button"
             aria-label="Notifications"
             className={cn(
-              "relative rounded-lg p-2 transition-colors",
-              isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              isHome ? "text-white/70 hover:text-white hover:bg-white/10"
+                     : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
           >
-            <Bell size={20} strokeWidth={1.75} />
+            <Bell size={18} strokeWidth={1.75} />
             <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-burgundy-deep">
               3
             </span>
           </button>
 
-          {/* Shortlist heart */}
+          {/* Shortlist - icon only */}
           <Link
             href="/shortlist"
             aria-label="Your shortlist"
             className={cn(
-              "relative rounded-lg p-2 transition-colors",
-              isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              isHome ? "text-white/70 hover:text-white hover:bg-white/10"
+                     : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
           >
-            <Heart size={20} strokeWidth={1.75} />
+            <Heart size={18} strokeWidth={1.75} />
             {slHydrated && shortlistCount > 0 && (
               <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold text-white">
                 {shortlistCount}
@@ -141,18 +140,17 @@ export function Header() {
             )}
           </Link>
 
-          {/* Cart */}
+          {/* Cart - icon only */}
           <Link
             href="/booking/cart"
             aria-label="Your cart"
             className={cn(
-              "relative rounded-lg p-2 transition-colors",
-              isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              isHome ? "text-white/70 hover:text-white hover:bg-white/10"
+                     : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
           >
-            <ShoppingBag size={20} strokeWidth={1.75} />
+            <ShoppingBag size={18} strokeWidth={1.75} />
             {hydrated && items.length > 0 && (
               <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-burgundy-deep">
                 {items.length}
@@ -230,6 +228,21 @@ export function Header() {
                   </SheetClose>
                 ))}
                 <div className="my-3 h-px bg-slate/10" />
+                <SheetClose asChild>
+                  <Link href="/about" className="rounded-md px-3 py-3 text-[15px] font-medium text-slate hover:bg-white">
+                    About
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="/contact" className="rounded-md px-3 py-3 text-[15px] font-medium text-slate hover:bg-white">
+                    Contact
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link href="/faq" className="rounded-md px-3 py-3 text-[15px] font-medium text-slate hover:bg-white">
+                    FAQ
+                  </Link>
+                </SheetClose>
               </nav>
               <div className="mt-auto flex flex-col gap-3">
                 <Button href="/vendor/register" variant="secondary" fullWidth>

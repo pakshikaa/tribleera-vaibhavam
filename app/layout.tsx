@@ -5,6 +5,8 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { ToastProvider } from "@/components/ui/Toast";
+import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
+import { BackToTop } from "@/components/ui/BackToTop";
 import { CompareBar } from "@/components/vendor/CompareBar";
 import { CompareProvider } from "@/context/CompareContext";
 import { CartProvider } from "@/context/CartContext";
@@ -91,6 +93,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Footer />
                     <CompareBar />
                     <MobileBottomNav />
+                    <WhatsAppFloat />
+                    <BackToTop />
                   </MotionProvider>
                 </ShortlistProvider>
               </CartProvider>
