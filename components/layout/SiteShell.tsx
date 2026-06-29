@@ -8,7 +8,6 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
 import { BackToTop } from "@/components/ui/BackToTop";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { CompareBar } from "@/components/vendor/CompareBar";
 
 const ADMIN_PREFIXES = ["/dashboard/admin", "/admin/"];
 
@@ -28,7 +27,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
-      <CompareBar />
       <MobileBottomNav />
       <WhatsAppFloat />
       <BackToTop />

@@ -252,7 +252,7 @@ export default function PaymentSummaryPage() {
                     {[
                       ["Bank", "People's Bank of Sri Lanka"],
                       ["Account Name", "TRIBLEERA VAIBHAVAM PVT LTD"],
-                      ["Account Number", "123-4567-8901"],
+                      ["Account Number", "123-4567-8901-00"],
                       ["Branch", "Jaffna Main Branch"],
                       ["Reference", bankReference],
                     ].map(([key, value]) => (
@@ -270,7 +270,7 @@ export default function PaymentSummaryPage() {
                     icon={<Copy size={14} />}
                     onClick={async () => {
                       try {
-                        await navigator.clipboard.writeText("123-4567-8901");
+                        await navigator.clipboard.writeText("123-4567-8901-00");
                         showToast("Account number copied.", "success");
                       } catch {
                         showToast("Clipboard access unavailable.", "error");

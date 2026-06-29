@@ -66,6 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       const existingCategory = prev.find((existing) => existing.categorySlug === item.categorySlug);
       if (existingCategory) {
+        try { sessionStorage.setItem("cart-category-conflict", item.categorySlug); } catch {}
         showToast(`You already have a ${item.categorySlug.replace("-", " ")} vendor in your cart. Remove it first to add another.`, "error");
         return prev;
       }

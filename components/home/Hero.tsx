@@ -179,7 +179,7 @@ export function Hero() {
         className="absolute inset-x-0 bottom-7 z-20 hidden px-5 lg:block lg:px-10"
       >
         <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-0">
             {STATS.map((stat, i) => (
               <div
                 key={stat.value}

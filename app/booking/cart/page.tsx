@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, PlusCircle, ShoppingBag, ChevronUp, ChevronDown } from "lucide-react";
+import { ArrowRight, ShieldCheck, PlusCircle, ShoppingBag, ChevronUp, ChevronDown, AlertCircle, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +16,18 @@ import { useCart } from "@/context/CartContext";
 export default function BookingCartPage() {
   const { items, removeItem, totals, hydrated } = useCart();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [conflictCategory, setConflictCategory] = useState("");
+
+  useEffect(() => {
+    try {
+      const conflict = sessionStorage.getItem("cart-category-conflict");
+      if (conflict) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setConflictCategory(conflict);
+        sessionStorage.removeItem("cart-category-conflict");
+      }
+    } catch {}
+  }, []);
   const groupedItems = items.reduce<Record<string, typeof items>>((acc, item) => {
     const current = acc[item.categorySlug] ?? [];
     acc[item.categorySlug] = [...current, item];
@@ -51,6 +63,24 @@ export default function BookingCartPage() {
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_360px]">
             <div>
+              {conflictCategory && (
+                <div className="mb-4 flex items-start gap-3 rounded-[8px] border border-warning bg-warning-pale p-4">
+                  <AlertCircle size={16} className="mt-0.5 shrink-0 text-warning" aria-hidden="true" />
+                  <div>
+                    <p className="text-sm font-semibold text-warning">Only 1 vendor per service allowed</p>
+                    <p className="mt-0.5 text-xs text-slate-soft">
+                      Remove the existing {conflictCategory.replace(/-/g, " ")} vendor before adding another.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setConflictCategory("")}
+                    aria-label="Dismiss"
+                    className="ml-auto text-slate-soft hover:text-slate"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
               <p className="mb-4 text-sm text-slate-soft">
                 {items.length} categor{items.length !== 1 ? "ies" : "y"} selected
               </p>

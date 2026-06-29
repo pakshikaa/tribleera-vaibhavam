@@ -17,7 +17,6 @@ import {
   Globe,
   LogOut,
   Menu,
-  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -49,11 +48,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace("/admin/login");
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAuthChecked(true);
   }, [router]);
 
   // Close mobile nav on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
   }, [pathname]);
 

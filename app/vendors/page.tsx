@@ -11,7 +11,14 @@ import { ShieldCheck, SearchX } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Browse Vendors",
-  description: "Search verified Tamil wedding vendors by category, city and budget on TRIBLEERA VAIBHAVAM.",
+  description:
+    "Search verified Tamil wedding vendors by category, city and budget on TRIBLEERA VAIBHAVAM — Jaffna's premium wedding marketplace.",
+  openGraph: {
+    title: "Find Your Wedding Vendors | TRIBLEERA VAIBHAVAM",
+    description:
+      "25+ verified studios across Jaffna, Colombo and beyond. Filter by category, budget and trust score.",
+    url: "/vendors",
+  },
 };
 
 interface SearchParams { category?: string; city?: string; sort?: string; q?: string; minPrice?: string; maxPrice?: string; minTrust?: string; }

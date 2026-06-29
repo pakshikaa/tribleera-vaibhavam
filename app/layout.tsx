@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { ToastProvider } from "@/components/ui/Toast";
-import { CompareProvider } from "@/context/CompareContext";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
@@ -25,7 +24,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
-    description: "Chosen with care, celebrated with grandeur - curated vendors for your Jaffna wedding.",
+    description: "Jaffna's most trusted wedding vendors — verified, bookable, secure.",
     type: "website",
     locale: "en_LK",
   },
@@ -73,15 +72,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <ToastProvider>
           <NotificationProvider>
-            <CompareProvider>
-              <CartProvider>
-                <ShortlistProvider>
-                  <MotionProvider>
-                    <SiteShell>{children}</SiteShell>
-                  </MotionProvider>
-                </ShortlistProvider>
-              </CartProvider>
-            </CompareProvider>
+            <CartProvider>
+              <ShortlistProvider>
+                <MotionProvider>
+                  <SiteShell>{children}</SiteShell>
+                </MotionProvider>
+              </ShortlistProvider>
+            </CartProvider>
           </NotificationProvider>
         </ToastProvider>
       </body>

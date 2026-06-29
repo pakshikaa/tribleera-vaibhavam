@@ -6,7 +6,6 @@ import { ArrowUpRight, MapPin, ShieldCheck, Star } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Vendor } from "@/types";
 import { Badge } from "@/components/ui/Badge";
-import { useCompare } from "@/context/CompareContext";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { ShortlistButton } from "@/components/vendor/ShortlistButton";
 import { formatLKR } from "@/lib/utils/format";
@@ -18,9 +17,6 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
   const mouseY = useMotionValue(0);
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), { stiffness: 300, damping: 30 });
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), { stiffness: 300, damping: 30 });
-  const { add, remove, compareList, isComparing } = useCompare();
-  const comparing = isComparing(vendor.slug);
-  const canAddMore = compareList.length < 3;
 
   function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
     if (!cardRef.current) return;
@@ -81,31 +77,12 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
             )}
           </div>
 
-          <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-2">
+          <div className="absolute right-3 top-3 z-10">
             <ShortlistButton
               slug={vendor.slug}
               size={16}
               className="h-8 w-8 bg-black/25 backdrop-blur-sm hover:bg-black/40"
             />
-            <button
-              type="button"
-              aria-pressed={comparing}
-              aria-label={comparing ? "Remove from compare" : "Add to compare"}
-              title={!canAddMore && !comparing ? "Max 3 vendors" : undefined}
-              disabled={!canAddMore && !comparing}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (comparing) {
-                  remove(vendor.slug);
-                  return;
-                }
-                add(vendor.slug);
-              }}
-              className="pointer-events-auto rounded-full border border-white/30 bg-black/30 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-sm transition-colors hover:bg-black/45 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Compare ({compareList.length}/3)
-            </button>
           </div>
 
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">

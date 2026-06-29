@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { CreditCard } from "lucide-react";
 import { bookings } from "@/lib/data/bookings";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
