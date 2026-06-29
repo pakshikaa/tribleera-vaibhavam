@@ -8,11 +8,11 @@ import { useShortlist } from "@/context/ShortlistContext";
 import { cn } from "@/lib/utils/cn";
 
 const TABS = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/services", label: "Services", icon: LayoutGrid },
-  { href: "/shortlist", label: "Saved", icon: Heart },
-  { href: "/booking/cart", label: "Cart", icon: ShoppingBag },
-  { href: "/dashboard/customer", label: "Profile", icon: User },
+  { href: "/", label: "Home", icon: Home, ariaLabel: undefined },
+  { href: "/services", label: "Services", icon: LayoutGrid, ariaLabel: undefined },
+  { href: "/shortlist", label: "Saved", icon: Heart, ariaLabel: undefined },
+  { href: "/booking/cart", label: "Cart", icon: ShoppingBag, ariaLabel: "Your cart" },
+  { href: "/dashboard/customer", label: "Profile", icon: User, ariaLabel: undefined },
 ];
 
 export function MobileBottomNav() {
@@ -30,6 +30,7 @@ export function MobileBottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
+              aria-label={tab.ariaLabel}
               className={cn(
                 "relative flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-0 py-2 transition-colors",
                 active ? "text-[9.5px] font-semibold text-burgundy" : "text-[9.5px] font-medium text-slate/45"

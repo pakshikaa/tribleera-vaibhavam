@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { SiteShell } from "@/components/layout/SiteShell";
 import { MotionProvider } from "@/components/layout/MotionProvider";
-import { PageTransition } from "@/components/layout/PageTransition";
 import { ToastProvider } from "@/components/ui/Toast";
-import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
-import { BackToTop } from "@/components/ui/BackToTop";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { CompareBar } from "@/components/vendor/CompareBar";
 import { CompareProvider } from "@/context/CompareContext";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
@@ -16,7 +9,7 @@ import { ShortlistProvider } from "@/context/ShortlistContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tribleera-vaibhavam.example.com"),
+  metadataBase: new URL("https://tribleera-vaibhavam.vercel.app"),
   title: {
     default: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
     template: "%s | TRIBLEERA VAIBHAVAM",
@@ -42,9 +35,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* This rule targets the legacy Pages Router's pages/_document.js;
-            in App Router, app/layout.tsx IS the single shared shell for
-            every route, so a <link> here is the documented, correct pattern. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
@@ -62,8 +52,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@type": "Organization",
               name: "Tribleera Vaibhavam",
               alternateName: "TRIBLEERA VAIBHAVAM",
-              url: "https://tribleera-vaibhavam.example.com",
-              logo: "https://tribleera-vaibhavam.example.com/logo/tribleera-mark-512.png",
+              url: "https://tribleera-vaibhavam.vercel.app",
+              logo: "https://tribleera-vaibhavam.vercel.app/logo/tribleera-mark-512.png",
               description:
                 "A curated wedding services marketplace for Jaffna, Sri Lanka — verified photographers, decorators, bridal makeup artists, cake ateliers and invitation designers.",
               address: {
@@ -87,16 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartProvider>
                 <ShortlistProvider>
                   <MotionProvider>
-                    <ScrollProgress />
-                    <Header />
-                    <main id="main-content" className="min-h-screen pb-20 md:pb-0">
-                      <PageTransition>{children}</PageTransition>
-                    </main>
-                    <Footer />
-                    <CompareBar />
-                    <MobileBottomNav />
-                    <WhatsAppFloat />
-                    <BackToTop />
+                    <SiteShell>{children}</SiteShell>
                   </MotionProvider>
                 </ShortlistProvider>
               </CartProvider>

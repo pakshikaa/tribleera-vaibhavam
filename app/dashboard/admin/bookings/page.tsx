@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Wallet, TrendingUp, ClipboardList, AlertCircle } from "lucide-react";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { TrendingUp, Wallet, ClipboardList, AlertCircle } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { AdminBookingTabsClient } from "@/components/dashboard/AdminBookingTabsClient";
 import { formatLKR } from "@/lib/utils/format";
 import { bookings } from "@/lib/data/bookings";
 
-export const metadata: Metadata = { title: "Booking & Payment Monitoring — Admin" };
+export const metadata: Metadata = { title: "Bookings & Payments — Admin" };
 
 export default function AdminBookingsPage() {
   const totalVolume = bookings.reduce((s, b) => s + b.serviceTotal, 0);
@@ -16,34 +14,27 @@ export default function AdminBookingsPage() {
   const pendingCount = bookings.filter((b) => b.status === "pending").length;
 
   return (
-    <div className="bg-ivory">
-      <section className="border-b border-slate/8 bg-white py-10">
-        <Container>
-          <SectionHeading
-            eyebrow="Admin"
-            title="Bookings & payments"
-            description="Monitor every transaction flowing through the platform, in real time."
-          />
-        </Container>
-      </section>
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-display text-2xl font-bold text-slate">Bookings & Payments</h1>
+        <p className="mt-1 text-sm text-slate-soft">
+          Monitor every transaction flowing through the platform.
+        </p>
+      </div>
 
-      <Container className="py-10 md:py-14">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <StatCard label="Gross booking volume" value={formatLKR(totalVolume)} icon={<TrendingUp size={18} />} />
-          <StatCard label="Platform fees earned" value={formatLKR(totalFees)} icon={<Wallet size={18} />} />
-          <StatCard label="Collected to date" value={formatLKR(totalCollected)} icon={<ClipboardList size={18} />} />
-          <StatCard
-            label="Awaiting confirmation"
-            value={String(pendingCount)}
-            deltaTone={pendingCount > 0 ? "danger" : "success"}
-            icon={<AlertCircle size={18} />}
-          />
-        </div>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard label="Gross volume" value={formatLKR(totalVolume)} icon={<TrendingUp size={18} />} />
+        <StatCard label="Platform fees" value={formatLKR(totalFees)} icon={<Wallet size={18} />} />
+        <StatCard label="Collected" value={formatLKR(totalCollected)} icon={<ClipboardList size={18} />} />
+        <StatCard
+          label="Pending"
+          value={String(pendingCount)}
+          deltaTone={pendingCount > 0 ? "danger" : "success"}
+          icon={<AlertCircle size={18} />}
+        />
+      </div>
 
-        <div className="mt-10">
-          <AdminBookingTabsClient bookings={bookings} />
-        </div>
-      </Container>
+      <AdminBookingTabsClient bookings={bookings} />
     </div>
   );
 }

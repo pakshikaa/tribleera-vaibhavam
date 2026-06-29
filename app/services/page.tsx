@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Clock, ShieldCheck } from "lucide-react";
+import { Clock, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { MotifArt } from "@/components/ui/MotifArt";
@@ -51,16 +51,21 @@ export default function ServicesPage() {
       <Container className="py-14 md:py-20">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((cat, i) => (
-            <Link
-              key={cat.slug}
-              href={`/vendors?category=${cat.slug}`}
-              className="group flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-burgundy/20 hover:shadow-lift"
-            >
+            <div key={cat.slug} className="group relative overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-burgundy/20 hover:shadow-lift">
+
+              {/* Full-card link (invisible overlay) */}
+              <Link
+                href={`/vendors?category=${cat.slug}`}
+                className="absolute inset-0 z-0"
+                aria-label={`Browse ${cat.name} vendors`}
+              />
+
+              {/* Image */}
               <div className="relative aspect-[16/10] overflow-hidden">
                 <div className="h-full w-full transition-transform duration-700 group-hover:scale-[1.06]">
                   <SmartImage
                     src={cat.imageUrl}
-                    alt={cat.description}
+                    alt={cat.name}
                     fallbackVariant={cat.motif}
                     fallbackTone={cat.tone}
                     fallbackSeed={i}
@@ -69,21 +74,26 @@ export default function ServicesPage() {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-slate/50 via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-4">
-                  <p className="font-display text-sm italic text-white/80">{cat.name}</p>
+                  <p className="font-display text-sm italic text-white/80">{cat.tamilName}</p>
                 </div>
               </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-display text-xl text-slate group-hover:text-burgundy">{cat.name}</h2>
-                  <ArrowRight size={18} className="mt-1 shrink-0 text-gold-deep opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
-                </div>
-                <p className="mt-2.5 flex-1 text-sm leading-relaxed text-slate-soft">{cat.description}</p>
+
+              {/* Card body */}
+              <div className="flex flex-col p-5">
+                <h2 className="font-display text-xl text-slate transition-colors group-hover:text-burgundy">
+                  {cat.name}
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-slate-soft">{cat.description}</p>
                 <div className="mt-4 flex items-center justify-between border-t border-slate/8 pt-3">
-                  <span className="text-xs font-semibold text-slate-soft">{cat.vendorCount} verified studio{cat.vendorCount !== 1 ? "s" : ""}</span>
-                  <span className="text-xs font-semibold text-gold-deep group-hover:underline">Explore →</span>
+                  <span className="text-xs font-semibold text-slate-soft">
+                    {cat.vendorCount} verified studio{cat.vendorCount !== 1 ? "s" : ""}
+                  </span>
+                  <span className="relative z-10 text-xs font-semibold text-gold-deep group-hover:underline">
+                    Explore →
+                  </span>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 

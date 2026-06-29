@@ -101,6 +101,12 @@ export interface Booking {
   platformFee: number;
   payableNow: number;
   remainingBalance: number;
+  // Flat-booking fields (populated for single-vendor bookings)
+  categorySlug?: string;
+  vendorName?: string;
+  vendorSlug?: string;
+  location?: string;
+  eventType?: string;
 }
 
 export interface VendorBookingRequest {

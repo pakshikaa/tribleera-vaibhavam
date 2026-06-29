@@ -144,11 +144,14 @@ export function Header() {
                   ? "text-white/70 hover:bg-white/10 hover:text-white"
                   : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
               )}
-            ><Heart size={18} strokeWidth={1.75} />{slHydrated && shortlistCount > 0 && (
+            >
+              <Heart size={18} strokeWidth={1.75} />
+              {slHydrated && shortlistCount > 0 && (
                 <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white">
                   {shortlistCount}
                 </span>
-              )}<span className="sr-only">Your shortlist</span></Link>
+              )}
+            </Link>
 
             {/* Cart */}
             <Link
@@ -160,11 +163,14 @@ export function Header() {
                   ? "text-white/70 hover:bg-white/10 hover:text-white"
                   : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
               )}
-            ><ShoppingBag size={18} strokeWidth={1.75} />{hydrated && items.length > 0 && (
+            >
+              <ShoppingBag size={18} strokeWidth={1.75} />
+              {hydrated && items.length > 0 && (
                 <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep">
                   {items.length}
                 </span>
-              )}<span className="sr-only">Your cart</span></Link>
+              )}
+            </Link>
 
           </div>
 
