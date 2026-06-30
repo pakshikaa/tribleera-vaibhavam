@@ -81,6 +81,7 @@ export default function VendorPackagesPage() {
                     />
                     <button
                       type="button"
+                      aria-label={`Remove inclusion ${index + 1}`}
                       className="rounded-[4px] border border-slate/15 px-3 text-sm text-slate-soft"
                       onClick={() =>
                         setPackages((prev) =>

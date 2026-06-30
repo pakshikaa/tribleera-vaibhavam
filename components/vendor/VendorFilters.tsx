@@ -53,15 +53,24 @@ export function VendorFilters() {
 
   return (
     <div className="rounded-[8px] border border-slate/8 bg-white p-4 shadow-soft md:p-5">
-      {/* Search */}
-      <div className="flex items-center gap-2 rounded-[4px] border border-slate/20 px-3 py-2.5 focus-within:border-burgundy">
-        <Search size={16} className="text-slate-soft" />
-        <input
-          defaultValue={q}
-          onChange={(e) => update({ q: e.target.value })}
-          placeholder="Search vendors, e.g. 'bridal makeup Jaffna'"
-          className="w-full text-sm text-slate placeholder:text-slate-soft/70 focus:outline-none"
-        />
+      {/* Search — name / service / city */}
+      <div>
+        <label
+          htmlFor="vendor-search"
+          className="mb-2 block text-[10.5px] font-semibold uppercase tracking-wider text-slate-soft"
+        >
+          Vendor name / service / city
+        </label>
+        <div className="flex items-center gap-2 rounded-[4px] border border-slate/20 px-3 py-2.5 focus-within:border-burgundy">
+          <Search size={16} className="text-slate-soft" aria-hidden="true" />
+          <input
+            id="vendor-search"
+            defaultValue={q}
+            onChange={(e) => update({ q: e.target.value })}
+            placeholder="e.g. 'Jaffna Frames Studio' or 'bridal makeup'"
+            className="w-full text-sm text-slate placeholder:text-slate-soft/70 focus:outline-none"
+          />
+        </div>
       </div>
 
       {/* Filter pills row 1 — City + Sort */}

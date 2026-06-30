@@ -90,13 +90,14 @@ export function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-5 md:flex lg:gap-8">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
                 "relative text-[13px] font-medium tracking-wide transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-gold after:transition-all after:duration-300 hover:after:w-full",
+                (link.label === "How it works" || link.accent) && "hidden lg:block",
                 link.accent
                   ? isHome
                     ? "font-semibold text-gold hover:text-gold-light"
@@ -117,9 +118,9 @@ export function Header() {
           {/* Notification bell */}
           <button
             type="button"
-            aria-label="View notifications"
+            aria-label="View notifications, 3 new"
             className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              "relative hidden h-9 w-9 items-center justify-center rounded-lg transition-colors lg:flex",
               isHome
                 ? "text-white/70 hover:bg-white/10 hover:text-white"
                 : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
@@ -127,7 +128,7 @@ export function Header() {
           >
             <Bell size={18} aria-hidden="true" strokeWidth={1.75} />
             <span
-              aria-label="3 notifications"
+              aria-hidden="true"
               className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
             >
               3
@@ -137,7 +138,7 @@ export function Header() {
           {/* Shortlist */}
           <Link
             href="/shortlist"
-            aria-label="Your shortlist"
+            aria-label={slHydrated && shortlistCount > 0 ? `Your shortlist, ${shortlistCount} saved` : "Your shortlist"}
             className={cn(
               "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
               isHome
@@ -147,7 +148,7 @@ export function Header() {
           >
             <Heart size={18} aria-hidden="true" strokeWidth={1.75} />
             {slHydrated && shortlistCount > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white">
+              <span aria-hidden="true" className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white">
                 {shortlistCount}
               </span>
             )}
@@ -156,7 +157,7 @@ export function Header() {
           {/* Cart */}
           <Link
             href="/booking/cart"
-            aria-label="Your cart"
+            aria-label={hydrated && items.length > 0 ? `Your cart, ${items.length} item${items.length !== 1 ? "s" : ""}` : "Your cart"}
             className={cn(
               "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
               isHome
@@ -166,7 +167,7 @@ export function Header() {
           >
             <ShoppingBag size={18} aria-hidden="true" strokeWidth={1.75} />
             {hydrated && items.length > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep">
+              <span aria-hidden="true" className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep">
                 {items.length}
               </span>
             )}
@@ -174,7 +175,7 @@ export function Header() {
 
           {/* Sign In */}
           <Link
-            href="/dashboard/customer"
+            href="/login"
             className={cn(
               "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               isHome
@@ -194,6 +195,7 @@ export function Header() {
             href="/vendor/register"
             variant={isHome ? "glass" : "secondary"}
             size="sm"
+            className="hidden lg:inline-flex"
           >
             For Vendors
           </Button>
@@ -211,14 +213,6 @@ export function Header() {
 
         {/* Mobile right */}
         <div className="flex items-center gap-3 md:hidden">
-          <Link href="/booking/cart" aria-label="Your cart" className="relative">
-            <ShoppingBag size={22} className={isHome ? "text-white" : "text-slate"} />
-            {hydrated && items.length > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] font-bold leading-none text-burgundy-deep">
-                {items.length}
-              </span>
-            )}
-          </Link>
           <Sheet>
             <SheetTrigger aria-label="Open menu">
               <Menu size={24} className={isHome ? "text-white" : "text-slate"} />

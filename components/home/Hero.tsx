@@ -17,6 +17,7 @@ const PARTICLES = [
 ];
 
 const STATS = [
+  { value: "500+", label: "Couples served" },
   { value: "25+", label: "Verified studios" },
   { value: "4.8★", label: "Average trust score" },
   { value: "20%", label: "Advance — 80% after service" },
@@ -69,7 +70,7 @@ export function Hero() {
       </div>
 
       {/* Hero content — centered */}
-      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-28 text-center md:px-10 md:pt-36">
+      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-28 text-center md:px-10 md:pt-36 md:pb-40">
 
         {/* 1 — Eyebrow */}
         <motion.p
@@ -176,14 +177,14 @@ export function Hero() {
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-x-0 bottom-7 z-20 hidden px-5 lg:block lg:px-10"
+        className="absolute inset-x-0 bottom-7 z-20 hidden px-5 md:block md:px-10"
       >
         <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-0">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-5 md:gap-0">
             {STATS.map((stat, i) => (
               <div
                 key={stat.value}
-                className={`p-4 text-center lg:text-left${i > 0 ? " lg:border-l lg:border-cream/10" : ""}`}
+                className={`p-4 text-center md:text-left${i > 0 ? " md:border-l md:border-cream/10" : ""}`}
               >
                 <p
                   className="font-display font-bold"

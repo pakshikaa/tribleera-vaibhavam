@@ -20,8 +20,8 @@ type ContactValues = z.infer<typeof contactSchema>;
 
 const INFO_CARDS = [
   { icon: Mail, label: "Email", value: "hello@tribleera.com", href: "mailto:hello@tribleera.com" },
-  { icon: Phone, label: "Phone", value: "+94 77 XXXX XXXX", href: "tel:+94770000000" },
-  { icon: MessageCircle, label: "WhatsApp", value: "Chat directly", href: "https://wa.me/94770000000" },
+  { icon: Phone, label: "Phone", value: "+94 77 123 4567", href: "tel:+94771234567" },
+  { icon: MessageCircle, label: "WhatsApp", value: "Chat directly", href: "https://wa.me/94771234567" },
   { icon: MapPin, label: "Address", value: "Jaffna, Sri Lanka", href: undefined },
   { icon: Clock, label: "Hours", value: "Monday–Saturday, 9 AM – 7 PM IST", href: undefined },
 ];

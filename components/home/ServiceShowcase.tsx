@@ -86,7 +86,7 @@ function ShowcaseCard({
         style={{ background: "linear-gradient(to top,rgba(21,4,12,0.97) 0%,rgba(21,4,12,0.80) 22%,rgba(21,4,12,0.35) 52%,transparent 100%)" }}
       />
       <div className="absolute inset-x-0 bottom-0 z-10 p-5">
-        <p style={{ color: "#D4AF6A", textShadow: "0 1px 8px rgba(21,4,12,1)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px" }}>{category.name}</p>
+        {!big && <p style={{ color: "#D4AF6A", textShadow: "0 1px 8px rgba(21,4,12,1)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px" }}>{category.name}</p>}
         {big ? (
           <>
             <h3 className="text-display-sm mt-2" style={{ color: "#F7EEE2", textShadow: "0 2px 16px rgba(21,4,12,1)" }}>{category.name}</h3>

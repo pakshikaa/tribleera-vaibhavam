@@ -30,7 +30,11 @@ function VendorResults({ searchParams }: { searchParams: SearchParams }) {
   if (searchParams.q) {
     const q = searchParams.q.toLowerCase();
     results = results.filter((v) =>
-      v.name.toLowerCase().includes(q) || v.location.toLowerCase().includes(q) || v.tags.some((t) => t.toLowerCase().includes(q))
+      v.name.toLowerCase().includes(q) ||
+      v.location.toLowerCase().includes(q) ||
+      v.tagline.toLowerCase().includes(q) ||
+      v.description.toLowerCase().includes(q) ||
+      v.tags.some((t) => t.toLowerCase().includes(q))
     );
   }
   if (searchParams.minPrice) results = results.filter((v) => v.startingPrice >= Number(searchParams.minPrice));

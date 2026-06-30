@@ -72,10 +72,12 @@ export function CustomerDashboardClient() {
   const [cancelReason, setCancelReason] = useState("Change of plans");
   const [cancelNotes, setCancelNotes] = useState("");
   const [reviewTarget, setReviewTarget] = useState<{ bookingId: string; vendorId: string } | null>(null);
-  const [reviewedBookingIds, setReviewedBookingIds] = useState<string[]>(() =>
+  const [reviewedKeys, setReviewedKeys] = useState<string[]>(() =>
     typeof window === "undefined"
       ? []
-      : readLocalStorage<{ bookingId: string }[]>("tribleera-reviews", []).map((review) => review.bookingId)
+      : readLocalStorage<{ bookingId: string; vendorId: string }[]>("tribleera-reviews", []).map(
+          (r) => `${r.bookingId}-${r.vendorId}`
+        )
   );
 
   useEffect(() => {
@@ -131,7 +133,7 @@ export function CustomerDashboardClient() {
 
   function handleReviewSubmitted() {
     if (!reviewTarget) return;
-    setReviewedBookingIds((prev) => [...prev, reviewTarget.bookingId]);
+    setReviewedKeys((prev) => [...prev, `${reviewTarget.bookingId}-${reviewTarget.vendorId}`]);
     setReviewTarget(null);
   }
 
@@ -184,7 +186,6 @@ export function CustomerDashboardClient() {
                   <div className="space-y-4">
                     {bookings.map((booking) => {
                       const refund = calculateRefund(booking);
-                      const reviewVendorId = booking.items[0]?.vendorId;
                       return (
                         <div key={booking.id} className="rounded-[8px] border border-slate/8 bg-white p-5 shadow-soft md:p-6">
                           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -219,16 +220,27 @@ export function CustomerDashboardClient() {
                                   Cancel Booking
                                 </Button>
                               )}
-                              {booking.status === "completed" && reviewVendorId && !reviewedBookingIds.includes(booking.id) && (
-                                <Button size="sm" onClick={() => setReviewTarget({ bookingId: booking.id, vendorId: reviewVendorId })}>
-                                  Leave a Review
-                                </Button>
-                              )}
+                              {booking.status === "completed" && booking.items.map((item) => {
+                                const reviewKey = `${booking.id}-${item.vendorId}`;
+                                if (reviewedKeys.includes(reviewKey)) {
+                                  return (
+                                    <span key={item.vendorId} className="flex items-center text-xs font-medium text-burgundy">
+                                      ✓ {booking.items.length > 1 ? `${item.vendorName} reviewed` : "Review submitted"}
+                                    </span>
+                                  );
+                                }
+                                return (
+                                  <Button
+                                    key={item.vendorId}
+                                    size="sm"
+                                    onClick={() => setReviewTarget({ bookingId: booking.id, vendorId: item.vendorId })}
+                                  >
+                                    {booking.items.length > 1 ? `Review ${item.vendorName}` : "Leave a Review"}
+                                  </Button>
+                                );
+                              })}
                             </div>
                           </div>
-                          {booking.status === "completed" && reviewedBookingIds.includes(booking.id) && (
-                            <p className="mt-3 text-sm font-medium text-burgundy">✓ Review submitted</p>
-                          )}
                           {booking.status !== "completed" && booking.status !== "cancelled" && (
                             <div className="mt-4 rounded-[8px] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                               {refund.label} ({formatLKR(refund.amount)})

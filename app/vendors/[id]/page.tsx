@@ -139,19 +139,19 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
       </section>
 
       {/* Stats strip */}
-      <div className="border-b border-slate/8 bg-white">
-        <Container className="grid grid-cols-3 divide-x divide-slate/10 py-4 text-center">
-          <div>
+      <div className="border-b border-slate/10 bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)]">
+        <Container className="grid grid-cols-3 divide-x divide-slate/20 py-5 text-center">
+          <div className="px-4 py-1">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Trust Score</p>
-            <p className="mt-1 font-display text-xl text-burgundy-deep">{Math.round(vendor.trustScore * 20)}%</p>
+            <p className="mt-1.5 font-display text-2xl font-bold text-burgundy-deep">{Math.round(vendor.trustScore * 20)}%</p>
           </div>
-          <div>
+          <div className="px-4 py-1">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Response</p>
-            <p className="mt-1 font-display text-xl text-burgundy-deep">{vendor.responseTime.match(/\d+\s*\w+/)?.[0] ?? "Fast"}</p>
+            <p className="mt-1.5 font-display text-2xl font-bold text-burgundy-deep">{vendor.responseTime.match(/\d+\s*\w+/)?.[0] ?? "Fast"}</p>
           </div>
-          <div>
+          <div className="px-4 py-1">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Experience</p>
-            <p className="mt-1 font-display text-xl text-burgundy-deep">{vendor.experienceYears}Y+</p>
+            <p className="mt-1.5 font-display text-2xl font-bold text-burgundy-deep">{vendor.experienceYears}Y+</p>
           </div>
         </Container>
       </div>

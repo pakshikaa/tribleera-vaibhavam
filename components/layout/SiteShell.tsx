@@ -8,6 +8,7 @@ import { PageTransition } from "@/components/layout/PageTransition";
 import { WhatsAppFloat } from "@/components/ui/WhatsAppFloat";
 import { BackToTop } from "@/components/ui/BackToTop";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { CookieConsent } from "@/components/ui/CookieConsent";
 
 const ADMIN_PREFIXES = ["/dashboard/admin", "/admin/"];
 
@@ -30,6 +31,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <MobileBottomNav />
       <WhatsAppFloat />
       <BackToTop />
+      <CookieConsent />
     </>
   );
 }

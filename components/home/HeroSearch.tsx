@@ -9,7 +9,7 @@ export function HeroSearch() {
   const router = useRouter();
   const [category, setCategory] = useState("");
 
-  function handleSearch(e: React.FormEvent) {
+  function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const params = new URLSearchParams();
     if (category) params.set("category", category);
@@ -52,7 +52,7 @@ export function HeroSearch() {
         </button>
       </div>
       <p className="mt-2.5 text-center text-[11px] text-white/40">
-        Date availability confirmed directly with your chosen vendor.
+        Vendors manage live availability — your booking request is confirmed within 24 hrs.
       </p>
     </form>
   );

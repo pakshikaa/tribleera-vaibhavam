@@ -66,6 +66,7 @@ export default function VendorProfilePage() {
                 <button
                   key={tag}
                   type="button"
+                  aria-label={`Remove tag: ${tag}`}
                   onClick={() => setTags((prev) => prev.filter((item) => item !== tag))}
                   className="rounded-full bg-ivory px-3 py-1 text-xs font-semibold text-slate"
                 >

@@ -1,12 +1,30 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Lock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { formatLKR } from "@/lib/utils/format";
 import { Vendor } from "@/types";
 
 export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
+  const [booked, setBooked] = useState(false);
+
+  useEffect(() => {
+    let found = false;
+    try {
+      const raw = window.localStorage.getItem("tribleera-last-booking");
+      if (raw) {
+        const record = JSON.parse(raw) as { items?: { vendorId: string }[] };
+        found = (record.items ?? []).some((item) => item.vendorId === vendor.id);
+      }
+    } catch {}
+    if (found) {
+      const id = window.setTimeout(() => setBooked(true), 0);
+      return () => window.clearTimeout(id);
+    }
+  }, [vendor.id]);
+
   return (
     <div className="fixed inset-x-0 bottom-[56px] z-30 border-t border-slate/10 bg-white px-4 py-3 shadow-lift md:hidden">
       <div className="flex items-center gap-3">
@@ -15,15 +33,25 @@ export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
           <p className="font-display text-lg font-bold text-burgundy-deep">{formatLKR(vendor.startingPrice)}</p>
         </div>
 
-        <a
-          href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat on WhatsApp"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white"
-        >
-          <MessageCircle size={18} />
-        </a>
+        {booked ? (
+          <a
+            href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white"
+          >
+            <MessageCircle size={18} />
+          </a>
+        ) : (
+          <div
+            title="Contact unlocked after booking"
+            aria-hidden="true"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate/15 bg-ivory text-slate-soft"
+          >
+            <Lock size={16} />
+          </div>
+        )}
 
         <Sheet>
           <SheetTrigger asChild>
@@ -72,14 +100,21 @@ export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
               ))}
             </div>
 
-            <a
-              href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#25D366] py-3 text-sm font-semibold text-white hover:bg-[#22C55E]"
-            >
-              <MessageCircle size={16} /> Chat on WhatsApp first
-            </a>
+            {booked ? (
+              <a
+                href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#25D366] py-3 text-sm font-semibold text-white hover:bg-[#22C55E]"
+              >
+                <MessageCircle size={16} /> Chat on WhatsApp
+              </a>
+            ) : (
+              <div className="mt-4 flex items-center gap-2 rounded-[8px] border border-slate/10 bg-ivory px-4 py-3 text-center">
+                <Lock size={15} className="shrink-0 text-slate-soft" />
+                <p className="text-xs text-slate-soft">WhatsApp contact unlocked after booking confirmation</p>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
       </div>

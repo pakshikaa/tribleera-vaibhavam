@@ -48,8 +48,8 @@ export function Footer() {
   return (
     <footer className="border-t border-gold/15 bg-ink text-cream">
       <Container className="py-14 md:py-20">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] lg:gap-12">
+          <div className="col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5">
               <Image
                 src="/logo/tribleera-mark-192.png"
