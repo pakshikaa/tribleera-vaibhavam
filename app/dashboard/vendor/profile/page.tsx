@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Container } from "@/components/ui/Container";
@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 
-const STORAGE_KEY = "tribleera-vendor-profile";
+const STORAGE_KEY = "triblerera-vendor-profile";
 const DEFAULT_VENDOR = getVendorBySlug("pushpa-florals-and-decor")!;
 
 const DEFAULT_FORM = {

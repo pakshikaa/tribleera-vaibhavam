@@ -1,8 +1,8 @@
-import { MotifTone, MotifVariant } from "@/types";
+﻿import { MotifTone, MotifVariant } from "@/types";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * TRIBLEERA's signature visual device.
+ * TRIBLERERA's signature visual device.
  *
  * Real vendor photography arrives once Cloudinary/S3 storage is wired up
  * on the backend. Until then, every image slot in this product renders a

@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+﻿import { Check, X } from "lucide-react";
 import { BookingStatus } from "@/types";
 import { cn } from "@/lib/utils/cn";
 
@@ -25,7 +25,7 @@ const STAGE_DESCRIPTIONS: Record<BookingStatus, string> = {
   pending: "Your request has been sent to the vendor and is awaiting a response.",
   confirmed: "The vendor accepted your request — complete payment to confirm the booking.",
   advance_paid: "Advance received. Your date is locked in and the vendor has been notified.",
-  completed: "This event has been delivered. Thank you for celebrating with TRIBLEERA.",
+  completed: "This event has been delivered. Thank you for celebrating with TRIBLERERA.",
   cancelled: "This booking was cancelled. See the case notes below for details.",
 };
 

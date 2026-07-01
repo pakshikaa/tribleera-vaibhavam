@@ -1,6 +1,6 @@
-// Booking & payment math for TRIBLEERA VAIBHAVAM.
+﻿// Booking & payment math for TRIBLERERA VAIBHAVAM.
 //
-// Business rule (see Tribleera_Vaibhavangal_Development_Idea brief):
+// Business rule (see TRIBLERERA_Vaibhavangal_Development_Idea brief):
 //   Customer pays now  = 20% advance of the service value
 //                       + 3% platform service fee on the service value
 //   Remaining balance  = service value - advance (settled with the vendor

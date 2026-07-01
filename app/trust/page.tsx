@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck, Lock, Scale, RefreshCw, ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
-  title: "How TRIBLEERA Protects You",
-  description: "Learn how TRIBLEERA VAIBHAVAM's escrow system, vendor verification, and dispute resolution protect every couple and vendor.",
+  title: "How TRIBLERERA Protects You",
+  description: "Learn how TRIBLERERA VAIBHAVAM's escrow system, vendor verification, and dispute resolution protect every couple and vendor.",
   alternates: { canonical: "/trust" },
   openGraph: {
-    title: "How TRIBLEERA Protects You | TRIBLEERA VAIBHAVAM",
-    description: "Escrow protection, vendor verification, dispute resolution and refund policy - how TRIBLEERA keeps every booking safe.",
+    title: "How TRIBLERERA Protects You | TRIBLERERA VAIBHAVAM",
+    description: "Escrow protection, vendor verification, dispute resolution and refund policy - how TRIBLERERA keeps every booking safe.",
     url: "/trust",
   },
 };
@@ -39,10 +39,10 @@ export default function TrustPage() {
             <span className="h-px w-7 bg-gold" />
           </p>
           <h1 className="font-display text-[34px] font-bold leading-[1.1] text-cream md:text-[56px]">
-            How TRIBLEERA<br />protects you.
+            How TRIBLERERA<br />protects you.
           </h1>
           <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-cream-dim">
-            Every booking on TRIBLEERA is protected by escrow, vendor verification, and a clear
+            Every booking on TRIBLERERA is protected by escrow, vendor verification, and a clear
             dispute resolution process — so you can celebrate without worry.
           </p>
         </Container>
@@ -61,8 +61,8 @@ export default function TrustPage() {
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[14px] border border-gold/14 bg-gold/14 md:grid-cols-3">
             {[
               { icon: Lock, step: "1", title: "You pay the advance", body: "20% of the service total plus a 3% platform fee. This is the only amount due before your event." },
-              { icon: ShieldCheck, step: "2", title: "TRIBLEERA holds it safely", body: "Your advance sits in a protected escrow account — the vendor cannot access it until your service milestones are met." },
-              { icon: RefreshCw, step: "3", title: "Released after service", body: "Once your vendor completes the service, you confirm, and TRIBLEERA releases the advance. The remaining 80% is settled directly between you and the vendor." },
+              { icon: ShieldCheck, step: "2", title: "TRIBLERERA holds it safely", body: "Your advance sits in a protected escrow account — the vendor cannot access it until your service milestones are met." },
+              { icon: RefreshCw, step: "3", title: "Released after service", body: "Once your vendor completes the service, you confirm, and TRIBLERERA releases the advance. The remaining 80% is settled directly between you and the vendor." },
             ].map((item) => (
               <div key={item.step} className="bg-burgundy-950 p-7 md:p-9">
                 <div className="mb-5 flex items-center gap-3">
@@ -92,10 +92,10 @@ export default function TrustPage() {
           <div className="relative pl-8">
             <div className="absolute left-[13px] top-3 bottom-3 w-px bg-gradient-to-b from-gold via-gold/30 to-transparent" />
             {[
-              { title: "Application", body: "Vendor submits business details, category, city and a business narrative through the TRIBLEERA registration form." },
+              { title: "Application", body: "Vendor submits business details, category, city and a business narrative through the TRIBLERERA registration form." },
               { title: "Background check", body: "Our team verifies business registration, identity documents and professional history before proceeding." },
-              { title: "Portfolio review", body: "We review sample work, client references and pricing for alignment with TRIBLEERA's quality standards." },
-              { title: "Profile published", body: "Once approved, the vendor receives a TRIBLEERA Verified badge visible on their profile and all search listings." },
+              { title: "Portfolio review", body: "We review sample work, client references and pricing for alignment with TRIBLERERA's quality standards." },
+              { title: "Profile published", body: "Once approved, the vendor receives a TRIBLERERA Verified badge visible on their profile and all search listings." },
             ].map((step, i) => (
               <div key={step.title} className="mb-8 flex gap-5 last:mb-0">
                 <div className="relative z-10 mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold text-[11px] font-bold text-burgundy-deep">
@@ -122,12 +122,12 @@ export default function TrustPage() {
             Problems are rare.<br />Solutions are guaranteed.
           </h2>
           <p className="mb-12 max-w-xl text-[15px] text-cream-dim">
-            In the rare case of a dispute between a couple and a vendor, TRIBLEERA mediates and resolves the issue within 48 hours.
+            In the rare case of a dispute between a couple and a vendor, TRIBLERERA mediates and resolves the issue within 48 hours.
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
               { icon: Scale, step: "Report", body: "Submit your issue through the customer dashboard — include any evidence, messages and timeline." },
-              { icon: ShieldCheck, step: "TRIBLEERA reviews", body: "Our team investigates within 48 hours — we contact both parties and review all booking records." },
+              { icon: ShieldCheck, step: "TRIBLERERA reviews", body: "Our team investigates within 48 hours — we contact both parties and review all booking records." },
               { icon: RefreshCw, step: "Resolution", body: "We issue a fair resolution — including refunds, partial releases, or escrow hold — based on the case facts." },
             ].map((item) => (
               <div key={item.step} className="rounded-[10px] border border-gold/15 bg-ink p-6">
@@ -170,7 +170,7 @@ export default function TrustPage() {
             Ready to plan with confidence?
           </h2>
           <p className="mx-auto mt-4 max-w-md text-[15px] text-cream-dim">
-            Every TRIBLEERA vendor is verified. Every advance is protected. Every dispute is resolved.
+            Every TRIBLERERA vendor is verified. Every advance is protected. Every dispute is resolved.
           </p>
           <Link
             href="/services"

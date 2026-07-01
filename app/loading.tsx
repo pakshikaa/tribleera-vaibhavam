@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 
 export default function Loading() {
   return (
@@ -25,7 +25,7 @@ export default function Loading() {
       {/* Logo */}
       <Image
         src="/logo/tribleera-mark-192.png"
-        alt="TRIBLEERA"
+        alt="TRIBLERERA"
         width={56}
         height={56}
         className="mb-4 rounded-[12px]"
@@ -33,7 +33,7 @@ export default function Loading() {
       />
 
       {/* Brand name */}
-      <p className="mb-6 font-display text-xl tracking-widest text-cream">TRIBLEERA</p>
+      <p className="mb-6 font-display text-xl tracking-widest text-cream">TRIBLERERA</p>
 
       {/* Gold shimmer bar */}
       <div className="h-0.5 w-32 overflow-hidden rounded-full bg-cream/10">

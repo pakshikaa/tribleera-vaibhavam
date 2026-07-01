@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
@@ -20,7 +20,7 @@ export interface NotificationItem {
   createdAt: string;
 }
 
-const STORAGE_KEY = "tribleera-notifications";
+const STORAGE_KEY = "triblerera-notifications";
 
 const defaultNotifications: NotificationItem[] = [
   {

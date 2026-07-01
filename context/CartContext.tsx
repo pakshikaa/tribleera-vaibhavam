@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { BookingLineItem } from "@/types";
 import {
@@ -13,7 +13,7 @@ import {
 import { useToast } from "@/components/ui/Toast";
 import { cartBreakdown } from "@/lib/utils/booking";
 
-const STORAGE_KEY = "tribleera-cart-v1";
+const STORAGE_KEY = "triblerera-cart-v1";
 
 interface CartContextValue {
   items: BookingLineItem[];

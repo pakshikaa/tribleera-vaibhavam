@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Clock, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -9,7 +9,7 @@ import { categories, comingSoonCategories } from "@/lib/data/categories";
 
 export const metadata: Metadata = {
   title: "Wedding Services",
-  description: "Explore TRIBLEERA VAIBHAVAM's Phase 1 wedding services in Jaffna — photography, cakes, decoration, bridal makeup and invitations.",
+  description: "Explore TRIBLERERA VAIBHAVAM's Phase 1 wedding services in Jaffna — photography, cakes, decoration, bridal makeup and invitations.",
 };
 
 export default function ServicesPage() {
@@ -101,7 +101,7 @@ export default function ServicesPage() {
         <div className="mt-16 rounded-[10px] border border-slate/8 bg-white p-8 md:p-10">
           <div className="flex items-center gap-2.5">
             <Clock size={18} className="text-gold-deep" />
-            <h2 className="font-display text-xl text-slate">Coming soon to TRIBLEERA</h2>
+            <h2 className="font-display text-xl text-slate">Coming soon to TRIBLERERA</h2>
           </div>
           <p className="mt-1.5 max-w-xl text-sm text-slate-soft">
             We&rsquo;re onboarding vetted vendors in these categories next. Register as a vendor to be first in line.

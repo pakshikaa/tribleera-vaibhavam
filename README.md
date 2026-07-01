@@ -1,6 +1,6 @@
-# TRIBLEERA VAIBHAVAM — Frontend
+﻿# TRIBLERERA VAIBHAVAM — Frontend
 
-A premium frontend for **TRIBLEERA VAIBHAVAM**, a Tamil wedding & event services marketplace
+A premium frontend for **TRIBLERERA VAIBHAVAM**, a Tamil wedding & event services marketplace
 launching in **Jaffna, Sri Lanka**. Built with Next.js (App Router), TypeScript and Tailwind CSS v4,
 using clean mock data — ready to wire up to the NestJS + PostgreSQL backend described in the
 project's development plan.

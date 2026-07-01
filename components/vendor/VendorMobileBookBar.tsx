@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Lock, MessageCircle } from "lucide-react";
@@ -13,7 +13,7 @@ export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
   useEffect(() => {
     let found = false;
     try {
-      const raw = window.localStorage.getItem("tribleera-last-booking");
+      const raw = window.localStorage.getItem("triblerera-last-booking");
       if (raw) {
         const record = JSON.parse(raw) as { items?: { vendorId: string }[] };
         found = (record.items ?? []).some((item) => item.vendorId === vendor.id);

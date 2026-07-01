@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 
-const STORAGE_KEY = "tribleera-cookie-consent";
+const STORAGE_KEY = "triblerera-cookie-consent";
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
@@ -6,10 +6,10 @@ import { MessageCircle } from "lucide-react";
 export function WhatsAppFloat() {
   return (
     <motion.a
-      href="https://wa.me/94771234567?text=Hello%20TRIBLEERA%2C%20I%20need%20help%20planning%20my%20wedding."
+      href="https://wa.me/94771234567?text=Hello%20TRIBLERERA%2C%20I%20need%20help%20planning%20my%20wedding."
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with TRIBLEERA on WhatsApp"
+      aria-label="Chat with TRIBLERERA on WhatsApp"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 2, type: "spring", stiffness: 200 }}

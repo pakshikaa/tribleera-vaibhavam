@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -151,11 +151,11 @@ export default function EventRequestPage() {
   }
 
   function saveForLater() {
-    writeLocalStorage("tribleera-event-request-draft", values);
+    writeLocalStorage("triblerera-event-request-draft", values);
   }
 
   const onSubmit = handleSubmit((formValues) => {
-    writeLocalStorage("tribleera-event-request", createEventRequestRecord(formValues));
+    writeLocalStorage("triblerera-event-request", createEventRequestRecord(formValues));
     router.push("/event-request/submitted");
   });
 
@@ -164,7 +164,7 @@ export default function EventRequestPage() {
       <section className="border-b border-gold/10 bg-gradient-to-b from-burgundy-950 via-ink to-ink py-16">
         <Container className="space-y-8">
           <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">TRIBLEERA Concierge Flow</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">TRIBLERERA Concierge Flow</p>
             <h1 className="mt-4 font-display text-4xl text-cream md:text-5xl">Tell Us About Your Celebration</h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-cream-dim">
               Share your date, city, service mix, and priorities. We will route the request to matching premium vendors.

@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 import { vendors } from "@/lib/data/vendors";
 import { categories } from "@/lib/data/categories";
 

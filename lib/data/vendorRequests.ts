@@ -1,4 +1,4 @@
-import { VendorBookingRequest } from "@/types";
+﻿import { VendorBookingRequest } from "@/types";
 
 export const vendorRequests: VendorBookingRequest[] = [
   {
@@ -47,7 +47,7 @@ export const vendorRequests: VendorBookingRequest[] = [
     price: 165000,
     status: "accepted",
     receivedAt: "2026-06-02T10:31:00+05:30",
-    message: "Advance has been paid through Tribleera. Please block the date.",
+    message: "Advance has been paid through TRIBLERERA. Please block the date.",
   },
   {
     id: "REQ-3301",

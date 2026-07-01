@@ -1,4 +1,4 @@
-import { Container } from "@/components/ui/Container";
+﻿import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
 const MISSION_CARDS = [
@@ -17,7 +17,7 @@ const MISSION_CARDS = [
 ];
 
 const TIMELINE = [
-  { year: "2024", event: "TRIBLEERA concept born in Jaffna" },
+  { year: "2024", event: "TRIBLERERA concept born in Jaffna" },
   { year: "2025", event: "First 10 vendors onboarded across photography and decoration" },
   { year: "2026", event: "Phase 1 launch: 5 categories, 25 verified studios, 5 cities" },
   { year: "2026+", event: "Mobile app and vendor tools in development" },
@@ -36,7 +36,7 @@ export default function AboutPage() {
             Built for Jaffna&rsquo;s most important day.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-cream-dim">
-            TRIBLEERA VAIBHAVAM was founded on one belief — Tamil couples deserve a wedding
+            TRIBLERERA VAIBHAVAM was founded on one belief — Tamil couples deserve a wedding
             platform that understands their heritage, honours their traditions, and removes the
             chaos from one of life&rsquo;s most meaningful moments.
           </p>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useId, useState } from "react";
 import { Star } from "lucide-react";
@@ -49,7 +49,7 @@ export function SubmitReviewSheet({
       return;
     }
 
-    const reviews = readLocalStorage<ReviewRecord[]>("tribleera-reviews", []);
+    const reviews = readLocalStorage<ReviewRecord[]>("triblerera-reviews", []);
     const nextReview: ReviewRecord = {
       id: `review-${Date.now()}`,
       bookingId,
@@ -60,7 +60,7 @@ export function SubmitReviewSheet({
       date: new Date().toISOString(),
     };
 
-    writeLocalStorage("tribleera-reviews", [nextReview, ...reviews]);
+    writeLocalStorage("triblerera-reviews", [nextReview, ...reviews]);
     showToast("Thank you! Your review helps other couples.", "success");
     onSubmitted();
     onOpenChange(false);

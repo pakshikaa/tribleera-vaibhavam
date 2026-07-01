@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -25,8 +25,8 @@ import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage
 import type { Booking } from "@/types";
 
 const CUSTOMER_NAME = "Niranjala & Kajan";
-const BOOKING_STORAGE_KEY = "tribleera-customer-bookings";
-const CANCELLATION_STORAGE_KEY = "tribleera-cancellations";
+const BOOKING_STORAGE_KEY = "triblerera-customer-bookings";
+const CANCELLATION_STORAGE_KEY = "triblerera-cancellations";
 
 function calculateRefund(booking: Booking) {
   const eventDate = new Date(booking.eventDate).getTime();
@@ -65,7 +65,7 @@ export function CustomerDashboardClient() {
       : readLocalStorage<CancellationRecord[]>(CANCELLATION_STORAGE_KEY, initialCancellations)
   );
   const [eventRequest] = useState<EventRequest | null>(() =>
-    typeof window === "undefined" ? initialEventRequest : readLocalStorage<EventRequest | null>("tribleera-event-request", initialEventRequest)
+    typeof window === "undefined" ? initialEventRequest : readLocalStorage<EventRequest | null>("triblerera-event-request", initialEventRequest)
   );
   const [cancelBooking, setCancelBooking] = useState<Booking | null>(null);
   const [cancelStep, setCancelStep] = useState(1);
@@ -75,7 +75,7 @@ export function CustomerDashboardClient() {
   const [reviewedKeys, setReviewedKeys] = useState<string[]>(() =>
     typeof window === "undefined"
       ? []
-      : readLocalStorage<{ bookingId: string; vendorId: string }[]>("tribleera-reviews", []).map(
+      : readLocalStorage<{ bookingId: string; vendorId: string }[]>("triblerera-reviews", []).map(
           (r) => `${r.bookingId}-${r.vendorId}`
         )
   );
@@ -329,7 +329,7 @@ export function CustomerDashboardClient() {
                               size="sm"
                               variant="gold"
                               onClick={() => {
-                                writeLocalStorage("tribleera-payment-selection", response);
+                                writeLocalStorage("triblerera-payment-selection", response);
                                 router.push("/booking/payment");
                               }}
                             >

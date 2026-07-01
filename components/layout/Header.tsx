@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -77,7 +77,7 @@ export function Header() {
           >
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA VAIBHAVAM"
+              alt="TRIBLERERA VAIBHAVAM"
               width={44}
               height={44}
               className="rounded-md"
@@ -85,7 +85,7 @@ export function Header() {
             />
           </motion.span>
           <span className={cn("font-display text-xl font-semibold tracking-widest", isHome ? "text-white" : "text-burgundy-deep")}>
-            TRIBLEERA
+            TRIBLERERA
           </span>
         </Link>
 

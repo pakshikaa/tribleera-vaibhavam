@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -10,8 +10,8 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://tribleera-vaibhavam.vercel.app"),
   title: {
-    default: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
-    template: "%s | TRIBLEERA VAIBHAVAM",
+    default: "TRIBLERERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
+    template: "%s | TRIBLERERA VAIBHAVAM",
   },
   description:
     "Discover and book verified photographers, cake artists, decorators, bridal makeup artists and invitation designers for your Jaffna wedding. Transparent pricing, secure milestone payments, curated for the discerning couple.",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "Sri Lanka wedding photography",
   ],
   openGraph: {
-    title: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
+    title: "TRIBLERERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
     description: "Jaffna's most trusted wedding vendors — verified, bookable, secure.",
     type: "website",
     locale: "en_LK",
@@ -49,8 +49,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "Tribleera Vaibhavam",
-              alternateName: "TRIBLEERA VAIBHAVAM",
+              name: "Triblerera Vaibhavam",
+              alternateName: "TRIBLERERA VAIBHAVAM",
               url: "https://tribleera-vaibhavam.vercel.app",
               logo: "https://tribleera-vaibhavam.vercel.app/logo/tribleera-mark-512.png",
               description:

@@ -1,4 +1,4 @@
-// Core domain types for TRIBLEERA VAIBHAVAM
+﻿// Core domain types for TRIBLERERA VAIBHAVAM
 // These mirror the future Prisma schema closely so backend integration
 // later does not require reshaping the frontend data model.
 

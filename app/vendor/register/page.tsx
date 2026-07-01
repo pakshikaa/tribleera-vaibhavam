@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -103,7 +103,7 @@ export default function VendorRegisterPage() {
         <Container>
           <SectionHeading
             eyebrow="For Vendors"
-            title="List your business on TRIBLEERA."
+            title="List your business on TRIBLERERA."
             description="Join a curated marketplace of Jaffna's most trusted wedding professionals."
           />
         </Container>
@@ -262,7 +262,7 @@ export default function VendorRegisterPage() {
                   ))}
                 </dl>
                 <p className="text-xs text-slate-soft">
-                  By submitting, you agree that a TRIBLEERA admin will review your application before your profile
+                  By submitting, you agree that a TRIBLERERA admin will review your application before your profile
                   goes live to customers.
                 </p>
               </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ const contactSchema = z.object({
 type ContactValues = z.infer<typeof contactSchema>;
 
 const INFO_CARDS = [
-  { icon: Mail, label: "Email", value: "hello@tribleera.com", href: "mailto:hello@tribleera.com" },
+  { icon: Mail, label: "Email", value: "hello@triblerera.com", href: "mailto:hello@triblerera.com" },
   { icon: Phone, label: "Phone", value: "+94 77 123 4567", href: "tel:+94771234567" },
   { icon: MessageCircle, label: "WhatsApp", value: "Chat directly", href: "https://wa.me/94771234567" },
   { icon: MapPin, label: "Address", value: "Jaffna, Sri Lanka", href: undefined },

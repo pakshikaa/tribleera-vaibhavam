@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -18,7 +18,7 @@ interface StoredEventRequest {
 
 export default function EventRequestSubmittedPage() {
   const [request] = useState<StoredEventRequest | null>(() =>
-    typeof window === "undefined" ? null : readLocalStorage<StoredEventRequest | null>("tribleera-event-request", null)
+    typeof window === "undefined" ? null : readLocalStorage<StoredEventRequest | null>("triblerera-event-request", null)
   );
 
   return (

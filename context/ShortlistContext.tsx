@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 
-const STORAGE_KEY = "tribleera-shortlist-v1";
+const STORAGE_KEY = "triblerera-shortlist-v1";
 
 interface ShortlistContextValue {
   slugs: string[];

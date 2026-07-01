@@ -1,4 +1,4 @@
-import { Review, Vendor, VendorPackage } from "@/types";
+﻿import { Review, Vendor, VendorPackage } from "@/types";
 
 type ServiceCategory = "photography" | "cakes" | "decoration" | "bridal-makeup" | "invitation";
 
@@ -64,7 +64,7 @@ const PACKAGE_IMAGES = {
 const TIER_COPY = {
   essential: "Thoughtfully scoped for an intimate celebration without compromising on craft.",
   signature: "Our most-booked package - complete coverage for a grand, full-day celebration.",
-  heritage: "The full TRIBLEERA experience. Every premium detail, handled end to end.",
+  heritage: "The full TRIBLERERA experience. Every premium detail, handled end to end.",
 };
 
 const REVIEW_NAMES = [
@@ -118,36 +118,36 @@ function buildPackages(
 function buildReviews(vendor: VendorSeed, seed: number): Review[] {
   const commentsByCategory: Record<ServiceCategory, string[]> = {
     photography: [
-      `TRIBLEERA made comparing photographers easy, and ${vendor.name} captured every quiet family moment without staging us too much.`,
+      `TRIBLERERA made comparing photographers easy, and ${vendor.name} captured every quiet family moment without staging us too much.`,
       `${vendor.name} handled the temple ceremony timeline beautifully. We received a polished gallery that still felt honest and emotional.`,
-      `We booked through TRIBLEERA from overseas and the process felt transparent. ${vendor.name}'s portraits at sunset were the highlight.`,
+      `We booked through TRIBLERERA from overseas and the process felt transparent. ${vendor.name}'s portraits at sunset were the highlight.`,
       `${vendor.name} understood the rhythm of our Tamil wedding and never missed the important rituals or elder blessings.`,
-      `The booking flow on TRIBLEERA was straightforward, and ${vendor.name}'s delivery was exactly what the package promised.`,
+      `The booking flow on TRIBLERERA was straightforward, and ${vendor.name}'s delivery was exactly what the package promised.`,
     ],
     cakes: [
-      `The cake tasting and booking process through TRIBLEERA was smooth, and ${vendor.name} delivered a design that looked even better in person.`,
+      `The cake tasting and booking process through TRIBLERERA was smooth, and ${vendor.name} delivered a design that looked even better in person.`,
       `${vendor.name} balanced flavour and presentation perfectly. Guests kept asking where the cake came from after the reception.`,
       `We wanted something elegant without being too western, and ${vendor.name} brought that Tamil celebration feel into every detail.`,
-      `${vendor.name}'s team packed, delivered, and set up everything on time. TRIBLEERA kept the payment side stress-free.`,
+      `${vendor.name}'s team packed, delivered, and set up everything on time. TRIBLERERA kept the payment side stress-free.`,
       `The flavours held up well even through a long outdoor event, and the final finish still looked premium in photos.`,
     ],
     decoration: [
       `${vendor.name} transformed the hall completely. The florals, lights, and entry arch all felt cohesive and worth the spend.`,
-      `We booked through TRIBLEERA because pricing was clearer than anywhere else, and ${vendor.name} delivered exactly that standard.`,
+      `We booked through TRIBLERERA because pricing was clearer than anywhere else, and ${vendor.name} delivered exactly that standard.`,
       `${vendor.name} handled the mandap setup before sunrise and still kept every floral detail fresh through the evening.`,
       `Their team coordinated well with the photographer and makeup artists, which made the whole celebration feel more polished.`,
       `The final stage looked rich without feeling crowded. ${vendor.name} clearly understood Tamil wedding aesthetics.`,
     ],
     "bridal-makeup": [
       `${vendor.name} matched my skin tone beautifully and the makeup lasted from muhurtham to reception without feeling heavy.`,
-      `Booking via TRIBLEERA gave us confidence, and ${vendor.name} arrived on time with a calm team that reduced the stress in the bridal room.`,
+      `Booking via TRIBLERERA gave us confidence, and ${vendor.name} arrived on time with a calm team that reduced the stress in the bridal room.`,
       `${vendor.name} handled saree draping, jewellery placement, and the final finish with real precision.`,
       `The look photographed cleanly in daylight and stage lighting. We would book ${vendor.name} again without hesitation.`,
-      `Every detail felt considered, from the trial notes to the touch-up kit. TRIBLEERA made the coordination much simpler.`,
+      `Every detail felt considered, from the trial notes to the touch-up kit. TRIBLERERA made the coordination much simpler.`,
     ],
     invitation: [
       `${vendor.name} translated our family brief into a suite that felt premium, bilingual, and easy for every guest to read.`,
-      `The TRIBLEERA booking flow helped us compare styles quickly, and ${vendor.name} stayed responsive through every revision.`,
+      `The TRIBLERERA booking flow helped us compare styles quickly, and ${vendor.name} stayed responsive through every revision.`,
       `${vendor.name} nailed the paper quality and finishing details. The invitations felt like keepsakes, not just event notices.`,
       `We needed fast proofing for relatives abroad, and ${vendor.name} moved quickly without sacrificing design quality.`,
       `From typography to envelope finishing, ${vendor.name} gave the entire wedding stationery set a refined identity.`,

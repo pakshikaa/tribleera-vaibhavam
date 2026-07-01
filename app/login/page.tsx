@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -58,13 +58,13 @@ export default function LoginPage() {
           <Link href="/">
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA"
+              alt="TRIBLERERA"
               width={64}
               height={64}
               className="mx-auto mb-3 rounded-[12px] shadow-[0_0_30px_rgba(92,4,39,0.15)]"
             />
           </Link>
-          <p className="font-display text-xl tracking-widest text-burgundy-deep">TRIBLEERA</p>
+          <p className="font-display text-xl tracking-widest text-burgundy-deep">TRIBLERERA</p>
           <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-soft">
             Welcome back
           </p>
@@ -138,7 +138,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center text-xs text-slate-soft">
-            New to TRIBLEERA?{" "}
+            New to TRIBLERERA?{" "}
             <Link href="/event-request" className="font-semibold text-burgundy hover:underline">
               Plan your wedding
             </Link>

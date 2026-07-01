@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
     setError("");
     // Mock auth — replace with real API call when backend ready
     setTimeout(() => {
-      if (username === "admin" && password === "tribleera2026") {
+      if (username === "admin" && password === "triblerera2026") {
         try {
           sessionStorage.setItem("admin-auth", "true");
         } catch {}
@@ -55,13 +55,13 @@ export default function AdminLoginPage() {
         <div className="mb-8 text-center">
           <Image
             src="/logo/tribleera-mark-192.png"
-            alt="TRIBLEERA"
+            alt="TRIBLERERA"
             width={64}
             height={64}
             className="mx-auto mb-3 rounded-[12px]"
             style={{ boxShadow: "0 0 30px rgba(212,175,106,0.3)" }}
           />
-          <p className="font-display text-xl tracking-widest text-cream">TRIBLEERA</p>
+          <p className="font-display text-xl tracking-widest text-cream">TRIBLERERA</p>
           <p className="mt-1 text-xs uppercase tracking-[0.2em] text-cream-faint">
             Admin Portal
           </p>

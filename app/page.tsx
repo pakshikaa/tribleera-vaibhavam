@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
 import { ServiceShowcase } from "@/components/home/ServiceShowcase";
 import { WhyTribleera } from "@/components/home/WhyTribleera";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "Jaffna's premium wedding concierge — verified photographers, decorators, bridal makeup artists, cake ateliers and invitation designers, bookable with secure milestone payments.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "TRIBLEERA VAIBHAVAM | Plan Your Perfect Celebration",
+    title: "TRIBLERERA VAIBHAVAM | Plan Your Perfect Celebration",
     description: "Jaffna's premium wedding concierge — curated, verified vendors, transparent pricing.",
     url: "/",
   },

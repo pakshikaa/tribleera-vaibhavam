@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
@@ -11,7 +11,7 @@ import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 import type { VendorPackage } from "@/types";
 
-const STORAGE_KEY = "tribleera-vendor-packages";
+const STORAGE_KEY = "triblerera-vendor-packages";
 const DEFAULT_PACKAGES = getVendorBySlug("pushpa-florals-and-decor")!.packages;
 
 export default function VendorPackagesPage() {

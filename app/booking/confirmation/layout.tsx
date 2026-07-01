@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Booking confirmed",
-  description: "Your TRIBLEERA VAIBHAVAM booking has been confirmed.",
+  description: "Your TRIBLERERA VAIBHAVAM booking has been confirmed.",
   robots: { index: false, follow: false },
 };
 

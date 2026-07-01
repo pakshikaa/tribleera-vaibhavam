@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Share2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -11,7 +11,7 @@ export function ShareVendorButton({ vendorName }: { vendorName: string }) {
     if (navigator.share) {
       navigator.share({
         title: vendorName,
-        text: `Check out ${vendorName} on TRIBLEERA VAIBHAVAM`,
+        text: `Check out ${vendorName} on TRIBLERERA VAIBHAVAM`,
         url: window.location.href,
       });
     } else {
