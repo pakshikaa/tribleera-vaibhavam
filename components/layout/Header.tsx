@@ -15,10 +15,10 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_LINKS = [
-  { href: "/services", label: "Services" },
-  { href: "/vendors", label: "Vendors" },
-  { href: "/#how-it-works", label: "How it works" },
-  { href: "/event-request", label: "Plan Your Wedding", accent: true },
+  { href: "/services",      label: "Services",          gold: false },
+  { href: "/vendors",       label: "Vendors",           gold: false },
+  { href: "/#how-it-works", label: "How it works",      gold: false },
+  { href: "/event-request", label: "Plan Your Wedding", gold: true  },
 ];
 
 export function Header() {
@@ -96,15 +96,14 @@ export function Header() {
               key={link.href}
               href={link.href}
               className={cn(
-                "relative text-[13px] font-medium tracking-wide transition-colors after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-gold after:transition-all after:duration-300 hover:after:w-full",
-                (link.label === "How it works" || link.accent) && "hidden lg:block",
-                link.accent
+                "text-[13px] font-medium transition-colors",
+                link.gold
                   ? isHome
-                    ? "font-semibold text-gold hover:text-gold-light"
-                    : "font-semibold text-gold-deep hover:text-burgundy"
+                    ? "text-gold font-semibold hover:text-gold-light"
+                    : "text-gold-deep font-semibold hover:text-burgundy"
                   : isHome
-                    ? "font-medium text-white/80 hover:text-white"
-                    : "font-medium text-slate/80 hover:text-burgundy"
+                    ? "text-white/75 hover:text-white"
+                    : "text-slate/70 hover:text-burgundy"
               )}
             >
               {link.label}
@@ -118,7 +117,7 @@ export function Header() {
           {/* Notification bell */}
           <button
             type="button"
-            aria-label="View notifications, 3 new"
+            aria-label="View notifications, 3 unread"
             className={cn(
               "relative hidden h-9 w-9 items-center justify-center rounded-lg transition-colors lg:flex",
               isHome
@@ -138,17 +137,20 @@ export function Header() {
           {/* Shortlist */}
           <Link
             href="/shortlist"
-            aria-label={slHydrated && shortlistCount > 0 ? `Your shortlist, ${shortlistCount} saved` : "Your shortlist"}
+            aria-label="Your shortlist"
             className={cn(
               "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
               isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+                ? "text-white/70 hover:text-white hover:bg-white/10"
+                : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
           >
-            <Heart size={18} aria-hidden="true" strokeWidth={1.75} />
+            <Heart size={18} strokeWidth={1.75} aria-hidden="true" />
             {slHydrated && shortlistCount > 0 && (
-              <span aria-hidden="true" className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white">
+              <span
+                aria-label={`${shortlistCount} saved vendors`}
+                className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white"
+              >
                 {shortlistCount}
               </span>
             )}
@@ -157,17 +159,20 @@ export function Header() {
           {/* Cart */}
           <Link
             href="/booking/cart"
-            aria-label={hydrated && items.length > 0 ? `Your cart, ${items.length} item${items.length !== 1 ? "s" : ""}` : "Your cart"}
+            aria-label="Your cart"
             className={cn(
               "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
               isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+                ? "text-white/70 hover:text-white hover:bg-white/10"
+                : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
           >
-            <ShoppingBag size={18} aria-hidden="true" strokeWidth={1.75} />
+            <ShoppingBag size={18} strokeWidth={1.75} aria-hidden="true" />
             {hydrated && items.length > 0 && (
-              <span aria-hidden="true" className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep">
+              <span
+                aria-label={`${items.length} items in cart`}
+                className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
+              >
                 {items.length}
               </span>
             )}
@@ -220,11 +225,20 @@ export function Header() {
             <SheetContent>
               <SheetTitle>Menu</SheetTitle>
               <nav className="mt-6 flex flex-col gap-1">
+                {NAV_LINKS.map((link) => (
+                  <SheetClose key={link.href} asChild>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory",
+                        link.gold && "text-gold-deep font-semibold"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </SheetClose>
+                ))}
                 {[
-                  { href: "/services", label: "Services" },
-                  { href: "/vendors", label: "Vendors" },
-                  { href: "/#how-it-works", label: "How it works" },
-                  { href: "/event-request", label: "Plan Your Wedding" },
                   { href: "/about", label: "About" },
                   { href: "/contact", label: "Contact" },
                   { href: "/faq", label: "FAQ" },

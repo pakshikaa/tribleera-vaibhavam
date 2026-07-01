@@ -100,10 +100,10 @@ export function Footer() {
             <p className="font-display text-sm text-cream-dim">தேர்வின் செம்மை, வைபவத்தின் பெருமை</p>
             <Link
               href="/admin/login"
-              className="text-[11px] text-cream-faint opacity-20 transition-opacity hover:opacity-60"
               aria-label="Admin login"
+              className="text-[11px] text-cream-faint opacity-20 transition-opacity hover:opacity-60"
             >
-              ⚙
+              <span aria-hidden="true">⚙</span>
             </Link>
           </div>
         </div>

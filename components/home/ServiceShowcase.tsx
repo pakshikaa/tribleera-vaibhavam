@@ -6,6 +6,14 @@ import { motion } from "framer-motion";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { categories } from "@/lib/data/categories";
 
+const CATEGORY_ALT: Record<string, string> = {
+  photography:    "Wedding photography",
+  cakes:          "Wedding cake design",
+  decoration:     "Wedding venue decoration",
+  "bridal-makeup": "Bridal makeup",
+  invitation:     "Wedding invitation design",
+};
+
 export function ServiceShowcase() {
   const [featured, ...rest] = categories;
 
@@ -67,7 +75,7 @@ function ShowcaseCard({
       <motion.div className="absolute inset-0 h-full w-full" whileHover={{ scale: 1.08 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] as const }}>
         <SmartImage
           src={category.imageUrl}
-          alt={category.description}
+          alt={CATEGORY_ALT[category.slug] ?? category.name}
           fallbackVariant={category.motif}
           fallbackTone={category.tone}
           fallbackSeed={category.id.length}
@@ -86,7 +94,7 @@ function ShowcaseCard({
         style={{ background: "linear-gradient(to top,rgba(21,4,12,0.97) 0%,rgba(21,4,12,0.80) 22%,rgba(21,4,12,0.35) 52%,transparent 100%)" }}
       />
       <div className="absolute inset-x-0 bottom-0 z-10 p-5">
-        {!big && <p style={{ color: "#D4AF6A", textShadow: "0 1px 8px rgba(21,4,12,1)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px" }}>{category.name}</p>}
+        {!big && <h3 style={{ color: "#D4AF6A", textShadow: "0 1px 8px rgba(21,4,12,1)", letterSpacing: "0.22em", textTransform: "uppercase", fontSize: "11px", fontWeight: "700", margin: 0 }}>{category.name}</h3>}
         {big ? (
           <>
             <h3 className="text-display-sm mt-2" style={{ color: "#F7EEE2", textShadow: "0 2px 16px rgba(21,4,12,1)" }}>{category.name}</h3>
