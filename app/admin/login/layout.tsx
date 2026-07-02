@@ -1,6 +1,6 @@
 ﻿import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Admin Login | TRIBLERERA" };
+export const metadata: Metadata = { title: "Admin Login | TRIBLEERA" };
 
 export default function AdminLoginLayout({ children }: { children: React.ReactNode }) {
   return (

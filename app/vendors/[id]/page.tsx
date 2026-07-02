@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     title: vendor.name,
     description: `${vendor.tagline} ${vendor.description}`.slice(0, 155),
     openGraph: {
-      title: `${vendor.name} | TRIBLERERA VAIBHAVAM`,
+      title: `${vendor.name} | TRIBLEERA VAIBHAVAM`,
       description: vendor.tagline,
     },
   };
@@ -290,7 +290,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
               <PriceCalculator startingPrice={vendor.startingPrice} />
             </div>
             <div className="rounded-[8px] border border-burgundy/15 bg-burgundy/5 p-4">
-              <p className="text-xs font-semibold text-burgundy-deep">🔒 TRIBLERERA Escrow Protection</p>
+              <p className="text-xs font-semibold text-burgundy-deep">🔒 TRIBLEERA Escrow Protection</p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-soft">
                 Your advance is held safely until service milestones are completed. <Link href="/trust" className="font-medium text-burgundy underline-offset-2 hover:underline">Learn how</Link>
               </p>

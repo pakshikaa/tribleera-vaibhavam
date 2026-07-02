@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, Mail, Phone, X } from "lucide-react";
@@ -29,7 +29,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
     if (typeof window === "undefined") return initial;
     try {
       const stored = JSON.parse(
-        localStorage.getItem("triblerera-vendor-applications") ?? "[]"
+        localStorage.getItem("TRIBLEERA-vendor-applications") ?? "[]"
       ) as VendorApplication[];
       return [...stored, ...initial];
     } catch {
@@ -47,7 +47,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
       // Only save the localStorage-sourced ones (non-static)
       const staticIds = new Set(initial.map((a) => a.id));
       const dynamicApps = updated.filter((a) => !staticIds.has(a.id));
-      localStorage.setItem("triblerera-vendor-applications", JSON.stringify(dynamicApps));
+      localStorage.setItem("TRIBLEERA-vendor-applications", JSON.stringify(dynamicApps));
     } catch {}
   }
 
@@ -74,10 +74,10 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
     };
 
     try {
-      const existing = JSON.parse(localStorage.getItem("triblerera-approved-vendors") ?? "[]");
+      const existing = JSON.parse(localStorage.getItem("TRIBLEERA-approved-vendors") ?? "[]");
       const filtered = existing.filter((v: { slug: string }) => v.slug !== approvedVendor.slug);
       filtered.push(approvedVendor);
-      localStorage.setItem("triblerera-approved-vendors", JSON.stringify(filtered));
+      localStorage.setItem("TRIBLEERA-approved-vendors", JSON.stringify(filtered));
     } catch {}
 
     const updated = apps.map((a) => (a.id === app.id ? { ...a, status: "approved" as const } : a));
@@ -162,8 +162,8 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                   <p className="font-display text-lg text-slate">{app.businessName}</p>
                   <p className="text-xs text-slate-soft">
                     {getCategoryBySlug(app.categorySlug)?.name ?? app.categorySlug}
-                    {" · "}{app.city}
-                    {app.experienceYears > 0 && ` · ${app.experienceYears} yrs`}
+                    {" Â· "}{app.city}
+                    {app.experienceYears > 0 && ` Â· ${app.experienceYears} yrs`}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-3 text-xs text-slate-soft">
                     <span className="flex items-center gap-1"><Phone size={11} /> {app.phone}</span>
@@ -218,7 +218,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                     rows={2}
                     value={adminNotes[app.id] ?? app.adminNotes ?? ""}
                     onChange={(e) => setAdminNotes((prev) => ({ ...prev, [app.id]: e.target.value }))}
-                    placeholder="Internal notes about this application…"
+                    placeholder="Internal notes about this applicationâ€¦"
                     className="mt-1.5 w-full rounded-[6px] border border-slate/15 bg-ivory px-3 py-2 text-sm text-slate placeholder:text-slate/40 focus:border-burgundy/40 focus:outline-none"
                   />
                 </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -56,7 +56,7 @@ export default function VendorSetupPage() {
       const slug = sessionStorage.getItem("vendor-slug");
       if (!slug) { router.replace("/vendor/login"); return; }
       const stored: ApprovedVendor[] = JSON.parse(
-        localStorage.getItem("triblerera-approved-vendors") ?? "[]"
+        localStorage.getItem("TRIBLEERA-approved-vendors") ?? "[]"
       );
       const v = stored.find((s) => s.slug === slug);
       if (v) {
@@ -68,7 +68,7 @@ export default function VendorSetupPage() {
         setStartingPrice(String(v.startingPrice ?? 15000));
         /* eslint-enable react-hooks/set-state-in-effect */
       }
-      const savedPhoto = localStorage.getItem(`triblerera-vendor-photo-${slug}`);
+      const savedPhoto = localStorage.getItem(`TRIBLEERA-vendor-photo-${slug}`);
       if (savedPhoto) { setPhoto(savedPhoto); setPhotoPreview(savedPhoto); }
     } catch { router.replace("/vendor/login"); }
   }, [router]);
@@ -116,12 +116,12 @@ export default function VendorSetupPage() {
 
     // Save photo
     if (photo) {
-      localStorage.setItem(`triblerera-vendor-photo-${slug}`, photo);
+      localStorage.setItem(`TRIBLEERA-vendor-photo-${slug}`, photo);
     }
 
     // Save profile data
     localStorage.setItem(
-      `triblerera-vendor-profiles`,
+      `TRIBLEERA-vendor-profiles`,
       JSON.stringify({
         slug,
         tagline,
@@ -141,19 +141,19 @@ export default function VendorSetupPage() {
       inclusions,
     };
     localStorage.setItem(
-      `triblerera-vendor-packages-${slug}`,
+      `TRIBLEERA-vendor-packages-${slug}`,
       JSON.stringify([firstPackage])
     );
 
     // Mark profile complete
     try {
       const stored: ApprovedVendor[] = JSON.parse(
-        localStorage.getItem("triblerera-approved-vendors") ?? "[]"
+        localStorage.getItem("TRIBLEERA-approved-vendors") ?? "[]"
       );
       const updated = stored.map((v) =>
         v.slug === slug ? { ...v, tagline, about, experienceYears: Number(experienceYears), startingPrice: Number(startingPrice), profileComplete: true } : v
       );
-      localStorage.setItem("triblerera-approved-vendors", JSON.stringify(updated));
+      localStorage.setItem("TRIBLEERA-approved-vendors", JSON.stringify(updated));
     } catch {}
 
     router.push("/dashboard/vendor");
@@ -166,7 +166,7 @@ export default function VendorSetupPage() {
       <div className="mx-auto max-w-2xl px-5 py-12">
         {/* Header */}
         <div className="mb-8 flex items-center gap-3">
-          <Image src="/logo/triblerera-mark-192.png" alt="TRIBLERERA" width={32} height={32} className="rounded-[6px]" />
+          <Image src="/logo/TRIBLEERA-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-gold-deep">Vendor Portal</p>
             <p className="font-display text-lg font-semibold text-burgundy-deep">
@@ -202,7 +202,7 @@ export default function VendorSetupPage() {
         <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
           <h2 className="mb-6 font-display text-xl text-burgundy-deep">{STEPS[step]}</h2>
 
-          {/* STEP 1 — Profile photo */}
+          {/* STEP 1 â€” Profile photo */}
           {step === 0 && (
             <div className="flex flex-col items-center gap-6">
               <p className="text-sm text-slate-soft">
@@ -237,7 +237,7 @@ export default function VendorSetupPage() {
               />
 
               {photoPreview && (
-                <p className="text-xs text-success">Photo selected — looking great!</p>
+                <p className="text-xs text-success">Photo selected â€” looking great!</p>
               )}
 
               <button
@@ -250,11 +250,11 @@ export default function VendorSetupPage() {
             </div>
           )}
 
-          {/* STEP 2 — Service info */}
+          {/* STEP 2 â€” Service info */}
           {step === 1 && (
             <div className="space-y-4">
               <p className="text-sm text-slate-soft">
-                Pre-filled from your registration — review and enhance before going live.
+                Pre-filled from your registration â€” review and enhance before going live.
               </p>
               <Input
                 label="Tagline"
@@ -262,7 +262,7 @@ export default function VendorSetupPage() {
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value)}
                 placeholder="Timeless floral designs for your heritage celebration"
-                hint="10–100 characters. Shown on your vendor card."
+                hint="10â€“100 characters. Shown on your vendor card."
                 error={step2Errors.tagline}
               />
               <Textarea
@@ -298,7 +298,7 @@ export default function VendorSetupPage() {
             </div>
           )}
 
-          {/* STEP 3 — First package */}
+          {/* STEP 3 â€” First package */}
           {step === 2 && (
             <div className="space-y-4">
               <p className="text-sm text-slate-soft">
@@ -417,7 +417,7 @@ export default function VendorSetupPage() {
               <span />
             )}
             <Button variant={step === STEPS.length - 1 ? "primary" : "gold"} onClick={goNext}>
-              {step === STEPS.length - 1 ? "Complete setup & go live" : "Next →"}
+              {step === STEPS.length - 1 ? "Complete setup & go live" : "Next â†’"}
             </Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -73,32 +73,42 @@ export function Header() {
             }}
             className="rounded-md"
           >
-            {/* Desktop logo — 36×36 per Figma */}
+            {/* Desktop logo â€” 36Ã—36 per Figma */}
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLERERA VAIBHAVAM"
+              alt="TRIBLEERA VAIBHAVAM"
               width={36}
               height={36}
               className="hidden rounded-[8px] shrink-0 md:block"
               priority
             />
-            {/* Mobile logo — 32×32 per Figma */}
+            {/* Mobile logo â€” 32Ã—32 per Figma */}
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLERERA VAIBHAVAM"
+              alt="TRIBLEERA VAIBHAVAM"
               width={32}
               height={32}
               className="rounded-[8px] shrink-0 md:hidden"
               priority
             />
           </motion.span>
-          <span
-            className={cn(
-              "font-display text-[17px] font-bold tracking-tight",
-              isHome ? "text-white" : "text-burgundy-deep"
-            )}
-          >
-            TRIBLERERA
+          <span className="flex flex-col leading-none">
+            <span
+              className={cn(
+                "font-display text-[15px] font-bold tracking-widest",
+                isHome ? "text-white" : "text-burgundy-deep"
+              )}
+            >
+              TRIBLEERA
+            </span>
+            <span
+              className={cn(
+                "font-display text-[9px] font-semibold tracking-[0.25em] opacity-70",
+                isHome ? "text-white" : "text-burgundy-deep"
+              )}
+            >
+              VAIBHAVAM
+            </span>
           </span>
         </Link>
 
@@ -127,7 +137,7 @@ export function Header() {
         {/* Desktop right section */}
         <div className="hidden items-center gap-1.5 md:flex">
 
-          {/* Notification bell — desktop only */}
+          {/* Notification bell â€” desktop only */}
           <button
             type="button"
             aria-label="View notifications, 3 unread"
@@ -214,7 +224,7 @@ export function Header() {
           {/* Divider */}
           <div className={cn("h-5 w-px", isHome ? "bg-white/15" : "bg-slate/15")} />
 
-          {/* For Vendors → vendor login */}
+          {/* For Vendors â†’ vendor login */}
           <Button
             href="/vendor/login"
             variant={isHome ? "glass" : "secondary"}
@@ -235,7 +245,7 @@ export function Header() {
 
         </div>
 
-        {/* Mobile right — hamburger ONLY, no bell */}
+        {/* Mobile right â€” hamburger ONLY, no bell */}
         <div className="flex items-center gap-3 md:hidden">
           <Sheet>
             <SheetTrigger aria-label="Open menu">

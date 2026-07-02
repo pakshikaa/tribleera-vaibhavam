@@ -113,7 +113,7 @@ export default function BookingCartPage() {
                 <div>
                   <p className="text-sm font-semibold text-burgundy-deep">Secure payments, held in escrow</p>
                   <p className="mt-1 text-sm leading-relaxed text-slate-soft">
-                    Your advance and platform fee are held safely by TRIBLERERA and released to each vendor only as
+                    Your advance and platform fee are held safely by TRIBLEERA and released to each vendor only as
                     milestones are completed — full mediation support included.
                   </p>
                 </div>

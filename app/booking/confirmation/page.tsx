@@ -43,7 +43,7 @@ function ShareBookingSection({ bookingId }: { bookingId: string }) {
     }).catch(() => {});
   }
 
-  const waText = encodeURIComponent(`I just booked my Jaffna wedding vendors on TRIBLERERA VAIBHAVAM! 🎊 Booking ref: ${bookingId}`);
+  const waText = encodeURIComponent(`I just booked my Jaffna wedding vendors on TRIBLEERA VAIBHAVAM! 🎊 Booking ref: ${bookingId}`);
 
   return (
     <div className="rounded-[8px] border border-rose/30 bg-rose-pale/40 p-5">
@@ -81,7 +81,7 @@ export default function BookingConfirmationPage() {
     // One-time hydration from a browser-only store; see CartContext for the
     // same documented exception to the set-state-in-effect rule.
     try {
-      const raw = window.localStorage.getItem("triblerera-last-booking");
+      const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setBooking(raw ? JSON.parse(raw) : null);
     } catch {
@@ -119,7 +119,7 @@ export default function BookingConfirmationPage() {
           <div className="mx-auto max-w-xl text-center">
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLERERA VAIBHAVAM"
+              alt="TRIBLEERA VAIBHAVAM"
               width={56}
               height={56}
               className="mx-auto rounded-[4px] shadow-soft"
@@ -231,7 +231,7 @@ export default function BookingConfirmationPage() {
 
           <div className="flex justify-center">
             <Badge tone="success" icon={<ShieldCheck size={13} />} className="px-3.5 py-1.5">
-              TRIBLERERA Verified Booking
+              TRIBLEERA Verified Booking
             </Badge>
           </div>
         </div>

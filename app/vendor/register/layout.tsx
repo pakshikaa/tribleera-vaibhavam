@@ -1,9 +1,9 @@
 ﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Become a vendor",
+  title: "Register your studio",
   description:
-    "List your photography, decoration, bridal makeup, cake or invitation business on TRIBLERERA VAIBHAVAM — Jaffna's premium wedding marketplace.",
+    "List your photography, decoration, bridal makeup, cake or invitation business on TRIBLEERA VAIBHAVAM — Jaffna's premium wedding marketplace.",
   alternates: { canonical: "/vendor/register" },
 };
 

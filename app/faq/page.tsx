@@ -27,7 +27,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
       },
       {
         q: "Is my payment safe?",
-        a: "Your advance is held in TRIBLERERA escrow and released only when service milestones are completed. We mediate any disputes.",
+        a: "Your advance is held in TRIBLEERA escrow and released only when service milestones are completed. We mediate any disputes.",
       },
       {
         q: "What payment methods are accepted?",
@@ -51,7 +51,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         a: "Every vendor profile has a WhatsApp button for direct chat. You can also send an event request through the platform.",
       },
       {
-        q: "Can I book a vendor outside TRIBLERERA?",
+        q: "Can I book a vendor outside TRIBLEERA?",
         a: "Vendors agree to our terms which prohibit bypassing the platform for bookings. This protects both you and the vendor.",
       },
     ],
@@ -77,7 +77,7 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         a: 'Click "For Vendors" → "Register" and complete the 3-step form. Our team reviews applications within 24–48 hours.',
       },
       {
-        q: "What commission does TRIBLERERA take?",
+        q: "What commission does TRIBLEERA take?",
         a: "The 3% platform fee is paid by the customer, not deducted from your payment. You receive the full agreed package price.",
       },
     ],

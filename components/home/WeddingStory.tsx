@@ -42,10 +42,10 @@ export function WeddingStory() {
           </h2>
           <p className="mt-6 text-[15px] leading-relaxed text-cream-dim">
             Inside Niranjala &amp; Kajan&apos;s Jaffna celebration - three vendors, one vision, and a
-            wedding week planned entirely through TRIBLERERA.
+            wedding week planned entirely through TRIBLEERA VAIBHAVAM.
           </p>
           <Link href="/trust" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-gold-light hover:text-gold">
-            See how TRIBLERERA protects your celebration →
+            See how TRIBLEERA protects your celebration →
           </Link>
         </motion.div>
       </div>

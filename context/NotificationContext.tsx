@@ -20,7 +20,7 @@ export interface NotificationItem {
   createdAt: string;
 }
 
-const STORAGE_KEY = "triblerera-notifications";
+const STORAGE_KEY = "TRIBLEERA-notifications";
 
 const defaultNotifications: NotificationItem[] = [
   {

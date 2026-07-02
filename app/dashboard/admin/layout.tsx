@@ -75,9 +75,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-slate/10 bg-white">
       {/* Brand */}
       <div className="flex items-center gap-2.5 border-b border-slate/10 px-5 py-4">
-        <Image src="/logo/tribleera-mark-192.png" alt="TRIBLERERA" width={36} height={36} className="rounded-[8px]" />
+        <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={36} height={36} className="rounded-[8px]" />
         <div>
-          <p className="font-display text-sm font-semibold text-burgundy-deep">TRIBLERERA</p>
+          <p className="font-display text-sm font-semibold text-burgundy-deep">TRIBLEERA</p>
           <p className="text-[10px] font-medium uppercase tracking-wider text-slate-soft">Admin Panel</p>
         </div>
       </div>

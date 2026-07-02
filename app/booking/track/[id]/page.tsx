@@ -18,7 +18,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  return { title: `Track Booking ${id}` };
+  return { title: `Tracking — ${id}` };
 }
 
 export default async function BookingTrackingPage({ params }: { params: Promise<{ id: string }> }) {

@@ -18,7 +18,7 @@ interface StoredEventRequest {
 
 export default function EventRequestSubmittedPage() {
   const [request] = useState<StoredEventRequest | null>(() =>
-    typeof window === "undefined" ? null : readLocalStorage<StoredEventRequest | null>("triblerera-event-request", null)
+    typeof window === "undefined" ? null : readLocalStorage<StoredEventRequest | null>("TRIBLEERA-event-request", null)
   );
 
   return (

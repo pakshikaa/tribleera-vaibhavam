@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           <section className="mb-10 space-y-4">
             <h2 className="font-display text-2xl font-semibold text-slate">1. What Data We Collect</h2>
             <p className="leading-relaxed text-slate-soft">
-              When you use TRIBLERERA VAIBHAVAM, we collect the following information:
+              When you use TRIBLEERA VAIBHAVAM, we collect the following information:
             </p>
             <ul className="list-disc space-y-2 pl-5 text-slate-soft">
               <li><strong>Identity:</strong> Full name, profile photo (optional)</li>
@@ -98,8 +98,8 @@ export default function PrivacyPage() {
             <h2 className="font-display text-2xl font-semibold text-slate">7. Contact for Privacy Concerns</h2>
             <p className="leading-relaxed text-slate-soft">
               To exercise your privacy rights or raise a concern, email us at{" "}
-              <a href="mailto:hello@triblerera.com" className="text-burgundy underline-offset-2 hover:underline">
-                hello@triblerera.com
+              <a href="mailto:hello@TRIBLEERA.com" className="text-burgundy underline-offset-2 hover:underline">
+                hello@TRIBLEERA.com
               </a>
               . We will respond within 5 business days.
             </p>

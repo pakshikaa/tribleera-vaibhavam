@@ -12,7 +12,7 @@ const REVIEWS = [
     stars: 5,
   },
   {
-    quote: "We booked three vendors through TRIBLERERA, and the consistency in communication made the whole week feel much less chaotic.",
+    quote: "We booked three vendors through TRIBLEERA VAIBHAVAM, and the consistency in communication made the whole week feel much less chaotic.",
     name: "Janani & Arun",
     location: "Colombo",
     service: "Decoration & Makeup",

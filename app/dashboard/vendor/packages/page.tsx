@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Plus, X } from "lucide-react";
@@ -13,7 +13,7 @@ import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage
 import type { VendorPackage } from "@/types";
 import { BackButton } from "@/components/ui/BackButton";
 
-const STORAGE_KEY = "triblerera-vendor-packages";
+const STORAGE_KEY = "TRIBLEERA-vendor-packages";
 const DEFAULT_PACKAGES = getVendorBySlug("pushpa-florals-and-decor")!.packages;
 
 export default function VendorPackagesPage() {
@@ -24,7 +24,7 @@ export default function VendorPackagesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [newPackage, setNewPackage] = useState({ name: "", price: "", inclusions: ["", "", ""] });
   const [galleryImages, setGalleryImages] = useState<string[]>(() =>
-    typeof window === "undefined" ? [] : readLocalStorage<string[]>("triblerera-vendor-gallery", [])
+    typeof window === "undefined" ? [] : readLocalStorage<string[]>("TRIBLEERA-vendor-gallery", [])
   );
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function VendorPackagesPage() {
         if (!url) return;
         setGalleryImages((prev) => {
           const next = [...prev, url].slice(0, 12);
-          writeLocalStorage("triblerera-vendor-gallery", next);
+          writeLocalStorage("TRIBLEERA-vendor-gallery", next);
           return next;
         });
       };
@@ -95,7 +95,7 @@ export default function VendorPackagesPage() {
                     onClick={() => {
                       const next = galleryImages.filter((_, idx) => idx !== i);
                       setGalleryImages(next);
-                      writeLocalStorage("triblerera-vendor-gallery", next);
+                      writeLocalStorage("TRIBLEERA-vendor-gallery", next);
                     }}
                     className="flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
                     aria-label="Remove photo"
@@ -154,7 +154,7 @@ export default function VendorPackagesPage() {
                         )
                       }
                     >
-                      ×
+                      Ã—
                     </button>
                   </div>
                 ))}

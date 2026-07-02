@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -39,7 +39,7 @@ export default function VendorLoginPage() {
     setTimeout(() => {
       try {
         const stored: ApprovedVendor[] = JSON.parse(
-          localStorage.getItem("triblerera-approved-vendors") ?? "[]"
+          localStorage.getItem("TRIBLEERA-approved-vendors") ?? "[]"
         );
         const normInput = normalisePhone(phone);
 
@@ -91,7 +91,7 @@ export default function VendorLoginPage() {
         </div>
         <Image
           src="/logo/tribleera-mark-192.png"
-          alt="TRIBLERERA"
+          alt="TRIBLEERA"
           width={64}
           height={64}
           className="mb-6 rounded-[12px]"
@@ -101,10 +101,10 @@ export default function VendorLoginPage() {
           Your studio.<br />Your bookings.
         </h1>
         <p className="max-w-xs text-center text-sm leading-relaxed text-[#C9BCAF]">
-          Manage requests, update your profile, and track your revenue — all in one place.
+          Manage requests, update your profile, and track your revenue â€” all in one place.
         </p>
         <p className="mt-8 font-display text-sm italic text-[#D4AF6A]/70">
-          தேர்வின் செம்மை, வைபவத்தின் பெருமை
+          à®¤à¯‡à®°à¯à®µà®¿à®©à¯ à®šà¯†à®®à¯à®®à¯ˆ, à®µà¯ˆà®ªà®µà®¤à¯à®¤à®¿à®©à¯ à®ªà¯†à®°à¯à®®à¯ˆ
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function VendorLoginPage() {
           <div className="mb-8 flex justify-center lg:hidden">
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLERERA"
+              alt="TRIBLEERA"
               width={48}
               height={48}
               className="rounded-[10px]"
@@ -125,7 +125,7 @@ export default function VendorLoginPage() {
           <p className="mb-8 text-sm text-[#4B5563]">
             New vendor?{" "}
             <Link href="/vendor/register" className="font-semibold text-[#7A1F3D] hover:underline">
-              Register your studio →
+              Register your studio â†’
             </Link>
           </p>
 
@@ -159,7 +159,7 @@ export default function VendorLoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                 required
                 className="w-full rounded border border-slate/20 bg-white px-4 py-3 text-sm text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
               />
@@ -177,7 +177,7 @@ export default function VendorLoginPage() {
               disabled={loading}
               className="w-full rounded bg-[#7A1F3D] py-3 text-sm font-semibold text-white transition-all hover:bg-[#5C0427] disabled:opacity-60"
             >
-              {loading ? "Signing in…" : "Sign in to vendor portal"}
+              {loading ? "Signing inâ€¦" : "Sign in to vendor portal"}
             </button>
           </form>
 
@@ -190,7 +190,7 @@ export default function VendorLoginPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-[#4B5563]">
-            <Link href="/" className="hover:text-[#7A1F3D]">← Back to TRIBLERERA</Link>
+            <Link href="/" className="hover:text-[#7A1F3D]">â† Back to TRIBLEERA</Link>
           </p>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 
-const STORAGE_KEY = "triblerera-cookie-consent";
+const STORAGE_KEY = "TRIBLEERA-cookie-consent";
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);

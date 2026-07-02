@@ -25,7 +25,7 @@ export default function Loading() {
       {/* Logo */}
       <Image
         src="/logo/tribleera-mark-192.png"
-        alt="TRIBLERERA"
+        alt="TRIBLEERA"
         width={56}
         height={56}
         className="mb-4 rounded-[12px]"
@@ -33,7 +33,8 @@ export default function Loading() {
       />
 
       {/* Brand name */}
-      <p className="mb-6 font-display text-xl tracking-widest text-cream">TRIBLERERA</p>
+      <p className="font-display text-xl tracking-widest text-cream">TRIBLEERA</p>
+      <p className="mb-6 mt-0.5 font-display text-[10px] tracking-[0.35em] text-gold/60">VAIBHAVAM</p>
 
       {/* Gold shimmer bar */}
       <div className="h-0.5 w-32 overflow-hidden rounded-full bg-cream/10">

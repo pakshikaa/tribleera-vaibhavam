@@ -106,7 +106,7 @@ export default function PaymentSummaryPage() {
       createdAt: new Date().toISOString(),
     };
     try {
-      window.localStorage.setItem("triblerera-last-booking", JSON.stringify(record));
+      window.localStorage.setItem("TRIBLEERA-last-booking", JSON.stringify(record));
     } catch {
       // session-only fallback; confirmation page handles a missing record gracefully
     }
@@ -253,7 +253,7 @@ export default function PaymentSummaryPage() {
                   <dl className="divide-y divide-slate/8">
                     {[
                       ["Bank", "People's Bank of Sri Lanka"],
-                      ["Account Name", "TRIBLERERA VAIBHAVAM PVT LTD"],
+                      ["Account Name", "TRIBLEERA VAIBHAVAM PVT LTD"],
                       ["Account Number", "123-4567-8901-00"],
                       ["Branch", "Jaffna Main Branch"],
                       ["Reference", bankReference],
@@ -320,7 +320,7 @@ export default function PaymentSummaryPage() {
               {isSubmitting ? "Processing payment..." : submitLabel}
             </Button>
             <p className="text-center text-[11px] leading-relaxed text-slate-soft md:hidden">
-              By clicking, you agree to TRIBLERERA&apos;s Escrow Terms of Service.
+              By clicking, you agree to TRIBLEERA&apos;s Escrow Terms of Service.
             </p>
           </form>
 
@@ -330,7 +330,7 @@ export default function PaymentSummaryPage() {
               <div className="flex items-start gap-3 rounded-[4px] border border-rose/40 bg-rose-pale/50 p-4">
                 <ShieldCheck size={18} className="mt-0.5 shrink-0 text-burgundy" />
                 <div>
-                  <p className="text-xs font-semibold text-burgundy-deep">TRIBLERERA Escrow Protection</p>
+                  <p className="text-xs font-semibold text-burgundy-deep">TRIBLEERA Escrow Protection</p>
                   <p className="mt-1 text-xs leading-relaxed text-slate-soft">
                     Your advance is held in a secure escrow account and released to vendors only as milestones are completed.
                     Your remaining balance is settled directly with each vendor afterwards.
@@ -350,7 +350,7 @@ export default function PaymentSummaryPage() {
                 {isSubmitting ? "Processing payment..." : submitLabel}
               </Button>
               <p className="text-center text-[11px] leading-relaxed text-slate-soft">
-                By clicking, you agree to TRIBLERERA&apos;s Escrow Terms of Service.
+                By clicking, you agree to TRIBLEERA&apos;s Escrow Terms of Service.
               </p>
             </div>
           </aside>

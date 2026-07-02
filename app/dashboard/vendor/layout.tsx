@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -49,8 +49,8 @@ function SidebarContent({ pathname }: { pathname: string }) {
     <div className="flex h-full flex-col">
       <div className="border-b border-slate/10 p-5">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo/triblerera-mark-192.png" alt="TRIBLERERA" width={32} height={32} className="rounded-[6px]" />
-          <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLERERA</span>
+          <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
+          <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLEERA</span>
         </Link>
         <p className="mt-3 text-xs text-[#4B5563]">Vendor Portal</p>
       </div>
@@ -97,8 +97,8 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
         {/* Mobile top bar */}
         <div className="flex h-14 items-center justify-between border-b border-slate/10 bg-white px-4 md:hidden">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo/triblerera-mark-192.png" alt="TRIBLERERA" width={28} height={28} className="rounded-md" />
-            <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLERERA</span>
+            <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={28} height={28} className="rounded-md" />
+            <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLEERA</span>
           </Link>
           <Sheet>
             <SheetTrigger aria-label="Open sidebar">

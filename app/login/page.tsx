@@ -58,14 +58,15 @@ export default function LoginPage() {
           <Link href="/">
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLERERA"
+              alt="TRIBLEERA"
               width={64}
               height={64}
               className="mx-auto mb-3 rounded-[12px] shadow-[0_0_30px_rgba(92,4,39,0.15)]"
             />
           </Link>
-          <p className="font-display text-xl tracking-widest text-burgundy-deep">TRIBLERERA</p>
-          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-soft">
+          <p className="font-display text-xl tracking-widest text-burgundy-deep">TRIBLEERA</p>
+          <p className="mt-0.5 font-display text-[10px] tracking-[0.35em] text-burgundy/50">VAIBHAVAM</p>
+          <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-soft">
             Welcome back
           </p>
         </div>
@@ -138,7 +139,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center text-xs text-slate-soft">
-            New to TRIBLERERA?{" "}
+            New to TRIBLEERA?{" "}
             <Link href="/event-request" className="font-semibold text-burgundy hover:underline">
               Plan your wedding
             </Link>

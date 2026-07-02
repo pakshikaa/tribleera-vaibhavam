@@ -13,7 +13,7 @@ export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
   useEffect(() => {
     let found = false;
     try {
-      const raw = window.localStorage.getItem("triblerera-last-booking");
+      const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
       if (raw) {
         const record = JSON.parse(raw) as { items?: { vendorId: string }[] };
         found = (record.items ?? []).some((item) => item.vendorId === vendor.id);

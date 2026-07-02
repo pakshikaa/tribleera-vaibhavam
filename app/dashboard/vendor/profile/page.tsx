@@ -10,8 +10,8 @@ import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 import { BackButton } from "@/components/ui/BackButton";
 
-const STORAGE_KEY = "triblerera-vendor-profile";
-const PHOTO_KEY = "triblerera-vendor-photo";
+const STORAGE_KEY = "TRIBLEERA-vendor-profile";
+const PHOTO_KEY = "TRIBLEERA-vendor-photo";
 const DEFAULT_VENDOR = getVendorBySlug("pushpa-florals-and-decor")!;
 
 const DEFAULT_FORM = {

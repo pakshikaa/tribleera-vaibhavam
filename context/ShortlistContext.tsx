@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 
-const STORAGE_KEY = "triblerera-shortlist-v1";
+const STORAGE_KEY = "TRIBLEERA-shortlist-v1";
 
 interface ShortlistContextValue {
   slugs: string[];

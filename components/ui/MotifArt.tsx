@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils/cn";
 
 /**
- * TRIBLERERA's signature visual device.
+ * TRIBLEERA's signature visual device.
  *
  * Real vendor photography arrives once Cloudinary/S3 storage is wired up
  * on the backend. Until then, every image slot in this product renders a

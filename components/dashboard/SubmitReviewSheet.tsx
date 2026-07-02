@@ -49,7 +49,7 @@ export function SubmitReviewSheet({
       return;
     }
 
-    const reviews = readLocalStorage<ReviewRecord[]>("triblerera-reviews", []);
+    const reviews = readLocalStorage<ReviewRecord[]>("TRIBLEERA-reviews", []);
     const nextReview: ReviewRecord = {
       id: `review-${Date.now()}`,
       bookingId,
@@ -60,7 +60,7 @@ export function SubmitReviewSheet({
       date: new Date().toISOString(),
     };
 
-    writeLocalStorage("triblerera-reviews", [nextReview, ...reviews]);
+    writeLocalStorage("TRIBLEERA-reviews", [nextReview, ...reviews]);
     showToast("Thank you! Your review helps other couples.", "success");
     onSubmitted();
     onOpenChange(false);

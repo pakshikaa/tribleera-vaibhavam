@@ -11,7 +11,7 @@ export function ShareVendorButton({ vendorName }: { vendorName: string }) {
     if (navigator.share) {
       navigator.share({
         title: vendorName,
-        text: `Check out ${vendorName} on TRIBLERERA VAIBHAVAM`,
+        text: `Check out ${vendorName} on TRIBLEERA VAIBHAVAM`,
         url: window.location.href,
       });
     } else {

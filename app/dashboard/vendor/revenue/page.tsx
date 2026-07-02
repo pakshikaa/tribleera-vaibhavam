@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { TrendingUp } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
@@ -87,7 +87,7 @@ export default function VendorRevenuePage() {
               </p>
               <p className="text-xs text-slate-soft">of {formatLKR(monthlyTarget)} goal</p>
             </div>
-            <Badge tone="gold">↑ +12.5% vs last month</Badge>
+            <Badge tone="gold">â†‘ +12.5% vs last month</Badge>
           </div>
           <div className="mt-4">
             <div className="flex items-center justify-between text-xs text-slate-soft">
@@ -105,10 +105,10 @@ export default function VendorRevenuePage() {
 
         {/* Escrow info */}
         <div className="mt-4 rounded-[10px] border border-gold/20 bg-gold/[0.06] p-4">
-          <p className="text-sm font-semibold text-slate">How TRIBLERERA escrow works</p>
+          <p className="text-sm font-semibold text-slate">How TRIBLEERA escrow works</p>
           <p className="mt-1 text-xs leading-relaxed text-slate-soft">
             Customers pay 20% advance at booking. The remaining 80% is collected after service
-            completion. TRIBLERERA releases your full payout within 3 business days of event
+            completion. TRIBLEERA releases your full payout within 3 business days of event
             completion confirmation.
           </p>
         </div>

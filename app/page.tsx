@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "Jaffna's premium wedding concierge — verified photographers, decorators, bridal makeup artists, cake ateliers and invitation designers, bookable with secure milestone payments.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "TRIBLERERA VAIBHAVAM | Plan Your Perfect Celebration",
+    title: "TRIBLEERA VAIBHAVAM | Plan Your Perfect Celebration",
     description: "Jaffna's premium wedding concierge — curated, verified vendors, transparent pricing.",
     url: "/",
   },

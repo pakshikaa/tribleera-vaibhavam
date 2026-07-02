@@ -8,7 +8,7 @@ export const users: PlatformUser[] = [
   { id: "u-4", name: "Jaffna Frames Studio", email: "contact@jaffnaframes.example.com", role: "vendor", joinedDate: "2024-04-10", status: "active", city: "Jaffna" },
   { id: "u-5", name: "Pushpa Florals & Decor", email: "hello@pushpadecor.example.com", role: "vendor", joinedDate: "2024-07-18", status: "active", city: "Jaffna" },
   { id: "u-6", name: "Pixel & Petal Photography", email: "studio@pixelandpetal.example.com", role: "vendor", joinedDate: "2026-05-02", status: "active", city: "Trincomalee" },
-  { id: "u-7", name: "Admin — Karthika S.", email: "karthika@triblerera.example.com", role: "admin", joinedDate: "2023-11-01", status: "active", city: "Jaffna" },
+  { id: "u-7", name: "Admin — Karthika S.", email: "karthika@TRIBLEERA.example.com", role: "admin", joinedDate: "2023-11-01", status: "active", city: "Jaffna" },
   { id: "u-8", name: "Revathi Thurairajah", email: "revathi.t@example.com", role: "customer", joinedDate: "2026-04-14", status: "suspended", city: "Colombo" },
 ];
 

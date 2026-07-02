@@ -39,7 +39,7 @@ const COLUMNS = [
 const SOCIAL = [
   {
     href: "https://wa.me/94771234567",
-    label: "TRIBLERERA on WhatsApp",
+    label: "TRIBLEERA on WhatsApp",
     Icon: ({ size }: { size?: number }) => <MessageCircle size={size} aria-hidden="true" />,
   },
 ];
@@ -53,12 +53,15 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2.5">
               <Image
                 src="/logo/tribleera-mark-192.png"
-                alt="TRIBLERERA VAIBHAVAM"
+                alt="TRIBLEERA VAIBHAVAM"
                 width={32}
                 height={32}
                 className="rounded-md shadow-glow"
               />
-              <span className="font-display text-lg text-cream">TRIBLERERA</span>
+              <span className="flex flex-col items-start leading-none">
+                <span className="font-display text-[16px] font-bold text-cream tracking-widest">TRIBLEERA</span>
+                <span className="font-display text-[9px] font-semibold tracking-[0.3em] text-gold/70 mt-0.5">VAIBHAVAM</span>
+              </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-faint">
               Jaffna&rsquo;s premium wedding concierge — verified photographers, decorators, bridal artists,
@@ -95,7 +98,7 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-cream/10 pt-7 text-xs text-cream-faint md:flex-row">
-          <p>© 2026 Triblerera Vaibhavam, Jaffna, Sri Lanka. All rights reserved.</p>
+          <p>© 2026 TRIBLEERA VAIBHAVAM, Jaffna, Sri Lanka. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <p className="font-display text-sm text-cream-dim">தேர்வின் செம்மை, வைபவத்தின் பெருமை</p>
             <Link

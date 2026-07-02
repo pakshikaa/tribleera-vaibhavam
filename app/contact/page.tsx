@@ -20,7 +20,7 @@ const contactSchema = z.object({
 type ContactValues = z.infer<typeof contactSchema>;
 
 const INFO_CARDS = [
-  { icon: Mail, label: "Email", value: "hello@triblerera.com", href: "mailto:hello@triblerera.com" },
+  { icon: Mail, label: "Email", value: "hello@TRIBLEERA.com", href: "mailto:hello@TRIBLEERA.com" },
   { icon: Phone, label: "Phone", value: "+94 77 123 4567", href: "tel:+94771234567" },
   { icon: MessageCircle, label: "WhatsApp", value: "Chat directly", href: "https://wa.me/94771234567" },
   { icon: MapPin, label: "Address", value: "Jaffna, Sri Lanka", href: undefined },

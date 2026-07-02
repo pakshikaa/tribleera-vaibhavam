@@ -15,7 +15,7 @@ export default function TermsPage() {
           <section className="mb-10 space-y-4">
             <h2 className="font-display text-2xl font-semibold text-slate">1. Introduction</h2>
             <p className="leading-relaxed text-slate-soft">
-              TRIBLERERA VAIBHAVAM (&ldquo;TRIBLERERA&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is a curated wedding services
+              TRIBLEERA VAIBHAVAM (&ldquo;TRIBLEERA&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is a curated wedding services
               marketplace connecting Tamil couples with verified vendors across Sri Lanka. By
               accessing or using our platform, you agree to be bound by these Terms &amp; Conditions.
             </p>
@@ -38,7 +38,7 @@ export default function TermsPage() {
           <section className="mb-10 space-y-4">
             <h2 className="font-display text-2xl font-semibold text-slate">3. Booking Process</h2>
             <p className="leading-relaxed text-slate-soft">
-              Bookings on TRIBLERERA follow a three-stage process:
+              Bookings on TRIBLEERA follow a three-stage process:
             </p>
             <ul className="list-disc space-y-2 pl-5 text-slate-soft">
               <li><strong>Request:</strong> Customer selects a package and submits a booking request</li>
@@ -54,15 +54,15 @@ export default function TermsPage() {
           <section className="mb-10 space-y-4">
             <h2 className="font-display text-2xl font-semibold text-slate">4. Payment Terms</h2>
             <p className="leading-relaxed text-slate-soft">
-              TRIBLERERA operates on a milestone-payment model:
+              TRIBLEERA operates on a milestone-payment model:
             </p>
             <ul className="list-disc space-y-2 pl-5 text-slate-soft">
-              <li><strong>Advance (20%):</strong> Paid at booking confirmation, held in TRIBLERERA escrow</li>
+              <li><strong>Advance (20%):</strong> Paid at booking confirmation, held in TRIBLEERA escrow</li>
               <li><strong>Platform fee (3%):</strong> Non-refundable fee charged to the customer on the service value</li>
               <li><strong>Balance (80%):</strong> Paid directly to the vendor after successful service delivery</li>
             </ul>
             <p className="leading-relaxed text-slate-soft">
-              TRIBLERERA does not receive commission from vendors. The 3% platform fee is the sole
+              TRIBLEERA does not receive commission from vendors. The 3% platform fee is the sole
               revenue mechanism from customers.
             </p>
           </section>
@@ -108,10 +108,10 @@ export default function TermsPage() {
             <h2 className="font-display text-2xl font-semibold text-slate">6. Vendor Obligations</h2>
             <ul className="list-disc space-y-2 pl-5 text-slate-soft">
               <li>Maintain accurate business information and portfolio</li>
-              <li>Complete background verification as required by TRIBLERERA</li>
+              <li>Complete background verification as required by TRIBLEERA</li>
               <li>Honour accepted bookings and deliver services as described</li>
               <li>Communicate professionally with all customers</li>
-              <li>Not solicit customers to bypass the TRIBLERERA platform</li>
+              <li>Not solicit customers to bypass the TRIBLEERA platform</li>
             </ul>
           </section>
 
@@ -128,8 +128,8 @@ export default function TermsPage() {
           <section className="mb-10 space-y-4">
             <h2 className="font-display text-2xl font-semibold text-slate">8. Dispute Resolution</h2>
             <p className="leading-relaxed text-slate-soft">
-              TRIBLERERA acts as a mediator in disputes between customers and vendors. To raise a
-              dispute, contact us within 48 hours of service completion. TRIBLERERA&rsquo;s decision
+              TRIBLEERA acts as a mediator in disputes between customers and vendors. To raise a
+              dispute, contact us within 48 hours of service completion. TRIBLEERA&rsquo;s decision
               following mediation is final with respect to escrow funds.
             </p>
           </section>
@@ -137,7 +137,7 @@ export default function TermsPage() {
           <section className="mb-10 space-y-4">
             <h2 className="font-display text-2xl font-semibold text-slate">9. Limitation of Liability</h2>
             <p className="leading-relaxed text-slate-soft">
-              TRIBLERERA is a marketplace platform. We are not liable for the quality, safety, or
+              TRIBLEERA is a marketplace platform. We are not liable for the quality, safety, or
               legality of vendor services. Our total liability to any user shall not exceed the
               platform fee paid for the transaction in dispute.
             </p>
@@ -156,8 +156,8 @@ export default function TermsPage() {
             <h2 className="font-display text-2xl font-semibold text-slate">11. Contact</h2>
             <p className="leading-relaxed text-slate-soft">
               For questions about these terms, contact us at{" "}
-              <a href="mailto:hello@triblerera.com" className="text-burgundy underline-offset-2 hover:underline">
-                hello@triblerera.com
+              <a href="mailto:hello@TRIBLEERA.com" className="text-burgundy underline-offset-2 hover:underline">
+                hello@TRIBLEERA.com
               </a>
               .
             </p>

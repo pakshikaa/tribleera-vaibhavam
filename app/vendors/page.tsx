@@ -12,9 +12,9 @@ import { ShieldCheck, SearchX } from "lucide-react";
 export const metadata: Metadata = {
   title: "Browse Vendors",
   description:
-    "Search verified Tamil wedding vendors by category, city and budget on TRIBLERERA VAIBHAVAM — Jaffna's premium wedding marketplace.",
+    "Search verified Tamil wedding vendors by category, city and budget on TRIBLEERA VAIBHAVAM — Jaffna's premium wedding marketplace.",
   openGraph: {
-    title: "Find Your Wedding Vendors | TRIBLERERA VAIBHAVAM",
+    title: "Find Your Wedding Vendors | TRIBLEERA VAIBHAVAM",
     description:
       "25+ verified studios across Jaffna, Colombo and beyond. Filter by category, budget and trust score.",
     url: "/vendors",
@@ -117,7 +117,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
         <Container className="py-3">
           <div className="flex flex-wrap items-center gap-6 text-xs text-slate-soft">
             <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-burgundy" /> All vendors background-verified</span>
-            <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-burgundy" /> Advance held in TRIBLERERA escrow</span>
+            <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-burgundy" /> Advance held in TRIBLEERA escrow</span>
             <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-burgundy" /> Transparent pricing — no hidden fees</span>
           </div>
         </Container>

@@ -54,7 +54,7 @@ export function WhyTribleera() {
         >
           <p className="text-overline mb-4 inline-flex items-center justify-center gap-2.5 text-gold">
             <span className="h-px w-7 bg-gold" />
-            Why TRIBLERERA
+            Why TRIBLEERA VAIBHAVAM
             <span className="h-px w-7 bg-gold" />
           </p>
           <h2 className="text-display-md text-cream">Trust, built into every booking.</h2>
