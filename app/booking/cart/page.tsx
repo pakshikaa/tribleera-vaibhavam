@@ -12,6 +12,7 @@ import { PriceSummary } from "@/components/booking/PriceSummary";
 import { BookingSteps } from "@/components/booking/BookingSteps";
 import { formatLKR } from "@/lib/utils/format";
 import { useCart } from "@/context/CartContext";
+import { BackButton } from "@/components/ui/BackButton";
 
 export default function BookingCartPage() {
   const { items, removeItem, totals, hydrated } = useCart();
@@ -38,6 +39,7 @@ export default function BookingCartPage() {
     <div className="bg-ivory">
       <section className="border-b border-slate/8 bg-white py-8 md:py-10">
         <Container>
+          <BackButton href="/vendors" label="Continue shopping" className="mb-4" />
           <SectionHeading eyebrow="Step 2 of 4" title="Your booking cart" className="mb-6" />
           <BookingSteps current={2} />
         </Container>
@@ -153,7 +155,7 @@ export default function BookingCartPage() {
 
       {/* Mobile bottom-sheet booking summary */}
       {hydrated && items.length > 0 && (
-        <div className="fixed inset-x-0 bottom-16 z-30 md:hidden">
+        <div className="fixed inset-x-0 bottom-[56px] z-30 md:hidden">
           {sheetOpen && (
             <div className="animate-slide-up space-y-2 border-t border-slate/10 bg-white px-4 pb-3 pt-4 shadow-lift">
               <div className="flex items-center justify-between text-sm">

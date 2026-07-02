@@ -8,6 +8,7 @@ import { Input, Textarea } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { BackButton } from "@/components/ui/BackButton";
 
 const STORAGE_KEY = "triblerera-vendor-profile";
 const PHOTO_KEY = "triblerera-vendor-photo";
@@ -60,6 +61,7 @@ export default function VendorProfilePage() {
   return (
     <div className="bg-ivory py-10">
       <Container className="max-w-4xl">
+        <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
         <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
           <h1 className="font-display text-3xl text-burgundy-deep">Edit Vendor Profile</h1>
 

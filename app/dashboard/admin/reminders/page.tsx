@@ -2,6 +2,7 @@ import { bookings } from "@/lib/data/bookings";
 import { Calendar } from "lucide-react";
 import { formatLKR } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
+import { BackButton } from "@/components/ui/BackButton";
 
 function getDaysUntil(dateStr: string): number {
   const today = new Date();
@@ -32,6 +33,7 @@ export default function RemindersPage() {
 
   return (
     <div>
+      <BackButton href="/dashboard/admin" label="Admin" className="mb-4" />
       <div className="mb-8">
         <h1 className="font-display text-2xl font-bold text-slate">Upcoming Event Reminders</h1>
         <p className="mt-1 text-sm text-slate-soft">

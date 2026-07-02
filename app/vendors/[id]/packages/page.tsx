@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PackageSelectionClient } from "@/components/vendor/PackageSelectionClient";
 import { getVendorBySlug, vendors } from "@/lib/data/vendors";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function generateStaticParams() {
   return vendors.map((v) => ({ id: v.slug }));
@@ -23,6 +24,11 @@ export default async function PackageSelectionPage({ params }: { params: Promise
 
   return (
     <div className="bg-ivory">
+      <div className="border-b border-slate/8 bg-ivory">
+        <Container className="py-3">
+          <BackButton href={`/vendors/${vendor.slug}`} label={vendor.name} />
+        </Container>
+      </div>
       <section className="border-b border-slate/8 bg-white py-10 md:py-14">
         <Container>
           <SectionHeading

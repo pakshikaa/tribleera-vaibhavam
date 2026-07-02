@@ -93,8 +93,8 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
           </p>
 
           {/* Quick category pills */}
-          <div className="mt-6 flex gap-2 overflow-x-auto scrollbar-hide pb-1 md:flex-wrap">
-            <Button href="/vendors" variant={!params.category ? "gold" : "glass"} size="sm">
+          <div className="mt-6 -mx-4 flex gap-2 overflow-x-auto scrollbar-hide px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+            <Button href="/vendors" variant={!params.category ? "gold" : "glass"} size="sm" className="shrink-0">
               All
             </Button>
             {categories.map((c) => (
@@ -103,6 +103,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
                 href={`/vendors?category=${c.slug}`}
                 variant={params.category === c.slug ? "gold" : "glass"}
                 size="sm"
+                className="shrink-0"
               >
                 {c.name} ({vendors.filter((v) => v.categorySlug === c.slug && v.status === "approved").length})
               </Button>

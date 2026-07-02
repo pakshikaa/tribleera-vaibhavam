@@ -24,6 +24,7 @@ import { getVendorBySlug, vendors } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { galleryImages } from "@/lib/data/images";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function generateStaticParams() {
   return vendors.map((v) => ({ id: v.slug }));
@@ -70,25 +71,25 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
   return (
     <div className="bg-ivory pb-24 md:pb-0">
+      <BackButton href="/vendors" label="Vendors" variant="floating" />
+
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="bg-ivory border-b border-slate/8">
-        <Container className="py-2">
+      <nav aria-label="Breadcrumb" className="overflow-x-auto scrollbar-hide whitespace-nowrap bg-ivory border-b border-slate/8">
+        <Container className="py-2.5">
           <ol className="flex items-center gap-2 text-xs text-slate-soft">
-            <li><Link href="/" className="hover:text-burgundy">Home</Link></li>
-            <li className="text-slate/30">/</li>
-            <li><Link href="/vendors" className="hover:text-burgundy">Vendors</Link></li>
-            <li className="text-slate/30">/</li>
+            <li><BackButton href="/vendors" label="Vendors" /></li>
+            <li className="text-slate/25">/</li>
             {category && (
               <>
                 <li>
-                  <Link href={`/vendors?category=${vendor.categorySlug}`} className="hover:text-burgundy">
+                  <Link href={`/vendors?category=${vendor.categorySlug}`} className="transition-colors hover:text-burgundy">
                     {category.name}
                   </Link>
                 </li>
-                <li className="text-slate/30">/</li>
+                <li className="text-slate/25">/</li>
               </>
             )}
-            <li className="max-w-[200px] truncate font-medium text-slate">{vendor.name}</li>
+            <li className="max-w-[180px] truncate font-medium text-slate">{vendor.name}</li>
           </ol>
         </Container>
       </nav>
@@ -130,7 +131,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
               <ShortlistButton
                 slug={vendor.slug}
                 size={22}
-                className="mb-1 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 shrink-0"
+                className="mb-1 h-11 w-11 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 shrink-0 md:h-10 md:w-10"
               />
               <ShareButton vendorName={vendor.name} />
             </div>
@@ -140,18 +141,18 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
       {/* Stats strip */}
       <div className="border-b border-slate/10 bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)]">
-        <Container className="grid grid-cols-3 divide-x divide-slate/20 py-5 text-center">
-          <div className="px-4 py-1">
+        <Container className="grid grid-cols-3 divide-x divide-slate/20 py-3 text-center md:py-5">
+          <div className="px-2 py-1 md:px-4">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Trust Score</p>
-            <p className="mt-1.5 font-display text-2xl font-bold text-burgundy-deep">{Math.round(vendor.trustScore * 20)}%</p>
+            <p className="mt-1 font-display text-xl font-bold text-burgundy-deep md:mt-1.5 md:text-2xl">{Math.round(vendor.trustScore * 20)}%</p>
           </div>
-          <div className="px-4 py-1">
+          <div className="px-2 py-1 md:px-4">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Response</p>
-            <p className="mt-1.5 font-display text-2xl font-bold text-burgundy-deep">{vendor.responseTime.match(/\d+\s*\w+/)?.[0] ?? "Fast"}</p>
+            <p className="mt-1 font-display text-xl font-bold text-burgundy-deep md:mt-1.5 md:text-2xl">{vendor.responseTime.match(/\d+\s*\w+/)?.[0] ?? "Fast"}</p>
           </div>
-          <div className="px-4 py-1">
+          <div className="px-2 py-1 md:px-4">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Experience</p>
-            <p className="mt-1.5 font-display text-2xl font-bold text-burgundy-deep">{vendor.experienceYears}Y+</p>
+            <p className="mt-1 font-display text-xl font-bold text-burgundy-deep md:mt-1.5 md:text-2xl">{vendor.experienceYears}Y+</p>
           </div>
         </Container>
       </div>

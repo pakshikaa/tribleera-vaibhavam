@@ -30,7 +30,7 @@ export function VendorGalleryClient({
 
   return (
     <>
-      <div className="mt-4 grid grid-cols-3 gap-2 md:gap-3">
+      <div className="mt-4 grid grid-cols-3 gap-1.5 md:gap-3">
         {images.map((img, i) => (
           <button
             key={i}

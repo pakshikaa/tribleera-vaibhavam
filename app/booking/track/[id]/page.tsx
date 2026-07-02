@@ -10,6 +10,7 @@ import { formatLKR, formatDate } from "@/lib/utils/format";
 import { getBookingById, bookings } from "@/lib/data/bookings";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
+import { BackButton } from "@/components/ui/BackButton";
 
 export function generateStaticParams() {
   return bookings.map((b) => ({ id: b.id }));
@@ -28,6 +29,9 @@ export default async function BookingTrackingPage({ params }: { params: Promise<
   return (
     <div className="bg-ivory">
       <section className="border-b border-slate/8 bg-white py-10">
+        <Container>
+          <BackButton href="/dashboard/customer" label="My bookings" className="mb-4" />
+        </Container>
         <Container className="flex flex-wrap items-center justify-between gap-3">
           <SectionHeading eyebrow={`Booking ${booking.id}`} title="Tracking your booking" />
           <BookingStatusBadge status={booking.status} />

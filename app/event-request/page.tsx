@@ -14,6 +14,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { categories } from "@/lib/data/categories";
 import { writeLocalStorage } from "@/lib/utils/browser-storage";
 import { formatLKR } from "@/lib/utils/format";
+import { BackButton } from "@/components/ui/BackButton";
 
 const SERVICE_OPTIONS = ["photography", "cakes", "decoration", "bridal-makeup", "invitation"] as const;
 const PRIORITIES = ["Quality", "Budget", "Availability", "Heritage Expertise", "Reviews"] as const;
@@ -404,6 +405,9 @@ export default function EventRequestPage() {
               Save for Later
             </Button>
             <div className="flex gap-3">
+              {step === 1 && (
+                <BackButton href="/" label="Home" />
+              )}
               {step > 1 && (
                 <Button type="button" variant="secondary" onClick={() => setStep((current) => current - 1)}>
                   Back

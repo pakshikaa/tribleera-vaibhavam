@@ -35,7 +35,7 @@ const fadeUp = {
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen overflow-x-hidden bg-ink text-white">
+    <section className="relative min-h-[100svh] overflow-x-hidden bg-ink text-white">
       {/* Background image — Ken Burns */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -61,7 +61,7 @@ export function Hero() {
         {PARTICLES.map((particle, index) => (
           <motion.span
             key={index}
-            className={`pointer-events-none absolute inline-block rounded-full bg-gold ${particle.size} shadow-[0_0_30px_rgba(212,175,106,0.15)]`}
+            className={`pointer-events-none absolute hidden sm:inline-block rounded-full bg-gold ${particle.size} shadow-[0_0_30px_rgba(212,175,106,0.15)]`}
             style={{ top: particle.top, left: particle.left, right: particle.right }}
             animate={{ y: particle.path }}
             transition={{ duration: particle.duration, repeat: Infinity, ease: "easeInOut", delay: particle.delay }}

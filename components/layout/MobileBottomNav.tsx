@@ -15,16 +15,28 @@ const TABS = [
   { href: "/dashboard/customer", label: "Profile", icon: User, ariaLabel: undefined },
 ];
 
+function getActiveTab(pathname: string): string | null {
+  if (pathname === "/") return "/";
+  if (pathname.startsWith("/services")) return "/services";
+  if (pathname.startsWith("/vendors")) return "/services";
+  if (pathname.startsWith("/shortlist")) return "/shortlist";
+  if (pathname.startsWith("/booking")) return "/booking/cart";
+  if (pathname.startsWith("/dashboard/customer")) return "/dashboard/customer";
+  if (pathname.startsWith("/event-request")) return "/services";
+  return null;
+}
+
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { items, hydrated } = useCart();
   const { count: shortlistCount, hydrated: shortlistHydrated } = useShortlist();
+  const activeHref = getActiveTab(pathname);
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate/10 bg-white/95 backdrop-blur-md md:hidden">
       <div className="flex items-center justify-between px-1 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {TABS.map((tab) => {
-          const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
+          const active = activeHref === tab.href;
           const Icon = tab.icon;
           return (
             <Link

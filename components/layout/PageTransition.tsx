@@ -8,13 +8,13 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, clipPath: "inset(0 0 8% 0)" }}
-        animate={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
-        exit={{ opacity: 0, clipPath: "inset(8% 0 0 0)" }}
-        transition={{ duration: 0.45, ease: [0.76, 0, 0.24, 1] as const }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
       >
         {children}
       </motion.div>

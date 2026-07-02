@@ -80,60 +80,64 @@
     color: var(--color-burgundy-deep);
   }
 
-  /* Figma display-lg-mobile: 32px mobile → 48px desktop */
+  /* Figma display-lg-mobile: 30px mobile → 48px desktop */
   h1 {
     font-family: var(--font-display);
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: -0.01em;
+  }
+  @media (min-width: 640px) {
+    h1 { font-size: 38px; }
   }
   @media (min-width: 768px) {
     h1 {
       font-size: 48px;
-      line-height: 1.1;
+      line-height: 1.07;
       letter-spacing: -0.02em;
     }
   }
 
-  /* Figma headline-sm mobile: 24px → headline-md desktop: 32px */
+  /* Figma headline mobile: 22px → desktop: 32px */
   h2 {
     font-family: var(--font-display);
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 1.3;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
   }
   @media (min-width: 768px) {
     h2 {
       font-size: 32px;
-      line-height: 1.2;
+      line-height: 1.15;
     }
   }
 
-  /* Figma: 20px mobile → 24px desktop */
+  /* Figma: 18px mobile → 24px desktop */
   h3 {
     font-family: var(--font-display);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.25;
   }
   @media (min-width: 768px) {
-    h3 {
-      font-size: 24px;
-    }
+    h3 { font-size: 24px; }
   }
 
   h4 {
     font-family: var(--font-display);
-    font-size: 18px;
+    font-size: 17px;
     line-height: 1.3;
     font-weight: 600;
   }
 
-  /* Figma body-md: 16px / 1.5 */
+  /* 15px mobile, 16px desktop */
   p {
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.68;
+  }
+  @media (min-width: 768px) {
+    p { font-size: 16px; }
   }
 
   .bg-ivory h1, .bg-ivory h2, .bg-ivory h3,

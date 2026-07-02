@@ -31,7 +31,7 @@ export function StepProgress({
                 >
                   {stepNumber}
                 </span>
-                <span className={cn("text-xs font-medium", active || complete ? "text-cream" : "text-cream-faint")}>
+                <span className={cn("hidden text-xs font-medium sm:block", active || complete ? "text-cream" : "text-cream-faint")}>
                   {step}
                 </span>
               </div>

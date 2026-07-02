@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ShieldCheck, AlertTriangle } from "lucide-react";
 import { vendors } from "@/lib/data/vendors";
 import { cn } from "@/lib/utils/cn";
+import { BackButton } from "@/components/ui/BackButton";
 
 export const metadata: Metadata = { title: "Moderation — Admin" };
 
@@ -18,6 +19,7 @@ export default function AdminModerationPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton href="/dashboard/admin" label="Admin" className="mb-4" />
       <div>
         <h1 className="font-display text-2xl font-bold text-slate">Moderation</h1>
         <p className="mt-1 text-sm text-slate-soft">

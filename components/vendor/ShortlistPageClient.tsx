@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { VendorCard, VendorCardSkeleton } from "@/components/vendor/VendorCard";
+import { BackButton } from "@/components/ui/BackButton";
 import { useShortlist } from "@/context/ShortlistContext";
 import { vendors } from "@/lib/data/vendors";
 
@@ -17,6 +18,7 @@ export function ShortlistPageClient() {
       <section className="relative overflow-hidden bg-ink py-16 md:py-22">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_30%_0%,rgba(122,31,61,0.3),transparent_60%)]" />
         <Container className="relative z-10">
+          <BackButton href="/vendors" label="Vendors" dark className="mb-4" />
           <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
             <span className="h-px w-5 bg-gold" />
             Your Priority List

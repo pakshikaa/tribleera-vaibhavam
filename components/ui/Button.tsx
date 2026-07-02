@@ -20,9 +20,9 @@ export const buttonVariants = cva(
         glass: "glass text-cream hover:border-gold hover:text-gold-light hover:-translate-y-0.5 active:scale-[0.98]",
       },
       size: {
-        sm: "text-sm px-4 py-2 gap-1.5",
-        md: "text-[15px] px-5 py-2.5 gap-2",
-        lg: "text-base px-7 py-3.5 gap-2.5",
+        sm: "text-sm px-4 py-2 gap-1.5 min-h-[40px]",
+        md: "text-[15px] px-5 py-2.5 gap-2 min-h-[44px]",
+        lg: "text-base px-7 py-3.5 gap-2.5 min-h-[48px]",
       },
       fullWidth: {
         true: "w-full",

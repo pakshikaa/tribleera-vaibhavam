@@ -1,9 +1,11 @@
 ﻿import { Container } from "@/components/ui/Container";
+import { BackButton } from "@/components/ui/BackButton";
 
 export default function TermsPage() {
   return (
     <div className="bg-ivory py-16 md:py-24">
       <Container>
+        <BackButton href="/" label="Home" className="mb-6" />
         <article className="mx-auto max-w-3xl font-body text-slate">
           <h1 className="mb-2 font-display text-4xl font-bold text-burgundy-deep">
             Terms &amp; Conditions

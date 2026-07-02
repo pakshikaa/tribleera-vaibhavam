@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { BackButton } from "@/components/ui/BackButton";
 import { cn } from "@/lib/utils/cn";
 
 interface FaqItem {
@@ -139,6 +140,7 @@ export default function FaqPage() {
       {/* HERO */}
       <section className="bg-ink py-20 md:py-28">
         <Container className="max-w-2xl text-center">
+          <BackButton href="/" label="Home" dark className="mb-6" />
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.25em] text-gold">
             Help centre
           </p>

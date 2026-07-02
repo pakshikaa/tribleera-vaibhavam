@@ -229,6 +229,14 @@ export default function VendorRegisterPage() {
             ))}
           </div>
 
+          {/* Progress bar */}
+          <div className="mb-8 h-1.5 w-full overflow-hidden rounded-full bg-rose-pale">
+            <div
+              className="h-full rounded-full bg-burgundy transition-all duration-500"
+              style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+            />
+          </div>
+
           <form
             onSubmit={(e) => {
               if (step < STEPS.length - 1) {
@@ -513,7 +521,12 @@ export default function VendorRegisterPage() {
                   Back
                 </Button>
               ) : (
-                <span />
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-soft transition-all hover:-translate-x-0.5 hover:text-burgundy"
+                >
+                  <ArrowLeft size={15} /> Home
+                </Link>
               )}
               <Button
                 type="submit"

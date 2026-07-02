@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Clock, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { BackButton } from "@/components/ui/BackButton";
 import { MotifArt } from "@/components/ui/MotifArt";
 import { Badge } from "@/components/ui/Badge";
 import { categories, comingSoonCategories } from "@/lib/data/categories";
@@ -25,6 +26,7 @@ export default function ServicesPage() {
           </svg>
         </div>
         <Container className="relative z-10 text-center">
+          <BackButton href="/" label="Home" dark className="mb-6" />
           <p className="mb-4 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">
             <span className="h-px w-7 bg-gold" />
             Phase One

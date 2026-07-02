@@ -18,6 +18,7 @@ import { lineItemBreakdown, generateBookingId } from "@/lib/utils/booking";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { useCart } from "@/context/CartContext";
 import { customerDetailsSchema, type CustomerDetailsValues } from "@/lib/schemas";
+import { BackButton } from "@/components/ui/BackButton";
 
 const PAYMENT_METHODS = [
   {
@@ -140,6 +141,7 @@ export default function PaymentSummaryPage() {
     <div className="bg-ivory">
       <section className="border-b border-slate/8 bg-white py-8 md:py-10">
         <Container>
+          <BackButton href="/booking/cart" label="Cart" className="mb-4" />
           <SectionHeading eyebrow="Step 3 of 4" title="Payment summary" className="mb-6" />
           <BookingSteps current={3} />
         </Container>

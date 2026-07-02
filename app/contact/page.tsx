@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Mail, Phone, MapPin, Clock, MessageCircle, CheckCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { BackButton } from "@/components/ui/BackButton";
 
 const SUBJECTS = ["Booking query", "Vendor inquiry", "Payment issue", "Other"] as const;
 
@@ -47,6 +48,7 @@ export default function ContactPage() {
       {/* HERO */}
       <section className="bg-ink py-20 md:py-28">
         <Container className="max-w-2xl text-center">
+          <BackButton href="/" label="Home" dark className="mb-6" />
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.25em] text-gold">
             Get in touch
           </p>

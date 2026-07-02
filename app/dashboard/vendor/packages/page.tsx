@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 import type { VendorPackage } from "@/types";
+import { BackButton } from "@/components/ui/BackButton";
 
 const STORAGE_KEY = "triblerera-vendor-packages";
 const DEFAULT_PACKAGES = getVendorBySlug("pushpa-florals-and-decor")!.packages;
@@ -69,6 +70,7 @@ export default function VendorPackagesPage() {
   return (
     <div className="bg-ivory py-10">
       <Container>
+        <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
         <div className="mb-6 flex items-center justify-between gap-3">
           <h1 className="font-display text-3xl text-burgundy-deep">Package Management</h1>
           <Button variant="gold" onClick={() => setCreateOpen(true)}>
