@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -28,10 +28,8 @@ export function Header() {
   const scrolled = useScrolled(40);
 
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = window.setTimeout(() => setMounted(true), 0);
-    return () => window.clearTimeout(id);
-  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setMounted(true); }, []);
 
   const isHome = mounted ? pathname === "/" : false;
   const homeAtTop = isHome && !scrolled;
@@ -75,16 +73,31 @@ export function Header() {
             }}
             className="rounded-md"
           >
+            {/* Desktop logo — 36×36 per Figma */}
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLERERA VAIBHAVAM"
-              width={44}
-              height={44}
-              className="rounded-md"
+              width={36}
+              height={36}
+              className="hidden rounded-[8px] shrink-0 md:block"
+              priority
+            />
+            {/* Mobile logo — 32×32 per Figma */}
+            <Image
+              src="/logo/tribleera-mark-192.png"
+              alt="TRIBLERERA VAIBHAVAM"
+              width={32}
+              height={32}
+              className="rounded-[8px] shrink-0 md:hidden"
               priority
             />
           </motion.span>
-          <span className={cn("font-display text-xl font-semibold tracking-widest", isHome ? "text-white" : "text-burgundy-deep")}>
+          <span
+            className={cn(
+              "font-display text-[17px] font-bold tracking-tight",
+              isHome ? "text-white" : "text-burgundy-deep"
+            )}
+          >
             TRIBLERERA
           </span>
         </Link>
@@ -96,11 +109,11 @@ export function Header() {
               key={link.href}
               href={link.href}
               className={cn(
-                "text-[13px] font-medium transition-colors",
+                "text-[13px] font-medium tracking-wide transition-colors",
                 link.gold
                   ? isHome
                     ? "text-gold font-semibold hover:text-gold-light"
-                    : "text-gold-deep font-semibold hover:text-burgundy"
+                    : "text-[#775a1d] font-semibold hover:text-burgundy"
                   : isHome
                     ? "text-white/75 hover:text-white"
                     : "text-slate/70 hover:text-burgundy"
@@ -114,18 +127,18 @@ export function Header() {
         {/* Desktop right section */}
         <div className="hidden items-center gap-1.5 md:flex">
 
-          {/* Notification bell */}
+          {/* Notification bell — desktop only */}
           <button
             type="button"
             aria-label="View notifications, 3 unread"
             className={cn(
-              "relative hidden h-9 w-9 items-center justify-center rounded-lg transition-colors lg:flex",
+              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
               isHome
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+                ? "text-white/70 hover:text-white hover:bg-white/10"
+                : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
           >
-            <Bell size={18} aria-hidden="true" strokeWidth={1.75} />
+            <Bell size={18} strokeWidth={1.75} aria-hidden="true" />
             <span
               aria-hidden="true"
               className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
@@ -148,12 +161,15 @@ export function Header() {
             <Heart size={18} strokeWidth={1.75} aria-hidden="true" />
             {slHydrated && shortlistCount > 0 && (
               <span
-                aria-label={`${shortlistCount} saved vendors`}
+                aria-hidden="true"
                 className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-burgundy text-[9px] font-bold leading-none text-white"
               >
                 {shortlistCount}
               </span>
             )}
+            <span className="sr-only">
+              {shortlistCount > 0 ? `${shortlistCount} saved vendors` : "Your shortlist"}
+            </span>
           </Link>
 
           {/* Cart */}
@@ -170,12 +186,15 @@ export function Header() {
             <ShoppingBag size={18} strokeWidth={1.75} aria-hidden="true" />
             {hydrated && items.length > 0 && (
               <span
-                aria-label={`${items.length} items in cart`}
+                aria-hidden="true"
                 className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
               >
                 {items.length}
               </span>
             )}
+            <span className="sr-only">
+              {items.length > 0 ? `${items.length} items in cart` : "Your cart"}
+            </span>
           </Link>
 
           {/* Sign In */}
@@ -195,9 +214,9 @@ export function Header() {
           {/* Divider */}
           <div className={cn("h-5 w-px", isHome ? "bg-white/15" : "bg-slate/15")} />
 
-          {/* For Vendors */}
+          {/* For Vendors → vendor login */}
           <Button
-            href="/vendor/register"
+            href="/vendor/login"
             variant={isHome ? "glass" : "secondary"}
             size="sm"
             className="hidden lg:inline-flex"
@@ -216,7 +235,7 @@ export function Header() {
 
         </div>
 
-        {/* Mobile right */}
+        {/* Mobile right — hamburger ONLY, no bell */}
         <div className="flex items-center gap-3 md:hidden">
           <Sheet>
             <SheetTrigger aria-label="Open menu">
@@ -239,9 +258,9 @@ export function Header() {
                   </SheetClose>
                 ))}
                 {[
-                  { href: "/about", label: "About" },
+                  { href: "/about",   label: "About"   },
                   { href: "/contact", label: "Contact" },
-                  { href: "/faq", label: "FAQ" },
+                  { href: "/faq",     label: "FAQ"     },
                 ].map((link) => (
                   <SheetClose key={link.href} asChild>
                     <Link
@@ -252,6 +271,15 @@ export function Header() {
                     </Link>
                   </SheetClose>
                 ))}
+                <div className="my-2 h-px bg-slate/10" />
+                <SheetClose asChild>
+                  <Link
+                    href="/vendor/login"
+                    className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory border-t border-slate/10"
+                  >
+                    Vendor sign in
+                  </Link>
+                </SheetClose>
               </nav>
               <div className="my-4 h-px bg-slate/10" />
               <div className="flex flex-col gap-3">

@@ -54,8 +54,8 @@ export function Footer() {
               <Image
                 src="/logo/tribleera-mark-192.png"
                 alt="TRIBLERERA VAIBHAVAM"
-                width={52}
-                height={52}
+                width={32}
+                height={32}
                 className="rounded-md shadow-glow"
               />
               <span className="font-display text-lg text-cream">TRIBLERERA</span>

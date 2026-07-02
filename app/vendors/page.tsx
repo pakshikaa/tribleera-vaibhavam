@@ -93,7 +93,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
           </p>
 
           {/* Quick category pills */}
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-6 flex gap-2 overflow-x-auto scrollbar-hide pb-1 md:flex-wrap">
             <Button href="/vendors" variant={!params.category ? "gold" : "glass"} size="sm">
               All
             </Button>

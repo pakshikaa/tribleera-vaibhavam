@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bell, CalendarDays, Eye, Pencil, Sparkles, TrendingUp } from "lucide-react";
+import { Bell, CalendarDays, Eye, ExternalLink, Pencil, Sparkles, TrendingUp } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
@@ -74,6 +74,36 @@ export default function VendorDashboardPage() {
             <StatCard label="Profile views (30d)" value="2,184" delta="+12.4% vs last month" icon={<Eye size={18} />} />
             <StatCard label="Events completed" value={String(vendor.eventsCompleted)} icon={<CalendarDays size={18} />} />
             <StatCard label="Response rate" value="99%" icon={<TrendingUp size={18} />} />
+          </div>
+        </div>
+
+        {/* Your public profile card */}
+        <div className="mt-8 rounded-[10px] border border-slate/8 bg-white p-6 shadow-ambient">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-xl text-burgundy-deep">Your public profile</h2>
+            <div className="flex gap-2">
+              <Button href="/dashboard/vendor/profile" variant="secondary" size="sm" icon={<Pencil size={14} />}>
+                Edit
+              </Button>
+              <Button href={`/vendors/${vendor.slug}`} variant="secondary" size="sm" icon={<ExternalLink size={14} />}>
+                View live
+              </Button>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {[
+              { label: "Business name", value: vendor.name },
+              { label: "Category", value: vendor.categorySlug.replace(/-/g, " ") },
+              { label: "Location", value: vendor.location },
+              { label: "Trust score", value: `${vendor.trustScore.toFixed(1)} / 5.0` },
+              { label: "Events completed", value: String(vendor.eventsCompleted) },
+              { label: "Active packages", value: String(vendor.packages.length) },
+            ].map((item) => (
+              <div key={item.label} className="rounded-[8px] bg-ivory p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-soft">{item.label}</p>
+                <p className="mt-1 text-sm font-semibold text-slate">{item.value}</p>
+              </div>
+            ))}
           </div>
         </div>
 

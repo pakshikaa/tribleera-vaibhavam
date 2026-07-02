@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
+import { Plus, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Field";
@@ -21,6 +22,9 @@ export default function VendorPackagesPage() {
   );
   const [createOpen, setCreateOpen] = useState(false);
   const [newPackage, setNewPackage] = useState({ name: "", price: "", inclusions: ["", "", ""] });
+  const [galleryImages, setGalleryImages] = useState<string[]>(() =>
+    typeof window === "undefined" ? [] : readLocalStorage<string[]>("triblerera-vendor-gallery", [])
+  );
 
   useEffect(() => {
     writeLocalStorage(STORAGE_KEY, packages);
@@ -43,6 +47,25 @@ export default function VendorPackagesPage() {
     showToast("Package created.", "success");
   }
 
+  function handleGalleryAdd(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const url = ev.target?.result as string;
+        if (!url) return;
+        setGalleryImages((prev) => {
+          const next = [...prev, url].slice(0, 12);
+          writeLocalStorage("triblerera-vendor-gallery", next);
+          return next;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+    // Reset input so same file can be re-added after removal
+    e.target.value = "";
+  }
+
   return (
     <div className="bg-ivory py-10">
       <Container>
@@ -53,9 +76,46 @@ export default function VendorPackagesPage() {
           </Button>
         </div>
 
+        {/* Portfolio gallery */}
+        <div className="mb-8 rounded-lg border border-slate/10 bg-white p-6 shadow-soft">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-display text-xl font-semibold text-[#1F2937]">Portfolio gallery</h2>
+            <span className="text-xs text-[#4B5563]">Shown on your public profile</span>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+            {galleryImages.map((url, i) => (
+              <div key={i} className="group relative aspect-square overflow-hidden rounded-lg bg-[#F1EAE0] border border-slate/10">
+                <img src={url} alt={`Portfolio ${i + 1}`} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = galleryImages.filter((_, idx) => idx !== i);
+                      setGalleryImages(next);
+                      writeLocalStorage("triblerera-vendor-gallery", next);
+                    }}
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    aria-label="Remove photo"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            {galleryImages.length < 12 && (
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate/20 bg-[#FAF7F2] transition-colors hover:border-[#7A1F3D]/40">
+                <Plus size={20} className="text-slate/40" />
+                <span className="mt-1 text-[10px] text-[#4B5563]">Add photo</span>
+                <input type="file" accept="image/*" multiple className="sr-only" onChange={handleGalleryAdd} />
+              </label>
+            )}
+          </div>
+          <p className="mt-2 text-[11px] text-[#4B5563]">Upload up to 12 photos. First photo is your profile cover image.</p>
+        </div>
+
         <div className="grid gap-5 md:grid-cols-3">
           {packages.map((pkg) => (
-            <div key={pkg.id} className="rounded-[10px] border border-slate/8 bg-white p-5 shadow-soft">
+            <div key={pkg.id} className="rounded-lg border border-slate/8 bg-white p-5 shadow-soft">
               <div className="aspect-[4/3] overflow-hidden rounded-[8px]">
                 <SmartImage src={pkg.coverImageUrl} alt={pkg.name} fallbackVariant="lotus" fallbackTone="gold" />
               </div>

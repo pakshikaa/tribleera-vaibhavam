@@ -40,7 +40,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
       style={{ rotateX, rotateY, transformPerspective: 1000 }}
       className="group flex flex-col"
     >
-      <div className="relative flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-2 hover:border-burgundy/20 hover:shadow-lift dark:border-white/8 dark:bg-burgundy-950 dark:shadow-[0_4px_20px_rgba(0,0,0,0.35),0_12px_40px_rgba(0,0,0,0.45)] dark:hover:border-gold/20 dark:hover:shadow-[0_8px_28px_rgba(212,175,106,0.12),0_18px_50px_rgba(0,0,0,0.55)]">
+      <div className="relative flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-ambient transition-all duration-300 hover:-translate-y-2 hover:border-burgundy/20 hover:shadow-lift dark:border-white/8 dark:bg-burgundy-950 dark:shadow-[0_4px_20px_rgba(0,0,0,0.35),0_12px_40px_rgba(0,0,0,0.45)] dark:hover:border-gold/20 dark:hover:shadow-[0_8px_28px_rgba(212,175,106,0.12),0_18px_50px_rgba(0,0,0,0.55)]">
         <Link href={`/vendors/${vendor.slug}`} aria-label={vendor.name} className="absolute inset-0 z-0 rounded-[10px]" />
         <div className="pointer-events-none relative z-[1] aspect-[4/3] overflow-hidden">
           <div className="h-full w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.08]">
@@ -81,7 +81,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
             <ShortlistButton
               slug={vendor.slug}
               size={16}
-              className="h-8 w-8 bg-black/25 backdrop-blur-sm hover:bg-black/40"
+              className="h-11 w-11 md:h-8 md:w-8 bg-black/25 backdrop-blur-sm hover:bg-black/40"
             />
           </div>
 

@@ -165,14 +165,22 @@ export interface PlatformUser {
 
 export interface VendorApplication {
   id: string;
+  slug?: string;
   businessName: string;
   ownerName: string;
   categorySlug: string;
+  category?: string;
   city: string;
+  location?: string;
+  tagline?: string;
+  whatsapp?: string;
   submittedAt: string;
   status: VendorStatus;
   phone: string;
   email: string;
   experienceYears: number;
+  startingPrice?: number;
+  portfolioCount?: number;
   about: string;
+  adminNotes?: string;
 }

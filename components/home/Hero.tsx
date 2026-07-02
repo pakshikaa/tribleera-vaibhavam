@@ -35,11 +35,11 @@ const fadeUp = {
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-ink text-white">
+    <section className="relative min-h-screen overflow-x-hidden bg-ink text-white">
       {/* Background image — Ken Burns */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute inset-0 will-change-transform"
+          className="absolute inset-0 will-change-transform motion-reduce:animate-none"
           animate={{ scale: [1.05, 1.18], x: ["0%", "-2.5%"] }}
           transition={{ duration: 20, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
         >
@@ -70,7 +70,7 @@ export function Hero() {
       </div>
 
       {/* Hero content — centered */}
-      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-28 text-center md:px-10 md:pt-36 md:pb-40">
+      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-20 text-center md:px-10 md:pt-36 md:pb-40">
 
         {/* 1 — Eyebrow */}
         <motion.p
@@ -98,8 +98,8 @@ export function Hero() {
           <em className="not-italic text-gold-light" style={{ fontStyle: "italic" }}>
             Perfect
           </em>
-          <br />
-          Celebration
+          <br className="hidden sm:block" />
+          {" "}Celebration
         </motion.h1>
 
         {/* 3 — Subtitle */}

@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Camera } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Field";
@@ -9,6 +10,7 @@ import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 
 const STORAGE_KEY = "triblerera-vendor-profile";
+const PHOTO_KEY = "triblerera-vendor-photo";
 const DEFAULT_VENDOR = getVendorBySlug("pushpa-florals-and-decor")!;
 
 const DEFAULT_FORM = {
@@ -26,13 +28,29 @@ const DEFAULT_FORM = {
 
 export default function VendorProfilePage() {
   const { showToast } = useToast();
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const storedProfile =
     typeof window === "undefined"
       ? null
       : readLocalStorage<(typeof DEFAULT_FORM & { tags: string[] }) | null>(STORAGE_KEY, null);
+  const [photo, setPhoto] = useState<string | null>(
+    typeof window === "undefined" ? null : readLocalStorage<string | null>(PHOTO_KEY, null)
+  );
   const [tags, setTags] = useState<string[]>(storedProfile?.tags ?? DEFAULT_VENDOR.tags);
   const [tagInput, setTagInput] = useState("");
   const [form, setForm] = useState(storedProfile ? { ...DEFAULT_FORM, ...storedProfile } : DEFAULT_FORM);
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setPhoto(dataUrl);
+      writeLocalStorage(PHOTO_KEY, dataUrl);
+    };
+    reader.readAsDataURL(file);
+  }
 
   function saveProfile() {
     writeLocalStorage(STORAGE_KEY, { ...form, tags });
@@ -44,6 +62,48 @@ export default function VendorProfilePage() {
       <Container className="max-w-4xl">
         <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
           <h1 className="font-display text-3xl text-burgundy-deep">Edit Vendor Profile</h1>
+
+          {/* Photo upload */}
+          <div className="mt-6 flex items-center gap-5">
+            <button
+              type="button"
+              aria-label="Change profile photo"
+              onClick={() => photoInputRef.current?.click()}
+              className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-slate/15 bg-ivory-deep hover:border-burgundy/40 transition-colors"
+            >
+              {photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={photo} alt="Profile photo" className="h-full w-full object-cover" />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center text-slate-soft">
+                  <Camera size={24} />
+                </span>
+              )}
+              <span className="absolute bottom-0 inset-x-0 flex h-7 items-center justify-center bg-ink/60 text-white">
+                <Camera size={13} aria-hidden="true" />
+              </span>
+            </button>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handlePhotoChange}
+              aria-label="Upload profile photo"
+            />
+            <div>
+              <p className="text-sm font-semibold text-slate">Profile photo</p>
+              <p className="mt-1 text-xs text-slate-soft">JPG or PNG, shown on your public listing</p>
+              <button
+                type="button"
+                onClick={() => photoInputRef.current?.click()}
+                className="mt-2 text-xs font-semibold text-burgundy underline underline-offset-2 hover:text-burgundy-deep"
+              >
+                Upload photo
+              </button>
+            </div>
+          </div>
+
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <Input label="Business name" value={form.businessName} onChange={(event) => setForm({ ...form, businessName: event.target.value })} />
             <Input label="Tagline" value={form.tagline} onChange={(event) => setForm({ ...form, tagline: event.target.value })} />
