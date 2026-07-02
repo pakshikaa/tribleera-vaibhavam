@@ -79,7 +79,6 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
       // eslint-disable-next-line react-hooks/set-state-in-effect
       else setChecked(true);
     } catch {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setChecked(true);
     }
   }, [router]);

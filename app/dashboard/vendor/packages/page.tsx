@@ -85,6 +85,7 @@ export default function VendorPackagesPage() {
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
             {galleryImages.map((url, i) => (
               <div key={i} className="group relative aspect-square overflow-hidden rounded-lg bg-[#F1EAE0] border border-slate/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt={`Portfolio ${i + 1}`} className="h-full w-full object-cover" />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
                   <button

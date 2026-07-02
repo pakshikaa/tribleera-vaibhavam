@@ -402,6 +402,7 @@ export default function VendorRegisterPage() {
                   <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                     {portfolio.map((file, i) => (
                       <div key={i} className="group relative aspect-square overflow-hidden rounded-[6px] bg-ivory-deep">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={URL.createObjectURL(file)}
                           alt={`Portfolio ${i + 1}`}

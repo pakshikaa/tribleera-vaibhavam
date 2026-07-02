@@ -69,7 +69,6 @@ export default function VendorSetupPage() {
         /* eslint-enable react-hooks/set-state-in-effect */
       }
       const savedPhoto = localStorage.getItem(`triblerera-vendor-photo-${slug}`);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (savedPhoto) { setPhoto(savedPhoto); setPhotoPreview(savedPhoto); }
     } catch { router.replace("/vendor/login"); }
   }, [router]);
@@ -217,6 +216,7 @@ export default function VendorSetupPage() {
                 className="group relative h-48 w-48 overflow-hidden rounded-full border-2 border-dashed border-burgundy/25 bg-ivory-deep transition-colors hover:border-burgundy/50"
               >
                 {photoPreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={photoPreview} alt="Profile preview" className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center gap-2">
