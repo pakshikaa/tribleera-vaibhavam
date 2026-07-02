@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 export function WhatsAppFloat() {
+  const pathname = usePathname();
+  const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
+
   return (
     <motion.a
       href="https://wa.me/94771234567?text=Hello%20TRIBLEERA%20VAIBHAVAM%2C%20I%20need%20help%20planning%20my%20wedding."
@@ -15,7 +20,10 @@ export function WhatsAppFloat() {
       transition={{ delay: 2, type: "spring", stiffness: 200 }}
       whileHover={{ scale: 1.12 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-24 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.45)] md:bottom-8 md:right-8"
+      className={cn(
+        "fixed bottom-24 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.45)] md:bottom-8 md:right-8",
+        hasMobileActionBar && "hidden md:flex"
+      )}
       style={{ backgroundColor: "#25D366" }}
     >
       <MessageCircle size={26} className="text-white" fill="white" />

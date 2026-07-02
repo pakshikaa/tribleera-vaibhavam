@@ -324,7 +324,7 @@ export default function PaymentSummaryPage() {
             </p>
           </form>
 
-          <aside>
+          <aside className="hidden md:block">
             <div className="sticky top-28 space-y-4">
               <PriceSummary breakdown={totals} />
               <div className="flex items-start gap-3 rounded-[4px] border border-rose/40 bg-rose-pale/50 p-4">

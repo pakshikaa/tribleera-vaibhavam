@@ -18,7 +18,7 @@ export function HeroSearch() {
 
   return (
     <form onSubmit={handleSearch} className="mx-auto mt-2 w-full max-w-xl" aria-label="Search vendors">
-      <div className="flex gap-2 rounded-[10px] border border-gold/25 bg-white/10 p-2 backdrop-blur-xl">
+      <div className="flex flex-col gap-2 rounded-[10px] border border-gold/25 bg-white/10 p-2 backdrop-blur-xl sm:flex-row">
 
         {/* Category */}
         <div className="relative flex flex-1 items-center gap-2.5 rounded-[7px] bg-white/15 px-4 py-3">
@@ -46,7 +46,7 @@ export function HeroSearch() {
         {/* Submit */}
         <button
           type="submit"
-          className="shrink-0 rounded-[7px] bg-gradient-to-br from-gold-light via-gold to-gold-deep px-6 py-3 text-[13px] font-bold text-burgundy-deep shadow-glow transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+          className="shrink-0 rounded-[7px] bg-gradient-to-br from-gold-light via-gold to-gold-deep px-6 py-3 text-[13px] font-bold text-burgundy-deep shadow-glow transition-all hover:-translate-y-0.5 active:scale-[0.98] sm:self-auto"
         >
           Find vendors
         </button>

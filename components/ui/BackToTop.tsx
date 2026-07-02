@@ -1,11 +1,15 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 export function BackToTop() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
+  const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
@@ -22,7 +26,10 @@ export function BackToTop() {
           exit={{ opacity: 0, y: 16 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label="Back to top"
-          className="fixed bottom-44 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-ink/80 text-gold backdrop-blur-sm transition-colors hover:bg-gold hover:text-ink md:bottom-24 md:right-8"
+          className={cn(
+            "fixed bottom-44 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-ink/80 text-gold backdrop-blur-sm transition-colors hover:bg-gold hover:text-ink md:bottom-24 md:right-8",
+            hasMobileActionBar && "hidden md:flex"
+          )}
         >
           <ArrowUp size={18} />
         </motion.button>

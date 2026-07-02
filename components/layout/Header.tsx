@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils/cn";
 const NAV_LINKS = [
   { href: "/services",      label: "Services",          gold: false },
   { href: "/vendors",       label: "Vendors",           gold: false },
+  { href: "/about",         label: "About",             gold: false },
+  { href: "/faq",           label: "FAQ",               gold: false },
   { href: "/#how-it-works", label: "How it works",      gold: false },
   { href: "/event-request", label: "Plan Your Wedding", gold: true  },
 ];
@@ -282,6 +284,14 @@ export function Header() {
                   </SheetClose>
                 ))}
                 <div className="my-2 h-px bg-slate/10" />
+                <SheetClose asChild>
+                  <Link
+                    href="/login"
+                    className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory hover:text-burgundy"
+                  >
+                    Sign in
+                  </Link>
+                </SheetClose>
                 <SheetClose asChild>
                   <Link
                     href="/vendor/login"

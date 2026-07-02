@@ -20,7 +20,7 @@ const STATS = [
   { value: "500+", label: "Couples served" },
   { value: "25+", label: "Verified studios" },
   { value: "4.8★", label: "Average trust score" },
-  { value: "20%", label: "Advance — 80% after service" },
+  { value: "20%", label: "Advance - 80% after service" },
   { value: "5", label: "Cities across Sri Lanka" },
 ];
 
@@ -36,7 +36,6 @@ const fadeUp = {
 export function Hero() {
   return (
     <section className="relative min-h-[100svh] overflow-x-hidden bg-ink text-white">
-      {/* Background image — Ken Burns */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute inset-0 will-change-transform motion-reduce:animate-none"
@@ -54,8 +53,14 @@ export function Hero() {
         </motion.div>
 
         <div className="absolute inset-0 bg-ink/45" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top,rgba(21,4,12,0.95) 0%,rgba(21,4,12,0.60) 30%,rgba(21,4,12,0.20) 60%,transparent 100%)" }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom,rgba(21,4,12,0.70) 0%,transparent 30%)" }} />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to top,rgba(21,4,12,0.95) 0%,rgba(21,4,12,0.60) 30%,rgba(21,4,12,0.20) 60%,transparent 100%)" }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom,rgba(21,4,12,0.70) 0%,transparent 30%)" }}
+        />
         <div className="absolute inset-0 bg-burgundy-950/20" />
 
         {PARTICLES.map((particle, index) => (
@@ -69,10 +74,7 @@ export function Hero() {
         ))}
       </div>
 
-      {/* Hero content — centered */}
-      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-20 text-center md:px-10 md:pt-36 md:pb-40">
-
-        {/* 1 — Eyebrow */}
+      <div className="relative z-10 mx-auto max-w-[860px] px-5 pb-12 pt-20 text-center md:px-10 md:pb-40 md:pt-36">
         <motion.p
           custom={0}
           initial="hidden"
@@ -85,7 +87,6 @@ export function Hero() {
           <span className="h-px w-8 bg-gold/60" />
         </motion.p>
 
-        {/* 2 — Headline */}
         <motion.h1
           custom={1}
           initial="hidden"
@@ -98,11 +99,9 @@ export function Hero() {
           <em className="not-italic text-gold-light" style={{ fontStyle: "italic" }}>
             Perfect
           </em>
-          <br className="hidden sm:block" />
-          {" "}Celebration
+          <br className="hidden sm:block" /> Celebration
         </motion.h1>
 
-        {/* 3 — Subtitle */}
         <motion.p
           custom={2}
           initial="hidden"
@@ -111,11 +110,10 @@ export function Hero() {
           className="mx-auto mt-5 max-w-[500px] leading-relaxed"
           style={{ fontSize: "clamp(0.95rem, 1.6vw, 1.125rem)", color: "rgba(247,238,226,0.85)", textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}
         >
-          Jaffna&rsquo;s most trusted photographers, decorators, bridal artists,
-          cake ateliers and invitation houses — verified, bookable, secure.
+          Jaffna&apos;s most trusted photographers, decorators, bridal artists, cake ateliers and invitation houses -
+          verified, bookable, secure.
         </motion.p>
 
-        {/* 4 — Tamil tagline */}
         <motion.p
           custom={3}
           initial="hidden"
@@ -127,7 +125,6 @@ export function Hero() {
           தேர்வின் செம்மை, வைபவத்தின் பெருமை
         </motion.p>
 
-        {/* 5 — CTA buttons */}
         <motion.div
           custom={4}
           initial="hidden"
@@ -143,7 +140,6 @@ export function Hero() {
           </Button>
         </motion.div>
 
-        {/* 6 — Search bar */}
         <motion.div
           custom={5}
           initial="hidden"
@@ -154,7 +150,23 @@ export function Hero() {
           <HeroSearch />
         </motion.div>
 
-        {/* 7 — Helper nudge */}
+        <div className="mt-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide md:hidden">
+          {STATS.map((stat) => (
+            <div
+              key={stat.value}
+              className="min-w-[120px] shrink-0 rounded-[16px] border border-gold/15 bg-black/25 px-3 py-3 text-left shadow-soft backdrop-blur-xl"
+            >
+              <p
+                className="font-display font-bold text-gold-light"
+                style={{ fontSize: "1.15rem", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}
+              >
+                {stat.value}
+              </p>
+              <p className="mt-1 text-[10px] leading-snug text-white/55">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
         <motion.p
           custom={6}
           initial="hidden"
@@ -165,14 +177,13 @@ export function Hero() {
           Not sure where to start?{" "}
           <Link
             href="/event-request"
-            className="font-semibold text-gold/80 underline underline-offset-2 hover:text-gold transition-colors"
+            className="font-semibold text-gold/80 underline underline-offset-2 transition-colors hover:text-gold"
           >
             Take our 2-minute wedding setup →
           </Link>
         </motion.p>
       </div>
 
-      {/* Stats bar — absolute bottom, lg only */}
       <motion.div
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
@@ -189,11 +200,15 @@ export function Hero() {
                 <p
                   className="font-display font-bold"
                   style={{ color: "#E9CE9C", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: "700", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}
-                >{stat.value}</p>
+                >
+                  {stat.value}
+                </p>
                 <p
                   className="mt-2"
                   style={{ color: "rgba(247,238,226,0.55)", fontSize: "11px", letterSpacing: "0.02em" }}
-                >{stat.label}</p>
+                >
+                  {stat.label}
+                </p>
               </div>
             ))}
           </div>

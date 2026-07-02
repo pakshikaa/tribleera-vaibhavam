@@ -34,15 +34,24 @@ export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
         </div>
 
         {booked ? (
-          <a
-            href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Chat on WhatsApp"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white"
-          >
-            <MessageCircle size={18} />
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href={`tel:${vendor.phone}`}
+              aria-label="Call vendor"
+              className="flex h-10 min-w-[44px] items-center justify-center rounded-full border border-slate/15 bg-ivory px-2 text-[11px] font-semibold text-slate"
+            >
+              Call
+            </a>
+            <a
+              href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat on WhatsApp"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white"
+            >
+              <MessageCircle size={18} />
+            </a>
+          </div>
         ) : (
           <div
             title="Contact unlocked after booking"
@@ -101,14 +110,22 @@ export function VendorMobileBookBar({ vendor }: { vendor: Vendor }) {
             </div>
 
             {booked ? (
-              <a
-                href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#25D366] py-3 text-sm font-semibold text-white hover:bg-[#22C55E]"
-              >
-                <MessageCircle size={16} /> Chat on WhatsApp
-              </a>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <a
+                  href={`tel:${vendor.phone}`}
+                  className="flex w-full items-center justify-center rounded-[4px] border border-slate/12 bg-white py-3 text-sm font-semibold text-slate"
+                >
+                  Call vendor
+                </a>
+                <a
+                  href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#25D366] py-3 text-sm font-semibold text-white hover:bg-[#22C55E]"
+                >
+                  <MessageCircle size={16} /> WhatsApp
+                </a>
+              </div>
             ) : (
               <div className="mt-4 flex items-center gap-2 rounded-[8px] border border-slate/10 bg-ivory px-4 py-3 text-center">
                 <Lock size={15} className="shrink-0 text-slate-soft" />

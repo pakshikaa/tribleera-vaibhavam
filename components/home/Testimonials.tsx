@@ -67,7 +67,7 @@ export function Testimonials() {
             {doubled.map((review, index) => (
               <div
                 key={`${review.name}-${index}`}
-                className="w-[360px] shrink-0 rounded-[14px] border border-gold/15 bg-burgundy-950/60 p-7 backdrop-blur-sm"
+                className="w-[min(360px,calc(100vw-3rem))] shrink-0 rounded-[14px] border border-gold/15 bg-burgundy-950/60 p-7 backdrop-blur-sm"
               >
                 <Quote size={22} className="mb-5 text-gold/40" />
                 <p className="text-body-sm flex-1 italic leading-relaxed text-cream-dim">&ldquo;{review.quote}&rdquo;</p>

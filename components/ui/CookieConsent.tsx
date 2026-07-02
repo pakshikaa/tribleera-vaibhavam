@@ -1,13 +1,16 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 const STORAGE_KEY = "TRIBLEERA-cookie-consent";
 
 export function CookieConsent() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
+  const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
 
   useEffect(() => {
     try {
@@ -34,7 +37,8 @@ export function CookieConsent() {
       aria-label="Cookie consent"
       aria-live="polite"
       className={cn(
-        "fixed bottom-20 left-4 right-4 z-50 rounded-[10px] border border-gold/20 bg-ink/95 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-500 md:bottom-6 md:left-auto md:right-6 md:max-w-sm",
+        "fixed left-4 right-4 z-50 rounded-[10px] border border-gold/20 bg-ink/95 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-500 md:bottom-6 md:left-auto md:right-6 md:max-w-sm",
+        hasMobileActionBar ? "bottom-36" : "bottom-20",
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
       )}
     >
