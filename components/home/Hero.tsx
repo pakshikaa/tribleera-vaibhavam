@@ -17,10 +17,9 @@ const PARTICLES = [
 ];
 
 const STATS = [
-  { value: "500+", label: "Couples served" },
   { value: "25+", label: "Verified studios" },
   { value: "4.8★", label: "Average trust score" },
-  { value: "20%", label: "Advance - 80% after service" },
+  { value: "20%", label: "Advance — 80% after service" },
   { value: "5", label: "Cities across Sri Lanka" },
 ];
 
@@ -96,10 +95,11 @@ export function Hero() {
           style={{ fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)", textShadow: "0 2px 30px rgba(21,4,12,0.8), 0 4px 60px rgba(21,4,12,0.6)" }}
         >
           Plan Your{" "}
-          <em className="not-italic text-gold-light" style={{ fontStyle: "italic" }}>
+          <em className="italic" style={{ color: "#E9CE9C" }}>
             Perfect
           </em>
-          <br className="hidden sm:block" /> Celebration
+          <br className="hidden sm:block" />
+          Celebration
         </motion.h1>
 
         <motion.p
@@ -150,23 +150,6 @@ export function Hero() {
           <HeroSearch />
         </motion.div>
 
-        <div className="mt-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-hide md:hidden">
-          {STATS.map((stat) => (
-            <div
-              key={stat.value}
-              className="min-w-[120px] shrink-0 rounded-[16px] border border-gold/15 bg-black/25 px-3 py-3 text-left shadow-soft backdrop-blur-xl"
-            >
-              <p
-                className="font-display font-bold text-gold-light"
-                style={{ fontSize: "1.15rem", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}
-              >
-                {stat.value}
-              </p>
-              <p className="mt-1 text-[10px] leading-snug text-white/55">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
         <motion.p
           custom={6}
           initial="hidden"
@@ -182,38 +165,38 @@ export function Hero() {
             Take our 2-minute wedding setup →
           </Link>
         </motion.p>
-      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 36 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-x-0 bottom-7 z-20 hidden px-5 md:block md:px-10"
-      >
-        <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-5 md:gap-0">
-            {STATS.map((stat, i) => (
-              <div
-                key={stat.value}
-                className={`p-4 text-center md:text-left${i > 0 ? " md:border-l md:border-cream/10" : ""}`}
-              >
-                <p
-                  className="font-display font-bold"
-                  style={{ color: "#E9CE9C", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: "700", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 md:absolute md:inset-x-0 md:bottom-7 md:mt-0 md:px-5 lg:px-10"
+        >
+          <div className="mx-auto w-full max-w-6xl rounded-[26px] border border-gold/15 bg-black/30 px-5 py-5 shadow-soft backdrop-blur-xl md:px-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4">
+              {STATS.map((stat, i) => (
+                <div
+                  key={stat.value}
+                  className={`p-4 text-center md:text-left${i > 0 ? " md:border-l md:border-cream/10" : ""}`}
                 >
-                  {stat.value}
-                </p>
-                <p
-                  className="mt-2"
-                  style={{ color: "rgba(247,238,226,0.55)", fontSize: "11px", letterSpacing: "0.02em" }}
-                >
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+                  <p
+                    className="font-display font-bold"
+                    style={{ color: "#E9CE9C", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: "700", textShadow: "0 1px 8px rgba(21,4,12,0.5)" }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p
+                    className="mt-2"
+                    style={{ color: "rgba(247,238,226,0.55)", fontSize: "11px", letterSpacing: "0.02em" }}
+                  >
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   );
 }

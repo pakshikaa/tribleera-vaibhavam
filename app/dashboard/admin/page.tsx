@@ -4,6 +4,7 @@ import { Store, Users, Wallet, ShieldAlert, ArrowRight, LayoutGrid, Scale, Alert
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
 import { AdminUsersClient } from "@/components/dashboard/AdminUsersClient";
+import { AdminActivityFeedClient } from "@/components/dashboard/AdminActivityFeedClient";
 import { BookingStatusBadge } from "@/components/dashboard/StatusBadge";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
@@ -49,13 +50,6 @@ const ACTIVITY_FEED = [
   { time: "Yesterday", type: "vendor_update", message: "Anjali Bridal Studio updated packages", icon: "✏️" },
   { time: "2 days ago", type: "vendor_register", message: "New vendor application: Golden Arch Decor", icon: "🆕" },
 ];
-
-const TYPE_COLORS: Record<string, string> = {
-  vendor_update: "bg-blue-50 border-blue-200 text-blue-700",
-  vendor_register: "bg-success-pale border-success/30 text-success",
-  payment: "bg-gold/10 border-gold/30 text-gold-deep",
-  dispute: "bg-rose-pale border-rose/30 text-burgundy",
-};
 
 const QUICK_LINKS = [
   {
@@ -182,25 +176,7 @@ export default function AdminDashboardPage() {
       {/* Recent Activity Feed */}
       <div>
         <h2 className="mb-4 font-display text-lg font-semibold text-slate">Recent Activity</h2>
-        <div className="space-y-2">
-          {ACTIVITY_FEED.map((item, i) => (
-            <div key={i} className="flex items-start gap-3 rounded-[8px] border border-slate/8 bg-white p-4">
-              <span className="text-xl">{item.icon}</span>
-              <div className="flex-1">
-                <p className="text-sm text-slate">{item.message}</p>
-                <p className="mt-0.5 text-[11px] text-slate-soft">{item.time}</p>
-              </div>
-              <span
-                className={cn(
-                  "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
-                  TYPE_COLORS[item.type] ?? "bg-ivory border-slate/10 text-slate-soft"
-                )}
-              >
-                {item.type.replace("_", " ")}
-              </span>
-            </div>
-          ))}
-        </div>
+        <AdminActivityFeedClient staticFeed={ACTIVITY_FEED} />
       </div>
     </div>
   );

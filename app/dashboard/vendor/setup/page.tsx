@@ -156,6 +156,17 @@ export default function VendorSetupPage() {
       localStorage.setItem("TRIBLEERA-approved-vendors", JSON.stringify(updated));
     } catch {}
 
+    try {
+      const notifs = JSON.parse(localStorage.getItem("TRIBLEERA-admin-notifications") ?? "[]");
+      notifs.unshift({
+        type: "vendor_update",
+        message: `${vendor.name} updated their profile`,
+        time: new Date().toISOString(),
+        icon: "✏️",
+      });
+      localStorage.setItem("TRIBLEERA-admin-notifications", JSON.stringify(notifs.slice(0, 20)));
+    } catch {}
+
     router.push("/dashboard/vendor");
   }
 

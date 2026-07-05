@@ -19,8 +19,15 @@ export function VendorContactClient({ vendorId, phone, whatsapp, packagesHref }:
     try {
       const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
       if (raw) {
-        const record = JSON.parse(raw) as { items?: { vendorId: string }[] };
-        found = (record.items ?? []).some((item) => item.vendorId === vendorId);
+        const record = JSON.parse(raw) as {
+          items?: { vendorId: string }[];
+          adminVerified?: boolean;
+          status?: string;
+        };
+        found =
+          record.adminVerified === true &&
+          record.status === "confirmed" &&
+          (record.items ?? []).some((item) => item.vendorId === vendorId);
       }
     } catch {
       // ignore parse errors

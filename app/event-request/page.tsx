@@ -1,11 +1,11 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ImageIcon, Users } from "lucide-react";
+import { Check, CheckCircle2, ImageIcon, Mic, Square, Users, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Input, Select, Textarea } from "@/components/ui/Field";
@@ -14,6 +14,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { categories } from "@/lib/data/categories";
 import { writeLocalStorage } from "@/lib/utils/browser-storage";
 import { formatLKR } from "@/lib/utils/format";
+import { cn } from "@/lib/utils/cn";
 import { BackButton } from "@/components/ui/BackButton";
 
 const SERVICE_OPTIONS = ["photography", "cakes", "decoration", "bridal-makeup", "invitation"] as const;
@@ -71,6 +72,13 @@ export default function EventRequestPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [inspirationFiles, setInspirationFiles] = useState<File[]>([]);
+  const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
+  const [voiceUrl, setVoiceUrl] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const today = new Date().toISOString().split("T")[0];
   const {
     register,
@@ -153,6 +161,51 @@ export default function EventRequestPage() {
 
   function saveForLater() {
     writeLocalStorage("TRIBLEERA-event-request-draft", values);
+  }
+
+  function stopRecording() {
+    mediaRecorderRef.current?.stop();
+    setRecording(false);
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
+      recordingIntervalRef.current = null;
+    }
+  }
+
+  async function startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      mediaRecorderRef.current = mr;
+      chunksRef.current = [];
+      mr.ondataavailable = (e) => chunksRef.current.push(e.data);
+      mr.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        setVoiceBlob(blob);
+        setVoiceUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+        setRecordingSeconds(0);
+      };
+      mr.start();
+      setRecording(true);
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingSeconds((s) => {
+          if (s >= 120) {
+            stopRecording();
+            return 120;
+          }
+          return s + 1;
+        });
+      }, 1000);
+    } catch {
+      alert("Microphone access denied. Please allow microphone to record.");
+    }
+  }
+
+  function deleteVoiceNote() {
+    if (voiceUrl) URL.revokeObjectURL(voiceUrl);
+    setVoiceBlob(null);
+    setVoiceUrl(null);
   }
 
   const onSubmit = handleSubmit((formValues) => {
@@ -359,6 +412,63 @@ export default function EventRequestPage() {
                     {inspirationFiles.length} file{inspirationFiles.length !== 1 ? "s" : ""} selected
                   </p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-slate">
+                  Voice note
+                  <span className="ml-1.5 text-xs font-normal text-slate-soft">
+                    (optional — describe your vision in your own words)
+                  </span>
+                </label>
+
+                {!voiceBlob ? (
+                  <div className="flex items-center gap-3 rounded-[8px] border border-slate/20 bg-white p-4">
+                    <button
+                      type="button"
+                      onClick={recording ? stopRecording : startRecording}
+                      className={cn(
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-medium transition-all",
+                        recording ? "animate-pulse bg-red-500 text-white" : "bg-burgundy text-white hover:bg-burgundy-deep"
+                      )}
+                      aria-label={recording ? "Stop recording" : "Start voice recording"}
+                    >
+                      {recording ? <Square size={18} aria-hidden="true" /> : <Mic size={18} aria-hidden="true" />}
+                    </button>
+                    <div>
+                      {recording ? (
+                        <p className="text-sm font-semibold text-red-600">Recording... {recordingSeconds}s</p>
+                      ) : (
+                        <>
+                          <p className="text-sm font-medium text-slate">Record a voice note</p>
+                          <p className="text-[11px] text-slate-soft">Tap the mic and describe your ceremony details</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-[8px] border border-success/30 bg-success-pale/30 p-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success text-white">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-slate">Voice note recorded ✓</p>
+                      {voiceUrl && <audio src={voiceUrl} controls className="mt-1 h-8 w-full" />}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={deleteVoiceNote}
+                      className="text-slate-soft hover:text-red-500"
+                      aria-label="Delete voice note"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+
+                <p className="text-[11px] text-slate-soft">
+                  Max 2 minutes. Helps vendors understand your Tamil ceremony requirements.
+                </p>
               </div>
             </div>
           )}

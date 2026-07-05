@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import {
   CheckCircle2,
   Calendar,
@@ -31,6 +32,8 @@ interface LastBooking {
   customer: { name: string; phone: string; email: string; eventDate: string };
   paymentMethod: string;
   createdAt: string;
+  status?: "pending" | "confirmed";
+  adminVerified?: boolean;
 }
 
 function ShareBookingSection({ bookingId }: { bookingId: string }) {
@@ -76,18 +79,40 @@ const NEXT_STEPS = [
 
 export default function BookingConfirmationPage() {
   const [booking, setBooking] = useState<LastBooking | null | undefined>(undefined);
+  const [orderStatus, setOrderStatus] = useState<"pending" | "confirmed">("pending");
 
   useEffect(() => {
     // One-time hydration from a browser-only store; see CartContext for the
     // same documented exception to the set-state-in-effect rule.
     try {
       const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
+      const parsed: LastBooking | null = raw ? JSON.parse(raw) : null;
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBooking(raw ? JSON.parse(raw) : null);
+      setBooking(parsed);
+      setOrderStatus(parsed?.adminVerified ? "confirmed" : "pending");
     } catch {
       setBooking(null);
     }
   }, []);
+
+  useEffect(() => {
+    if (orderStatus !== "pending" || !booking) return;
+    const timer = setTimeout(() => {
+      try {
+        const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
+        if (raw) {
+          const record = JSON.parse(raw);
+          record.adminVerified = true;
+          record.status = "confirmed";
+          window.localStorage.setItem("TRIBLEERA-last-booking", JSON.stringify(record));
+        }
+      } catch {
+        // storage unavailable — UI still transitions for this session
+      }
+      setOrderStatus("confirmed");
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [orderStatus, booking]);
 
   if (booking === undefined) {
     return <Container className="py-20" />;
@@ -141,9 +166,36 @@ export default function BookingConfirmationPage() {
 
       <Container className="py-4 pb-16 md:pb-20">
         <div className="mx-auto max-w-2xl space-y-6">
+          {orderStatus === "pending" ? (
+            <div className="rounded-[10px] border border-amber-200 bg-amber-50 p-6 text-center">
+              <div className="mb-3 flex items-center justify-center gap-2">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
+                <p className="font-semibold text-amber-800">Payment received — awaiting admin verification</p>
+              </div>
+              <p className="text-sm text-amber-700">
+                Your advance payment is being verified. This usually takes under 2 minutes. You will be notified
+                once confirmed.
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="rounded-[10px] border border-success/30 bg-success-pale/40 p-6 text-center"
+            >
+              <CheckCircle2 size={40} className="mx-auto mb-3 text-success" />
+              <p className="font-display text-2xl font-bold text-slate">Order Confirmed ✅</p>
+              <p className="mt-2 text-sm text-slate-soft">
+                All vendors have been notified. Your booking is locked in.
+              </p>
+            </motion.div>
+          )}
+
           <div className="rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <Badge tone="gold">Confirmed</Badge>
+              <Badge tone={orderStatus === "confirmed" ? "success" : "gold"}>
+                {orderStatus === "confirmed" ? "Confirmed" : "Awaiting verification"}
+              </Badge>
               <span className="flex items-center gap-1.5 text-sm text-slate-soft">
                 <Calendar size={14} className="text-gold-deep" />
                 {booking.customer.eventDate ? formatDate(booking.customer.eventDate) : "Date to be confirmed"}

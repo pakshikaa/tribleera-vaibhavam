@@ -29,6 +29,12 @@ export default function BookingCartPage() {
       }
     } catch {}
   }, []);
+
+  useEffect(() => {
+    if (!conflictCategory) return;
+    const timer = setTimeout(() => setConflictCategory(""), 5000);
+    return () => clearTimeout(timer);
+  }, [conflictCategory]);
   const groupedItems = items.reduce<Record<string, typeof items>>((acc, item) => {
     const current = acc[item.categorySlug] ?? [];
     acc[item.categorySlug] = [...current, item];

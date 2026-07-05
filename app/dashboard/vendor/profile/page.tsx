@@ -55,6 +55,18 @@ export default function VendorProfilePage() {
 
   function saveProfile() {
     writeLocalStorage(STORAGE_KEY, { ...form, tags });
+    try {
+      const notifs = JSON.parse(window.localStorage.getItem("TRIBLEERA-admin-notifications") ?? "[]");
+      notifs.unshift({
+        type: "vendor_update",
+        message: `${form.businessName} updated their profile`,
+        time: new Date().toISOString(),
+        icon: "✏️",
+      });
+      window.localStorage.setItem("TRIBLEERA-admin-notifications", JSON.stringify(notifs.slice(0, 20)));
+    } catch {
+      // storage unavailable — profile save still succeeds
+    }
     showToast("Profile updated successfully", "success");
   }
 

@@ -3,6 +3,7 @@ import { bookings } from "@/lib/data/bookings";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { BackButton } from "@/components/ui/BackButton";
+import { AdminPendingVerificationClient } from "@/components/dashboard/AdminPendingVerificationClient";
 
 export const metadata: Metadata = { title: "Payments — Admin" };
 
@@ -41,6 +42,8 @@ export default function AdminPaymentsPage() {
           </div>
         ))}
       </div>
+
+      <AdminPendingVerificationClient />
 
       {/* Payments table */}
       <div className="overflow-hidden rounded-[10px] border border-slate/10 bg-white">

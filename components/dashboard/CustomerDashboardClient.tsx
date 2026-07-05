@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarClock, ClipboardList, MapPin, Wallet } from "lucide-react";
+import { CalendarClock, Clock, ClipboardList, MapPin, Wallet } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -40,6 +41,10 @@ function calculateRefund(booking: Booking) {
   }
 
   return { amount: booking.platformFee, label: "Platform fee is non-refundable" };
+}
+
+function getDeadlineHours(deadline: Date): number {
+  return Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / 3600000));
 }
 
 function getRefundStatus(cancelledAt: string): CancellationRecord["refundStatus"] {
@@ -321,9 +326,29 @@ export function CustomerDashboardClient() {
                           </div>
                         )}
                         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                          <p className="text-xs text-slate-soft">
-                            Responds by {formatDate(new Date(new Date(eventRequest.createdAt).getTime() + 24 * 60 * 60 * 1000))}
-                          </p>
+                          {response.status === "pending" ? (
+                            (() => {
+                              const deadline = new Date(new Date(eventRequest.createdAt).getTime() + 24 * 60 * 60 * 1000);
+                              const hoursLeft = getDeadlineHours(deadline);
+                              return (
+                                <div
+                                  className={cn(
+                                    "flex items-center gap-1.5 text-xs font-semibold",
+                                    hoursLeft <= 6 ? "text-red-600" : "text-amber-600"
+                                  )}
+                                >
+                                  <Clock size={12} aria-hidden="true" />
+                                  {hoursLeft <= 0
+                                    ? "Deadline passed"
+                                    : hoursLeft <= 24
+                                      ? `Vendor must respond in ${hoursLeft} hour${hoursLeft === 1 ? "" : "s"}`
+                                      : `Deadline: ${formatDate(deadline)}`}
+                                </div>
+                              );
+                            })()
+                          ) : (
+                            <span />
+                          )}
                           {response.status === "accepted" && (
                             <Button
                               size="sm"

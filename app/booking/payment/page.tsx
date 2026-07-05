@@ -104,6 +104,8 @@ export default function PaymentSummaryPage() {
       paymentMethod: method,
       depositSlipName: slipName || null,
       createdAt: new Date().toISOString(),
+      status: "pending" as const,
+      adminVerified: false,
     };
     try {
       window.localStorage.setItem("TRIBLEERA-last-booking", JSON.stringify(record));
