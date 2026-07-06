@@ -2,6 +2,7 @@
 
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { safeGet } from "@/lib/utils/store";
 
 export interface NotificationItem {
   id: string;
@@ -10,7 +11,10 @@ export interface NotificationItem {
     | "vendor_accepted"
     | "vendor_rejected"
     | "review_received"
+    | "review_prompt"
     | "payment_verified"
+    | "payment_submitted"
+    | "request_sent"
     | "refund_approved"
     | "dispute_update";
   title: string;
@@ -21,6 +25,7 @@ export interface NotificationItem {
 }
 
 const STORAGE_KEY = "TRIBLEERA-notifications";
+const LIVE_FEED_KEY = "tv-notifications-cust-demo";
 
 const defaultNotifications: NotificationItem[] = [
   {
@@ -89,6 +94,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     writeLocalStorage(STORAGE_KEY, notifications);
   }, [notifications]);
+
+  // Pull in notifications pushed by the vendor/admin/payment bridges (a
+  // different page or tab writes directly to localStorage), merging any
+  // new entries in as unread without touching already-known ones.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const live = safeGet<NotificationItem[]>(LIVE_FEED_KEY, []);
+      if (live.length === 0) return;
+      setNotifications((prev) => {
+        const knownIds = new Set(prev.map((item) => item.id));
+        const fresh = live.filter((item) => !knownIds.has(item.id));
+        if (fresh.length === 0) return prev;
+        return [...fresh, ...prev];
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const value = useMemo<NotificationContextValue>(
     () => ({

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Store, Users, Wallet, ShieldAlert, ArrowRight, LayoutGrid, Scale, AlertCircle } from "lucide-react";
+import { Store, Users, Wallet, ShieldAlert, ArrowRight, LayoutGrid, Scale } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
 import { AdminUsersClient } from "@/components/dashboard/AdminUsersClient";
 import { AdminActivityFeedClient } from "@/components/dashboard/AdminActivityFeedClient";
+import { AdminQuickActionsClient } from "@/components/dashboard/AdminQuickActionsClient";
 import { BookingStatusBadge } from "@/components/dashboard/StatusBadge";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
-import { cn } from "@/lib/utils/cn";
 import { vendors } from "@/lib/data/vendors";
 import { bookings } from "@/lib/data/bookings";
 import { users, vendorApplications } from "@/lib/data/users";
@@ -91,26 +91,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Needs Your Attention */}
-      {QUICK_ACTIONS.some((a) => a.count > 0) && (
-        <div className="rounded-[10px] border border-amber-200 bg-amber-50 p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <AlertCircle size={16} className="text-amber-600" />
-            <p className="text-sm font-semibold text-amber-800">Needs your attention</p>
-          </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {QUICK_ACTIONS.map((action) => (
-              <Link
-                key={action.href}
-                href={action.href}
-                className={cn("rounded-[8px] border p-3 transition-all hover:shadow-sm", action.color)}
-              >
-                <p className="font-display text-2xl font-bold">{action.count}</p>
-                <p className="mt-0.5 text-xs font-medium">{action.label}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+      <AdminQuickActionsClient staticActions={QUICK_ACTIONS} />
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

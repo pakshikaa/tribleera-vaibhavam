@@ -23,11 +23,61 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { formatDate, formatLKR } from "@/lib/utils/format";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
-import type { Booking } from "@/types";
+import { safeGet } from "@/lib/utils/store";
+import type { Booking, BookingLineItem, BookingStatus } from "@/types";
 
 const CUSTOMER_NAME = "Niranjala & Kajan";
 const BOOKING_STORAGE_KEY = "TRIBLEERA-customer-bookings";
 const CANCELLATION_STORAGE_KEY = "TRIBLEERA-cancellations";
+
+interface TvResponse {
+  requestId: string;
+  vendorSlug: string;
+  status: "accepted" | "rejected";
+  rejectionReason?: string;
+  startingPrice?: number;
+}
+
+interface TvBookingRecord {
+  bookingId?: string;
+  customerName?: string;
+  customerCity?: string;
+  eventDate?: string;
+  submittedAt?: string;
+  status?: string;
+  items?: BookingLineItem[];
+  totals?: {
+    serviceTotal: number;
+    advanceAmount: number;
+    platformFee: number;
+    payableNow: number;
+    remainingBalance: number;
+  };
+}
+
+function mapTvBooking(raw: TvBookingRecord): Booking | null {
+  if (!raw.bookingId || !raw.items || !raw.totals) return null;
+  return {
+    id: raw.bookingId,
+    customerName: raw.customerName ?? CUSTOMER_NAME,
+    customerCity: raw.customerCity ?? "Jaffna",
+    eventDate: raw.eventDate ?? new Date().toISOString(),
+    createdAt: raw.submittedAt ?? new Date().toISOString(),
+    status: (raw.status as BookingStatus) ?? "confirmed",
+    items: raw.items,
+    serviceTotal: raw.totals.serviceTotal,
+    advanceAmount: raw.totals.advanceAmount,
+    platformFee: raw.totals.platformFee,
+    payableNow: raw.totals.payableNow,
+    remainingBalance: raw.totals.remainingBalance,
+  };
+}
+
+function readLiveBookings(): Booking[] {
+  return safeGet<TvBookingRecord[]>("tv-bookings", [])
+    .map(mapTvBooking)
+    .filter((booking): booking is Booking => booking !== null && booking.customerName === CUSTOMER_NAME);
+}
 
 function calculateRefund(booking: Booking) {
   const eventDate = new Date(booking.eventDate).getTime();
@@ -72,6 +122,10 @@ export function CustomerDashboardClient() {
   const [eventRequest] = useState<EventRequest | null>(() =>
     typeof window === "undefined" ? initialEventRequest : readLocalStorage<EventRequest | null>("TRIBLEERA-event-request", initialEventRequest)
   );
+  const [liveResponses, setLiveResponses] = useState<TvResponse[]>(() => safeGet<TvResponse[]>("tv-responses", []));
+  const [liveBookings, setLiveBookings] = useState<Booking[]>(() =>
+    typeof window === "undefined" ? [] : readLiveBookings()
+  );
   const [cancelBooking, setCancelBooking] = useState<Booking | null>(null);
   const [cancelStep, setCancelStep] = useState(1);
   const [cancelReason, setCancelReason] = useState("Change of plans");
@@ -93,9 +147,38 @@ export function CustomerDashboardClient() {
     writeLocalStorage(CANCELLATION_STORAGE_KEY, cancellations);
   }, [cancellations]);
 
-  const activeBookings = bookings.filter((booking) => booking.status !== "completed" && booking.status !== "cancelled");
-  const totalPaid = bookings.reduce((sum, booking) => sum + booking.payableNow, 0);
-  const nextEvent = bookings[0]?.eventDate;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveResponses(safeGet<TvResponse[]>("tv-responses", []));
+      setLiveBookings(readLiveBookings());
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const allBookings = useMemo(() => {
+    const liveIds = new Set(liveBookings.map((booking) => booking.id));
+    return [...liveBookings, ...bookings.filter((booking) => !liveIds.has(booking.id))];
+  }, [liveBookings, bookings]);
+
+  const mergedResponses = useMemo(() => {
+    if (!eventRequest) return [];
+    const liveForThisRequest = liveResponses.filter((response) => response.requestId === eventRequest.id);
+    const liveVendorSlugs = new Set(liveForThisRequest.map((response) => response.vendorSlug));
+    const staticFiltered = eventRequest.responses.filter((response) => !liveVendorSlugs.has(response.vendorSlug));
+    return [
+      ...liveForThisRequest.map((response) => ({
+        vendorSlug: response.vendorSlug,
+        status: response.status,
+        rejectionReason: response.rejectionReason,
+        startingPrice: response.startingPrice,
+      })),
+      ...staticFiltered,
+    ];
+  }, [eventRequest, liveResponses]);
+
+  const activeBookings = allBookings.filter((booking) => booking.status !== "completed" && booking.status !== "cancelled");
+  const totalPaid = allBookings.reduce((sum, booking) => sum + booking.payableNow, 0);
+  const nextEvent = allBookings[0]?.eventDate;
   const requestExpiryDays = useMemo(() => {
     if (!eventRequest) return null;
     const expiryMs = new Date(eventRequest.createdAt).getTime() + 3 * 24 * 60 * 60 * 1000;
@@ -173,14 +256,14 @@ export function CustomerDashboardClient() {
           <Tabs
             defaultTab="bookings"
             tabs={[
-              { id: "bookings", label: "My Bookings", count: bookings.length },
-              { id: "responses", label: "Vendor Responses", count: eventRequest?.responses.length ?? 0 },
+              { id: "bookings", label: "My Bookings", count: allBookings.length },
+              { id: "responses", label: "Vendor Responses", count: mergedResponses.length },
               { id: "refunds", label: "Refunds", count: cancellations.length },
               { id: "profile", label: "Profile" },
             ]}
             panels={{
               bookings:
-                bookings.length === 0 ? (
+                allBookings.length === 0 ? (
                   <EmptyState
                     icon={<ClipboardList size={28} />}
                     title="No bookings yet"
@@ -189,7 +272,7 @@ export function CustomerDashboardClient() {
                   />
                 ) : (
                   <div className="space-y-4">
-                    {bookings.map((booking) => {
+                    {allBookings.map((booking) => {
                       const refund = calculateRefund(booking);
                       return (
                         <div key={booking.id} className="rounded-[8px] border border-slate/8 bg-white p-5 shadow-soft md:p-6">
@@ -288,7 +371,7 @@ export function CustomerDashboardClient() {
                     </div>
                   </div>
 
-                  {eventRequest.responses.map((response) => {
+                  {mergedResponses.map((response) => {
                     const vendor = getVendorBySlug(response.vendorSlug);
                     const statusClass =
                       response.status === "accepted"

@@ -71,6 +71,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return prev;
       }
 
+      showToast(`${item.vendorName} (${item.packageName}) added to cart ✓`, "success");
       return [...prev, item];
     });
   }, [showToast]);

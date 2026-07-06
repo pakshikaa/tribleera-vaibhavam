@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Bell, Heart, LogIn, Menu, ShoppingBag } from "lucide-react";
+import { Heart, LogIn, Menu, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { NotificationPanel } from "@/components/ui/NotificationPanel";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/context/CartContext";
 import { useShortlist } from "@/context/ShortlistContext";
@@ -138,24 +139,14 @@ export function Header() {
         <div className="hidden items-center gap-1.5 md:flex">
 
           {/* Notification bell â€” desktop only */}
-          <button
-            type="button"
-            aria-label="View notifications, 3 unread"
-            className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+          <NotificationPanel
+            triggerClassName={cn(
+              "flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
               isHome
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
-          >
-            <Bell size={18} strokeWidth={1.75} aria-hidden="true" />
-            <span
-              aria-hidden="true"
-              className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-burgundy-deep"
-            >
-              3
-            </span>
-          </button>
+          />
 
           {/* Shortlist */}
           <Link

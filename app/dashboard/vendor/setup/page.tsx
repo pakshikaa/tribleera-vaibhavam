@@ -7,6 +7,7 @@ import { Camera, CheckCircle2, Plus, X } from "lucide-react";
 import { Input, Textarea } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
+import { generateId, safePush } from "@/lib/utils/store";
 
 type ApprovedVendor = {
   slug: string;
@@ -156,16 +157,13 @@ export default function VendorSetupPage() {
       localStorage.setItem("TRIBLEERA-approved-vendors", JSON.stringify(updated));
     } catch {}
 
-    try {
-      const notifs = JSON.parse(localStorage.getItem("TRIBLEERA-admin-notifications") ?? "[]");
-      notifs.unshift({
-        type: "vendor_update",
-        message: `${vendor.name} updated their profile`,
-        time: new Date().toISOString(),
-        icon: "✏️",
-      });
-      localStorage.setItem("TRIBLEERA-admin-notifications", JSON.stringify(notifs.slice(0, 20)));
-    } catch {}
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "vendor_update",
+      message: `${vendor.name} updated their profile`,
+      time: new Date().toISOString(),
+      icon: "✏️",
+    });
 
     router.push("/dashboard/vendor");
   }

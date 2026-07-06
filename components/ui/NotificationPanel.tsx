@@ -12,11 +12,15 @@ function getNotificationIcon(type: NotificationItem["type"]) {
     case "booking_confirmed":
     case "vendor_accepted":
     case "payment_verified":
+    case "request_sent":
       return <BadgeCheck size={16} className="text-gold-deep" />;
     case "refund_approved":
       return <Undo2 size={16} className="text-burgundy" />;
     case "review_received":
+    case "review_prompt":
       return <MessageSquareQuote size={16} className="text-slate" />;
+    case "payment_submitted":
+      return <BadgeCheck size={16} className="text-amber-600" />;
     default:
       return <CircleAlert size={16} className="text-danger" />;
   }

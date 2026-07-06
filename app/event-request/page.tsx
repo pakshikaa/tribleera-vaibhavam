@@ -12,9 +12,11 @@ import { Input, Select, Textarea } from "@/components/ui/Field";
 import { StepProgress } from "@/components/ui/StepProgress";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { categories } from "@/lib/data/categories";
+import { vendors } from "@/lib/data/vendors";
 import { writeLocalStorage } from "@/lib/utils/browser-storage";
 import { formatLKR } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
+import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
 import { BackButton } from "@/components/ui/BackButton";
 
 const SERVICE_OPTIONS = ["photography", "cakes", "decoration", "bridal-makeup", "invitation"] as const;
@@ -55,14 +57,17 @@ function calculateAdvance(budgetRange: EventRequestValues["budgetRange"]) {
   };
 }
 
-function createEventRequestRecord(formValues: EventRequestValues) {
+function createEventRequestRecord(formValues: EventRequestValues, hasVoiceNote: boolean) {
   const createdAt = new Date().toISOString();
 
   return {
     id: `EVT-${new Date(createdAt).getFullYear()}${createdAt.replace(/\D/g, "").slice(-5)}`,
     createdAt,
     customerId: "customer-niranjala-kajan",
+    customerName: "Niranjala & Kajan",
     status: "pending",
+    deadline: new Date(new Date(createdAt).getTime() + 24 * 60 * 60 * 1000).toISOString(),
+    hasVoiceNote,
     responses: [],
     ...formValues,
   };
@@ -209,7 +214,48 @@ export default function EventRequestPage() {
   }
 
   const onSubmit = handleSubmit((formValues) => {
-    writeLocalStorage("TRIBLEERA-event-request", createEventRequestRecord(formValues));
+    const record = createEventRequestRecord(formValues, Boolean(voiceBlob));
+    writeLocalStorage("TRIBLEERA-event-request", record);
+
+    const bridgeRequest = {
+      id: record.id,
+      customerId: record.customerId,
+      customerName: record.customerName,
+      status: "pending" as const,
+      submittedAt: record.createdAt,
+      deadline: record.deadline,
+      eventDate: formValues.eventDate,
+      location: formValues.eventLocation,
+      guestCount: formValues.guestCount,
+      budgetRange: formValues.budgetRange,
+      requirements: formValues.specialRequirements ?? "",
+      selectedServices: formValues.selectedServices,
+      priorities: formValues.priorities ?? [],
+      hasVoiceNote: Boolean(voiceBlob),
+    };
+
+    safePush("tv-requests", bridgeRequest);
+
+    formValues.selectedServices.forEach((categorySlug) => {
+      const matchedVendors = vendors.filter((v) => v.categorySlug === categorySlug && v.status === "approved");
+      matchedVendors.forEach((vendor) => {
+        const inbox = safeGet<Record<string, unknown[]>>("tv-vendor-inbox", {});
+        if (!inbox[vendor.slug]) inbox[vendor.slug] = [];
+        inbox[vendor.slug].unshift({ ...bridgeRequest, vendorSlug: vendor.slug });
+        safeSet("tv-vendor-inbox", inbox);
+      });
+    });
+
+    safePush("tv-notifications-cust-demo", {
+      id: generateId("N"),
+      type: "request_sent",
+      title: "Your wedding request is live",
+      message: `Vendors for ${formValues.selectedServices.length} service${formValues.selectedServices.length !== 1 ? "s" : ""} have been notified.`,
+      href: "/dashboard/customer",
+      read: false,
+      createdAt: new Date().toISOString(),
+    });
+
     router.push("/event-request/submitted");
   });
 

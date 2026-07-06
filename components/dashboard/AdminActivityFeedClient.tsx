@@ -21,6 +21,8 @@ const TYPE_COLORS: Record<string, string> = {
   vendor_update: "bg-blue-50 border-blue-200 text-blue-700",
   vendor_register: "bg-success-pale border-success/30 text-success",
   payment: "bg-gold/10 border-gold/30 text-gold-deep",
+  payment_verified: "bg-success-pale border-success/30 text-success",
+  event_completed: "bg-gold/10 border-gold/30 text-gold-deep",
   dispute: "bg-rose-pale border-rose/30 text-burgundy",
 };
 
@@ -35,19 +37,27 @@ function timeAgo(iso: string): string {
   return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
+const ADMIN_NOTIFICATIONS_KEY = "tv-admin-notifications";
+
+function readLiveItems(): ActivityItem[] {
+  try {
+    const notifs: StoredNotification[] = JSON.parse(window.localStorage.getItem(ADMIN_NOTIFICATIONS_KEY) ?? "[]");
+    return notifs.map((n) => ({ ...n, time: timeAgo(n.time) }));
+  } catch {
+    return [];
+  }
+}
+
 export function AdminActivityFeedClient({ staticFeed }: { staticFeed: ActivityItem[] }) {
   const [liveItems, setLiveItems] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
-    try {
-      const notifs: StoredNotification[] = JSON.parse(
-        window.localStorage.getItem("TRIBLEERA-admin-notifications") ?? "[]"
-      );
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setLiveItems(notifs.map((n) => ({ ...n, time: timeAgo(n.time) })));
-    } catch {
-      // ignore corrupted storage
-    }
+    // One-time hydration from a browser-only store; see CartContext for the
+    // same documented exception to the set-state-in-effect rule.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLiveItems(readLiveItems());
+    const interval = setInterval(() => setLiveItems(readLiveItems()), 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const items = [...liveItems, ...staticFeed];

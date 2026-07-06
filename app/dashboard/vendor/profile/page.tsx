@@ -8,6 +8,7 @@ import { Input, Textarea } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { generateId, safePush } from "@/lib/utils/store";
 import { BackButton } from "@/components/ui/BackButton";
 
 const STORAGE_KEY = "TRIBLEERA-vendor-profile";
@@ -55,18 +56,13 @@ export default function VendorProfilePage() {
 
   function saveProfile() {
     writeLocalStorage(STORAGE_KEY, { ...form, tags });
-    try {
-      const notifs = JSON.parse(window.localStorage.getItem("TRIBLEERA-admin-notifications") ?? "[]");
-      notifs.unshift({
-        type: "vendor_update",
-        message: `${form.businessName} updated their profile`,
-        time: new Date().toISOString(),
-        icon: "✏️",
-      });
-      window.localStorage.setItem("TRIBLEERA-admin-notifications", JSON.stringify(notifs.slice(0, 20)));
-    } catch {
-      // storage unavailable — profile save still succeeds
-    }
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "vendor_update",
+      message: `${form.businessName} updated their profile`,
+      time: new Date().toISOString(),
+      icon: "✏️",
+    });
     showToast("Profile updated successfully", "success");
   }
 

@@ -95,23 +95,24 @@ export default function BookingConfirmationPage() {
     }
   }, []);
 
+  // Poll for the admin's verification action (see AdminPendingVerificationClient),
+  // which flips adminVerified/status on this same localStorage record.
   useEffect(() => {
     if (orderStatus !== "pending" || !booking) return;
-    const timer = setTimeout(() => {
+    const interval = setInterval(() => {
       try {
         const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
         if (raw) {
           const record = JSON.parse(raw);
-          record.adminVerified = true;
-          record.status = "confirmed";
-          window.localStorage.setItem("TRIBLEERA-last-booking", JSON.stringify(record));
+          if (record.adminVerified) {
+            setOrderStatus("confirmed");
+          }
         }
       } catch {
-        // storage unavailable — UI still transitions for this session
+        // storage unavailable — status stays pending for this session
       }
-      setOrderStatus("confirmed");
     }, 3000);
-    return () => clearTimeout(timer);
+    return () => clearInterval(interval);
   }, [orderStatus, booking]);
 
   if (booking === undefined) {

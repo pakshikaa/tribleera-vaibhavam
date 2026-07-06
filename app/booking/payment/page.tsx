@@ -19,6 +19,7 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 import { useCart } from "@/context/CartContext";
 import { customerDetailsSchema, type CustomerDetailsValues } from "@/lib/schemas";
 import { BackButton } from "@/components/ui/BackButton";
+import { generateId, safePush } from "@/lib/utils/store";
 
 const PAYMENT_METHODS = [
   {
@@ -96,14 +97,20 @@ export default function PaymentSummaryPage() {
 
   function onSubmit(values: CustomerDetailsValues) {
     const bookingId = generateBookingId();
+    const submittedAt = new Date().toISOString();
     const record = {
       id: bookingId,
+      bookingId,
       items,
       totals,
       customer: values,
+      customerName: values.name,
+      customerCity: "Jaffna",
+      eventDate: values.eventDate,
       paymentMethod: method,
       depositSlipName: slipName || null,
-      createdAt: new Date().toISOString(),
+      createdAt: submittedAt,
+      submittedAt,
       status: "pending" as const,
       adminVerified: false,
     };
@@ -112,6 +119,27 @@ export default function PaymentSummaryPage() {
     } catch {
       // session-only fallback; confirmation page handles a missing record gracefully
     }
+
+    safePush("tv-payments-pending", record);
+
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "payment",
+      message: `New payment: ${values.name} — ${formatLKR(totals.payableNow)} [${method}]`,
+      time: submittedAt,
+      icon: "💳",
+      urgent: true,
+    });
+
+    safePush("tv-notifications-cust-demo", {
+      id: generateId("N"),
+      type: "payment_submitted",
+      title: "Payment submitted",
+      message: "Your advance payment is being verified by the TRIBLEERA team.",
+      href: "/booking/confirmation",
+      read: false,
+      createdAt: submittedAt,
+    });
 
     return new Promise<void>((resolve) => {
       setTimeout(() => {

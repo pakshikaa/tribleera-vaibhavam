@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Check, ChevronDown, ChevronUp, Clock, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, CheckCircle2, ChevronDown, ChevronUp, Clock, X } from "lucide-react";
 import { VendorBookingRequest } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +10,9 @@ import { Modal } from "@/components/ui/Modal";
 import { Select, Textarea } from "@/components/ui/Field";
 import { formatDate, formatLKR, relativeTime } from "@/lib/utils/format";
 import { getCategoryBySlug } from "@/lib/data/categories";
+import { getVendorBySlug } from "@/lib/data/vendors";
 import { useToast } from "@/components/ui/Toast";
+import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
 
 const STATUS_TONE = {
   new: "warning",
@@ -26,12 +28,64 @@ const REJECTION_REASONS = [
   "Other",
 ];
 
+const DEFAULT_VENDOR_SLUG = "pushpa-florals-and-decor";
+
+interface InboxEntry {
+  id: string;
+  customerName: string;
+  eventDate: string;
+  location?: string;
+  guestCount?: number;
+  budgetRange?: string;
+  requirements?: string;
+  submittedAt: string;
+  status: "pending" | "accepted" | "rejected";
+  rejectionReason?: string;
+  vendorSlug: string;
+}
+
 function deadlineForRequest(receivedAt: string) {
   return new Date(new Date(receivedAt).getTime() + 24 * 60 * 60 * 1000);
 }
 
+function getVendorSlug(): string {
+  try {
+    return sessionStorage.getItem("vendor-slug") ?? DEFAULT_VENDOR_SLUG;
+  } catch {
+    return DEFAULT_VENDOR_SLUG;
+  }
+}
+
+function buildLiveRequests(vendorSlug: string): VendorBookingRequest[] {
+  const inbox = safeGet<Record<string, InboxEntry[]>>("tv-vendor-inbox", {});
+  const entries = inbox[vendorSlug] ?? [];
+  const vendor = getVendorBySlug(vendorSlug);
+
+  return entries.map((entry) => ({
+    id: entry.id,
+    customerName: entry.customerName,
+    eventDate: entry.eventDate,
+    location: entry.location,
+    guestCount: entry.guestCount,
+    budgetRange: entry.budgetRange,
+    categorySlug: vendor?.categorySlug ?? "general",
+    packageName: "Custom request",
+    price: 0,
+    status: entry.status === "accepted" ? "accepted" : entry.status === "rejected" ? "declined" : "new",
+    rejectionReason: entry.rejectionReason,
+    receivedAt: entry.submittedAt,
+    message: entry.requirements || "No additional requirements provided.",
+  }));
+}
+
 export function VendorRequestsClient({ initial }: { initial: VendorBookingRequest[] }) {
-  const [requests, setRequests] = useState(initial);
+  const [vendorSlug] = useState(getVendorSlug);
+  const vendor = useMemo(() => getVendorBySlug(vendorSlug), [vendorSlug]);
+  const [requests, setRequests] = useState<VendorBookingRequest[]>(() => [
+    ...buildLiveRequests(vendorSlug),
+    ...initial,
+  ]);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
   const [currentTime] = useState(() => Date.now());
   const [acceptTarget, setAcceptTarget] = useState<VendorBookingRequest | null>(null);
   const [rejectTarget, setRejectTarget] = useState<VendorBookingRequest | null>(null);
@@ -40,22 +94,97 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
   const [rejectionNotes, setRejectionNotes] = useState("");
   const { showToast } = useToast();
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRequests((prev) => {
+        const live = buildLiveRequests(vendorSlug);
+        const liveIds = new Set(live.map((r) => r.id));
+        const rest = prev.filter((r) => !liveIds.has(r.id));
+        return [...live, ...rest];
+      });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [vendorSlug]);
+
   const newCount = useMemo(() => requests.filter((request) => request.status === "new").length, [requests]);
 
-  if (requests.length === 0) {
-    return <EmptyState icon={<Clock size={28} />} title="No booking requests yet" />;
+  function isLiveRequest(id: string): InboxEntry | undefined {
+    const inbox = safeGet<Record<string, InboxEntry[]>>("tv-vendor-inbox", {});
+    return (inbox[vendorSlug] ?? []).find((entry) => entry.id === id);
   }
 
   function acceptRequest() {
     if (!acceptTarget) return;
+    const liveEntry = isLiveRequest(acceptTarget.id);
+
+    if (liveEntry && vendor) {
+      const inbox = safeGet<Record<string, InboxEntry[]>>("tv-vendor-inbox", {});
+      inbox[vendorSlug] = (inbox[vendorSlug] ?? []).map((entry) =>
+        entry.id === acceptTarget.id ? { ...entry, status: "accepted" as const } : entry
+      );
+      safeSet("tv-vendor-inbox", inbox);
+
+      safePush("tv-responses", {
+        id: generateId("RES"),
+        requestId: acceptTarget.id,
+        vendorSlug,
+        vendorName: vendor.name,
+        categorySlug: vendor.categorySlug,
+        startingPrice: vendor.startingPrice,
+        status: "accepted",
+        respondedAt: new Date().toISOString(),
+      });
+
+      safePush("tv-notifications-cust-demo", {
+        id: generateId("N"),
+        type: "vendor_accepted",
+        title: `${vendor.name} accepted your request`,
+        message: `${vendor.name} is available for your event on ${formatDate(acceptTarget.eventDate)}.`,
+        href: "/dashboard/customer",
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
     setRequests((prev) => prev.map((request) => (request.id === acceptTarget.id ? { ...request, status: "accepted" } : request)));
-    showToast("Request accepted.", "success");
+    showToast("Request accepted. Customer has been notified.", "success");
     setAcceptTarget(null);
   }
 
   function rejectRequest() {
     if (!rejectTarget) return;
     const reason = rejectionReason === "Other" && rejectionNotes.trim() ? rejectionNotes.trim() : rejectionReason;
+    const liveEntry = isLiveRequest(rejectTarget.id);
+
+    if (liveEntry && vendor) {
+      const inbox = safeGet<Record<string, InboxEntry[]>>("tv-vendor-inbox", {});
+      inbox[vendorSlug] = (inbox[vendorSlug] ?? []).map((entry) =>
+        entry.id === rejectTarget.id ? { ...entry, status: "rejected" as const, rejectionReason: reason } : entry
+      );
+      safeSet("tv-vendor-inbox", inbox);
+
+      safePush("tv-responses", {
+        id: generateId("RES"),
+        requestId: rejectTarget.id,
+        vendorSlug,
+        vendorName: vendor.name,
+        categorySlug: vendor.categorySlug,
+        status: "rejected",
+        rejectionReason: reason,
+        respondedAt: new Date().toISOString(),
+      });
+
+      safePush("tv-notifications-cust-demo", {
+        id: generateId("N"),
+        type: "vendor_rejected",
+        title: `${vendor.name} is not available`,
+        message: `Reason: ${reason}. Choose another ${getCategoryBySlug(vendor.categorySlug)?.name ?? "vendor"}.`,
+        href: "/dashboard/customer",
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
     setRequests((prev) =>
       prev.map((request) =>
         request.id === rejectTarget.id ? { ...request, status: "declined", rejectionReason: reason } : request
@@ -65,6 +194,46 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
     setRejectTarget(null);
     setRejectionNotes("");
     setRejectionReason(REJECTION_REASONS[0]);
+  }
+
+  function markComplete(request: VendorBookingRequest) {
+    if (!vendor) return;
+
+    const bookings = safeGet<Array<Record<string, unknown>>>("tv-bookings", []);
+    const updated = bookings.map((booking) => {
+      const items = (booking.items as Array<{ vendorId?: string; vendorSlug?: string }> | undefined) ?? [];
+      const matchesVendor = items.some((item) => item.vendorId === vendorSlug || item.vendorSlug === vendorSlug);
+      if (matchesVendor && booking.customerName === request.customerName) {
+        return { ...booking, status: "completed", completedAt: new Date().toISOString() };
+      }
+      return booking;
+    });
+    safeSet("tv-bookings", updated);
+
+    safePush("tv-notifications-cust-demo", {
+      id: generateId("N"),
+      type: "review_prompt",
+      title: `How was ${vendor.name}?`,
+      message: "Your event is complete! Leave a review to help other couples.",
+      href: "/dashboard/customer",
+      read: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "event_completed",
+      message: `${vendor.name} marked event complete for ${request.customerName}`,
+      time: new Date().toISOString(),
+      icon: "🎉",
+    });
+
+    setCompletedIds((prev) => [...prev, request.id]);
+    showToast("Event marked as complete. Customer will be prompted to review.", "success");
+  }
+
+  if (requests.length === 0) {
+    return <EmptyState icon={<Clock size={28} />} title="No booking requests yet" />;
   }
 
   return (
@@ -80,6 +249,7 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
         const hoursLeft = Math.max(0, Math.ceil((deadline.getTime() - currentTime) / (1000 * 60 * 60)));
         const showWarning = request.status === "new" && hoursLeft < 6;
         const expanded = expandedId === request.id;
+        const isComplete = completedIds.includes(request.id);
 
         return (
           <div key={request.id} className="rounded-[8px] border border-slate/8 bg-white p-5 shadow-soft">
@@ -106,7 +276,7 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <p className="font-display text-base text-burgundy-deep">{formatLKR(request.price)}</p>
+                {request.price > 0 && <p className="font-display text-base text-burgundy-deep">{formatLKR(request.price)}</p>}
                 <p className={`text-xs ${showWarning ? "font-semibold text-amber-900" : "text-slate-soft"}`}>
                   You must respond by {formatDate(deadline)} {showWarning ? `(${hoursLeft}h left)` : ""}
                 </p>
@@ -128,13 +298,24 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
                   </>
                 )}
                 {request.status === "accepted" && (
-                  <button
-                    type="button"
-                    onClick={() => setExpandedId(expanded ? null : request.id)}
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-burgundy"
-                  >
-                    View Customer Details {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(expanded ? null : request.id)}
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-burgundy"
+                    >
+                      View Customer Details {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+                    {isComplete ? (
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-success">
+                        <CheckCircle2 size={14} /> Marked complete
+                      </span>
+                    ) : (
+                      <Button size="sm" variant="secondary" icon={<CheckCircle2 size={14} />} onClick={() => markComplete(request)}>
+                        Mark Complete
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

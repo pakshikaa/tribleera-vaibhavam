@@ -11,31 +11,35 @@ interface Props {
   packagesHref: string;
 }
 
+function checkBooked(vendorId: string): boolean {
+  try {
+    const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
+    if (!raw) return false;
+    const record = JSON.parse(raw) as {
+      items?: { vendorId: string }[];
+      adminVerified?: boolean;
+      status?: string;
+    };
+    return (
+      record.adminVerified === true &&
+      record.status === "confirmed" &&
+      (record.items ?? []).some((item) => item.vendorId === vendorId)
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function VendorContactClient({ vendorId, phone, whatsapp, packagesHref }: Props) {
   const [booked, setBooked] = useState(false);
 
   useEffect(() => {
-    let found = false;
-    try {
-      const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
-      if (raw) {
-        const record = JSON.parse(raw) as {
-          items?: { vendorId: string }[];
-          adminVerified?: boolean;
-          status?: string;
-        };
-        found =
-          record.adminVerified === true &&
-          record.status === "confirmed" &&
-          (record.items ?? []).some((item) => item.vendorId === vendorId);
-      }
-    } catch {
-      // ignore parse errors
-    }
-    if (found) {
-      const id = window.setTimeout(() => setBooked(true), 0);
-      return () => window.clearTimeout(id);
-    }
+    // One-time hydration from a browser-only store; see CartContext for the
+    // same documented exception to the set-state-in-effect rule.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBooked(checkBooked(vendorId));
+    const interval = setInterval(() => setBooked(checkBooked(vendorId)), 5000);
+    return () => clearInterval(interval);
   }, [vendorId]);
 
   if (!booked) {
