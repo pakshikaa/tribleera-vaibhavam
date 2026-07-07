@@ -1,8 +1,7 @@
 ﻿import type { MetadataRoute } from "next";
 import { vendors } from "@/lib/data/vendors";
 import { categories } from "@/lib/data/categories";
-
-const BASE_URL = "https://tribleera-vaibhavam.example.com";
+import { SITE_URL as BASE_URL } from "@/lib/constants";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = ["", "/services", "/vendors", "/vendor/register"].map((path) => ({

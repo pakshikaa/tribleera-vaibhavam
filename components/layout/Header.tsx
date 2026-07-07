@@ -141,7 +141,7 @@ export function Header() {
           {/* Notification bell â€” desktop only */}
           <NotificationPanel
             triggerClassName={cn(
-              "flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
               isHome
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
@@ -153,7 +153,7 @@ export function Header() {
             href="/shortlist"
             aria-label="Your shortlist"
             className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              "relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
               isHome
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
@@ -178,7 +178,7 @@ export function Header() {
             href="/booking/cart"
             aria-label="Your cart"
             className={cn(
-              "relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+              "relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
               isHome
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"

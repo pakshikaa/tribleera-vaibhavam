@@ -26,6 +26,12 @@ export interface NotificationItem {
 
 const STORAGE_KEY = "TRIBLEERA-notifications";
 const LIVE_FEED_KEY = "tv-notifications-cust-demo";
+const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
+
+function pruneExpired(items: NotificationItem[]): NotificationItem[] {
+  const cutoff = Date.now() - MAX_AGE_MS;
+  return items.filter((item) => new Date(item.createdAt).getTime() >= cutoff);
+}
 
 const defaultNotifications: NotificationItem[] = [
   {
@@ -88,7 +94,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
     if (typeof window === "undefined") return defaultNotifications;
     const stored = readLocalStorage<NotificationItem[] | null>(STORAGE_KEY, null);
-    return stored && stored.length > 0 ? stored : defaultNotifications;
+    return pruneExpired(stored && stored.length > 0 ? stored : defaultNotifications);
   });
 
   useEffect(() => {
@@ -105,8 +111,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setNotifications((prev) => {
         const knownIds = new Set(prev.map((item) => item.id));
         const fresh = live.filter((item) => !knownIds.has(item.id));
-        if (fresh.length === 0) return prev;
-        return [...fresh, ...prev];
+        const merged = fresh.length > 0 ? [...fresh, ...prev] : prev;
+        const pruned = pruneExpired(merged);
+        if (fresh.length === 0 && pruned.length === prev.length) return prev;
+        return pruned;
       });
     }, 5000);
     return () => clearInterval(interval);

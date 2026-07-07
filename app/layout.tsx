@@ -5,10 +5,11 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
+import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tribleera-vaibhavam.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
     template: "%s | TRIBLEERA VAIBHAVAM",
