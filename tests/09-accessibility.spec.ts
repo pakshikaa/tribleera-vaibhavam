@@ -11,7 +11,8 @@ test.describe("Accessibility", () => {
 
   test("shortlist link has a descriptive aria-label, not the raw URL", async ({ page }) => {
     await page.goto("/");
-    const link = page.locator("a[href='/shortlist']");
+    // MobileBottomNav has an identical href — scope to the header's icon link.
+    const link = page.locator("header a[href='/shortlist']");
     const ariaLabel = await link.getAttribute("aria-label");
     expect(ariaLabel).toBeTruthy();
     expect(ariaLabel).not.toBe("/shortlist");
@@ -19,7 +20,7 @@ test.describe("Accessibility", () => {
 
   test("cart link has a descriptive aria-label, not the raw URL", async ({ page }) => {
     await page.goto("/");
-    const link = page.locator("a[href='/booking/cart']");
+    const link = page.locator("header a[href='/booking/cart']");
     const ariaLabel = await link.getAttribute("aria-label");
     expect(ariaLabel).toBeTruthy();
     expect(ariaLabel).not.toBe("/booking/cart");
@@ -27,11 +28,11 @@ test.describe("Accessibility", () => {
 
   test("all images have alt text", async ({ page }) => {
     await page.goto("/");
-    const images = await page.locator("img").all();
-    for (const img of images) {
-      const alt = await img.getAttribute("alt");
-      expect(alt).not.toBeNull();
-    }
+    // A single evaluateAll — the homepage has an auto-scrolling testimonials
+    // marquee that continuously mounts/unmounts nodes, which made a per-element
+    // getAttribute loop flaky (an element could vanish between snapshot and read).
+    const alts = await page.locator("img").evaluateAll((imgs) => imgs.map((img) => img.getAttribute("alt")));
+    for (const alt of alts) expect(alt).not.toBeNull();
   });
 
   test("lightbox has role=dialog and aria-modal", async ({ page }) => {

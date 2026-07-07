@@ -31,7 +31,9 @@ test.describe("Admin Sidebar", () => {
     await page.evaluate(() => sessionStorage.setItem("admin-auth", "true"));
   });
 
-  test("sidebar shows all nav items", async ({ page }) => {
+  test("sidebar shows all nav items", async ({ page }, testInfo) => {
+    // app/dashboard/admin/layout.tsx: <aside> is `hidden md:flex` — desktop only.
+    testInfo.skip(testInfo.project.name === "Mobile Safari", "desktop sidebar only");
     await page.goto("/dashboard/admin");
     for (const label of ["Dashboard", "Vendors", "Bookings", "Payments", "Disputes", "Reports"]) {
       await expect(page.locator("aside").locator(`text=${label}`)).toBeVisible();
@@ -48,7 +50,9 @@ test.describe("Admin Sidebar", () => {
     await expect(page).toHaveTitle(/Reminders/);
   });
 
-  test("logout clears session", async ({ page }) => {
+  test("logout clears session", async ({ page }, testInfo) => {
+    // Sign out lives in the same desktop-only <aside>.
+    testInfo.skip(testInfo.project.name === "Mobile Safari", "desktop sidebar only");
     await page.goto("/dashboard/admin");
     await page.locator("button", { hasText: /sign out/i }).click();
     await expect(page).toHaveURL(/admin\/login/);

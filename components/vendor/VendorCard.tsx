@@ -77,7 +77,7 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
             )}
           </div>
 
-          <div className="absolute right-3 top-3 z-10">
+          <div className="absolute right-3 top-3 z-10 pointer-events-auto">
             <ShortlistButton
               slug={vendor.slug}
               size={16}

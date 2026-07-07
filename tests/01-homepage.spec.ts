@@ -43,8 +43,10 @@ test.describe("Homepage", () => {
 
   test("hero has 2 CTA buttons", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("a[href='/vendors']").first()).toBeVisible();
-    await expect(page.locator("a[href='/event-request']").first()).toBeVisible();
+    // ':visible' matters here — the same hrefs also exist in Header's
+    // desktop-only nav, which is CSS-hidden at the Mobile Safari viewport.
+    await expect(page.locator("a[href='/vendors']:visible").first()).toBeVisible();
+    await expect(page.locator("a[href='/event-request']:visible").first()).toBeVisible();
   });
 
   test("no Vaibhavam Standard placeholder section", async ({ page }) => {
@@ -64,9 +66,13 @@ test.describe("Homepage", () => {
     const consent = await page.evaluate(() => localStorage.getItem("TRIBLEERA-cookie-consent"));
     expect(consent).toBe("accepted");
 
-    // Reload — banner must not reappear.
+    // Reload — banner must not reappear. The banner div is always mounted
+    // (it's CSS-transitioned, not conditionally rendered), and Playwright's
+    // toBeVisible() doesn't treat opacity:0 as hidden — so assert the
+    // computed style directly instead of visibility.
     await page.reload();
     await page.waitForTimeout(1200);
-    await expect(acceptBtn).not.toBeVisible();
+    const opacity = await banner.evaluate((el) => getComputedStyle(el).opacity);
+    expect(Number(opacity)).toBeLessThan(0.1);
   });
 });

@@ -30,6 +30,8 @@ test.describe("Edge Cases & 404", () => {
     await page.evaluate(() => localStorage.removeItem("TRIBLEERA-shortlist-v1"));
     await page.goto("/shortlist");
     await expect(page.locator("text=No vendors saved yet")).toBeVisible();
-    await expect(page.locator("a[href='/vendors']").first()).toBeVisible();
+    // ':visible' — Header's desktop nav "Vendors" link shares this href and
+    // is CSS-hidden at the Mobile Safari viewport; the EmptyState CTA isn't.
+    await expect(page.locator("a[href='/vendors']:visible").first()).toBeVisible();
   });
 });

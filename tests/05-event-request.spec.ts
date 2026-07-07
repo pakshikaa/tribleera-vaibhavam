@@ -12,7 +12,9 @@ async function fillStep1(page: Page) {
 test.describe("Event Request Form", () => {
   test("loads step 1", async ({ page }) => {
     await page.goto("/event-request");
-    await expect(page.locator("text=Your Celebration")).toBeVisible();
+    // StepProgress renders a same-named hidden label too — target the
+    // actual step heading specifically to avoid the strict-mode ambiguity.
+    await expect(page.getByRole("heading", { name: /Your Celebration/ })).toBeVisible();
   });
 
   test("past date shows validation error", async ({ page }) => {
@@ -25,7 +27,7 @@ test.describe("Event Request Form", () => {
   test("can advance to step 2 with valid data", async ({ page }) => {
     await page.goto("/event-request");
     await fillStep1(page);
-    await expect(page.locator("text=Select Services")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Select Services" })).toBeVisible();
   });
 
   test("step 2: selecting no service blocks progress", async ({ page }) => {
@@ -33,7 +35,7 @@ test.describe("Event Request Form", () => {
     await fillStep1(page);
     await page.locator("button", { hasText: /continue/i }).click();
     // Still on step 2 — zod requires selectedServices.min(1)
-    await expect(page.locator("text=Select Services")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Select Services" })).toBeVisible();
     await expect(page.locator("text=Select at least one service")).toBeVisible();
   });
 
@@ -43,7 +45,7 @@ test.describe("Event Request Form", () => {
     // Step 2 — select one category card (renders as a labelled button per category)
     await page.locator("button", { hasText: "Photography" }).first().click();
     await page.locator("button", { hasText: /continue/i }).click();
-    await expect(page.locator("text=Your Priorities")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Your Priorities" })).toBeVisible();
 
     await expect(page.locator("input[type='file'][accept*='image']")).toBeAttached();
     await expect(page.locator("button[aria-label='Start voice recording']")).toBeVisible();

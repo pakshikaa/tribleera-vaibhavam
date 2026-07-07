@@ -43,7 +43,8 @@ test.describe("Mobile 375px", () => {
     for (const link of await links.all()) {
       const box = await link.boundingBox();
       expect(box).not.toBeNull();
-      if (box) expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
+      // Tolerate sub-pixel rendering (44px CSS class can measure as 43.999...).
+      if (box) expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(43.9);
     }
   });
 });

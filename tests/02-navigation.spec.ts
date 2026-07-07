@@ -4,7 +4,11 @@ const PAGES = ["/", "/vendors", "/vendors/jaffna-frames-studio", "/services", "/
 
 for (const url of PAGES) {
   test.describe(`Nav on ${url}`, () => {
-    test("shows 4 nav links", async ({ page }) => {
+    test("shows 4 nav links", async ({ page }, testInfo) => {
+      // Header's desktop <nav> is `hidden md:flex` — at the Mobile Safari
+      // viewport the same links only exist inside the closed hamburger Sheet,
+      // which "mobile hamburger opens Sheet" already covers separately.
+      testInfo.skip(testInfo.project.name === "Mobile Safari", "desktop-only nav bar");
       await page.goto(url);
       await expect(page.locator("nav a", { hasText: "Services" }).first()).toBeVisible();
       await expect(page.locator("nav a", { hasText: "Vendors" }).first()).toBeVisible();
@@ -56,6 +60,9 @@ test("mobile hamburger opens Sheet", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.goto("/");
   await page.locator("[aria-label='Open menu']").click();
-  await expect(page.locator("[role='dialog']")).toBeVisible();
-  await expect(page.locator("[role='dialog']").locator("text=Services")).toBeVisible();
+  // The cookie-consent banner also has role="dialog" — scope to the Sheet
+  // specifically (its Radix Dialog title is "Menu").
+  const menu = page.getByRole("dialog", { name: "Menu" });
+  await expect(menu).toBeVisible();
+  await expect(menu.locator("text=Services")).toBeVisible();
 });

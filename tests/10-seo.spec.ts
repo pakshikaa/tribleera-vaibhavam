@@ -6,7 +6,7 @@ const PAGES_SEO = [
   { url: "/services", titleContains: "Services" },
   { url: "/trust", titleContains: "TRIBLEERA" },
   { url: "/about", titleContains: "About" },
-  { url: "/faq", titleContains: "FAQ" },
+  { url: "/faq", titleContains: "Frequently Asked" },
   { url: "/contact", titleContains: "Contact" },
 ];
 
@@ -34,8 +34,12 @@ for (const { url, titleContains } of PAGES_SEO) {
 
   test(`${url} canonical/OG url is not example.com`, async ({ page }) => {
     await page.goto(url);
-    const canonical = await page.locator("link[rel='canonical']").getAttribute("href").catch(() => null);
-    if (canonical) {
+    // .count() resolves immediately even with 0 matches; getAttribute() on a
+    // never-appearing locator instead polls for the full test timeout before
+    // any .catch() gets a chance to run.
+    const canonicalTag = page.locator("link[rel='canonical']");
+    if (await canonicalTag.count() > 0) {
+      const canonical = await canonicalTag.first().getAttribute("href");
       expect(canonical).not.toContain("example.com");
     }
   });

@@ -105,7 +105,9 @@ test.describe("Confirmation", () => {
     await page.goto("/");
     await page.evaluate((b) => localStorage.setItem("TRIBLEERA-last-booking", JSON.stringify(b)), seedBooking({ adminVerified: false, status: "pending" }));
     await page.goto("/booking/confirmation");
-    await expect(page.locator("text=Awaiting")).toBeVisible();
+    // Two elements contain "Awaiting" (the pending message and a status
+    // badge) — either confirms the pending state, .first() avoids strict mode.
+    await expect(page.locator("text=Awaiting").first()).toBeVisible();
   });
 
   test("shows confirmed state when adminVerified", async ({ page }) => {

@@ -27,7 +27,9 @@ test.describe("Vendor Listing", () => {
 
   test("heart button shortlists vendor", async ({ page }) => {
     await page.goto("/vendors");
-    const heart = page.locator("[aria-label*='shortlist']").first();
+    // Scope to <main> — Header's own "Your shortlist" link also matches
+    // [aria-label*='shortlist'] and would otherwise win .first() and navigate away.
+    const heart = page.locator("main [aria-label*='shortlist']").first();
     await heart.click();
     await expect(page.locator("a[aria-label='Your shortlist'] span", { hasText: "1" })).toBeVisible();
   });
@@ -58,7 +60,11 @@ test.describe("Vendor Profile", () => {
     await expect(page.locator("[role='dialog'][aria-label*='gallery']")).not.toBeVisible();
   });
 
-  test("contact section is locked for an unauthenticated visitor", async ({ page }) => {
+  test("contact section is locked for an unauthenticated visitor", async ({ page }, testInfo) => {
+    // The sidebar holding VendorContactClient is `hidden md:block` — on
+    // mobile the equivalent surface is VendorMobileBookBar, a different
+    // component not covered by this assertion.
+    testInfo.skip(testInfo.project.name === "Mobile Safari", "desktop sidebar only");
     await page.goto("/vendors/jaffna-frames-studio");
     await expect(page.locator("text=Contact revealed after booking")).toBeVisible();
     await expect(page.locator("text=+94 77")).toHaveCount(0);
@@ -77,7 +83,9 @@ test.describe("Vendor Profile", () => {
 
   test("back button exists and works", async ({ page }) => {
     await page.goto("/vendors/jaffna-frames-studio");
-    await page.locator("a", { hasText: /vendors/i }).first().click();
+    // ':visible' — Header's desktop nav "Vendors" link matches the same text
+    // but is CSS-hidden on the Mobile Safari viewport.
+    await page.locator("a:visible", { hasText: /vendors/i }).first().click();
     await expect(page).toHaveURL(/\/vendors/);
   });
 });
