@@ -31,7 +31,12 @@ test.describe("Vendor Listing", () => {
     // [aria-label*='shortlist'] and would otherwise win .first() and navigate away.
     const heart = page.locator("main [aria-label*='shortlist']").first();
     await heart.click();
-    await expect(page.locator("a[aria-label='Your shortlist'] span", { hasText: "1" })).toBeVisible();
+    // Header's shortlist icon (and its badge) is `hidden md:flex` on mobile,
+    // so a visible-badge check isn't viewport-independent — assert the
+    // underlying persisted state instead, which is what actually matters.
+    await expect
+      .poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("TRIBLEERA-shortlist-v1") ?? "[]").length))
+      .toBe(1);
   });
 });
 
