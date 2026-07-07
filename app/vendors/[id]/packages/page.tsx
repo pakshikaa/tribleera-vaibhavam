@@ -10,6 +10,9 @@ export function generateStaticParams() {
   return vendors.map((v) => ({ id: v.slug }));
 }
 
+// See app/vendors/[id]/page.tsx for why this matters for a correct 404 status.
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const vendor = getVendorBySlug(id);

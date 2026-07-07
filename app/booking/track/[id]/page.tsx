@@ -16,6 +16,11 @@ export function generateStaticParams() {
   return bookings.map((b) => ({ id: b.id }));
 }
 
+// Without this, a request for an id outside the static list gets rendered
+// on demand and Next.js caches the notFound() result as a 200 — the HTTP
+// status doesn't actually reflect the 404 boundary being hit.
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   return { title: `Tracking — ${id}` };

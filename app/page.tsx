@@ -9,7 +9,10 @@ import { BookingJourney } from "@/components/home/BookingJourney";
 import { PremiumCTA } from "@/components/home/PremiumCTA";
 
 export const metadata: Metadata = {
-  title: "Plan Your Perfect Celebration",
+  // `absolute` bypasses the root layout's title template deterministically —
+  // this page was rendering with the brand suffix silently dropped when
+  // relying on template substitution (confirmed live via Playwright).
+  title: { absolute: "TRIBLEERA VAIBHAVAM | Plan Your Perfect Celebration" },
   description:
     "Jaffna's premium wedding concierge — verified photographers, decorators, bridal makeup artists, cake ateliers and invitation designers, bookable with secure milestone payments.",
   alternates: { canonical: "/" },
