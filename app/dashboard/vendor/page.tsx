@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bell, CalendarDays, Eye, ExternalLink, Pencil, Sparkles, TrendingUp } from "lucide-react";
+import { AlertTriangle, Bell, CalendarDays, Eye, ExternalLink, Pencil, Sparkles, TrendingUp } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { MotifArt } from "@/components/ui/MotifArt";
 import { VendorRequestsClient } from "@/components/dashboard/VendorRequestsClient";
-import { formatLKR } from "@/lib/utils/format";
+import { formatDate, formatLKR } from "@/lib/utils/format";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { vendorRequests } from "@/lib/data/vendorRequests";
 import { bookings } from "@/lib/data/bookings";
@@ -15,6 +15,36 @@ import { bookings } from "@/lib/data/bookings";
 export const metadata: Metadata = { title: "Vendor Dashboard" };
 
 const VENDOR_SLUG = "pushpa-florals-and-decor";
+
+// Module-scope so the impure Date.now() read is an opaque call from the
+// component's perspective — same pattern as generateBookingId().
+function daysUntil(dateStr: string): number {
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
+function TrustScoreRing({ score }: { score: number }) {
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const filled = (score / 100) * circumference;
+  return (
+    <div className="relative flex h-16 w-16 shrink-0 items-center justify-center">
+      <svg width={64} height={64} viewBox="0 0 64 64" className="-rotate-90">
+        <circle cx={32} cy={32} r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={5} />
+        <circle
+          cx={32}
+          cy={32}
+          r={radius}
+          fill="none"
+          stroke="#D4AF6A"
+          strokeWidth={5}
+          strokeDasharray={`${filled} ${circumference}`}
+          strokeLinecap="round"
+        />
+      </svg>
+      <p className="absolute font-display text-base font-bold text-gold-light">{score}</p>
+    </div>
+  );
+}
 
 export default function VendorDashboardPage() {
   const vendor = getVendorBySlug(VENDOR_SLUG)!;
@@ -30,51 +60,83 @@ export default function VendorDashboardPage() {
   const monthlyTarget = 450000;
   const monthlyProgress = Math.min(100, Math.round((completedRevenue / monthlyTarget) * 100));
 
+  const upcomingSoon = vendorBookings
+    .filter((b) => b.status !== "cancelled" && b.status !== "completed")
+    .map((b) => ({ ...b, daysUntil: daysUntil(b.eventDate) }))
+    .filter((b) => b.daysUntil >= 0 && b.daysUntil <= 3)
+    .sort((a, b) => a.daysUntil - b.daysUntil);
+
   return (
     <div className="bg-ivory">
-      <section className="border-b border-slate/8 bg-white py-10">
+      <section
+        className="py-10"
+        style={{ background: "linear-gradient(135deg, #15040C 0%, #5C0427 100%)" }}
+      >
         <Container className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 overflow-hidden rounded-[8px] shadow-soft">
               <MotifArt variant={vendor.motif} tone={vendor.tone} seed={vendor.id.length} />
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep">Premium Partner Dashboard</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gold">Premium Partner Dashboard</p>
               <div className="flex items-center gap-2">
-                <h1 className="font-display text-2xl text-burgundy-deep">Welcome back, {vendor.name}</h1>
+                <h1 className="font-display text-2xl text-cream">Welcome back, {vendor.name}</h1>
                 {vendor.verified && <Badge tone="rose">Verified</Badge>}
               </div>
-              <p className="text-sm text-slate-soft">{vendor.location}</p>
+              <p className="text-sm text-cream-dim">{vendor.location}</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button href="/dashboard/vendor/profile" variant="secondary" icon={<Pencil size={15} />}>
-              Edit profile
-            </Button>
-            <Button href="/dashboard/vendor/packages" variant="gold">
-              Manage packages
-            </Button>
+          <div className="flex items-center gap-4">
+            <TrustScoreRing score={trustPercent} />
+            <div className="flex flex-wrap gap-2">
+              <Button href="/dashboard/vendor/profile" variant="glass" icon={<Pencil size={15} />}>
+                Edit profile
+              </Button>
+              <Button href="/dashboard/vendor/packages" variant="gold">
+                Manage packages
+              </Button>
+            </div>
           </div>
         </Container>
       </section>
 
       <Container className="py-10 md:py-14">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-[200px_1fr]">
-          <div className="flex flex-col items-center justify-center rounded-[8px] border-2 border-burgundy/30 bg-white p-6 text-center shadow-soft">
-            <p className="font-display text-4xl text-burgundy-deep">{trustPercent}</p>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-soft">Trust Score</p>
-            <p className="mt-2 font-display text-sm text-burgundy-deep">Exceptional Performance</p>
-            <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-              <Badge tone="rose">Top Rated</Badge>
-              <Badge tone="gold">Elite Status</Badge>
+        {upcomingSoon.length > 0 && (
+          <div className="mb-8 rounded-[10px] border border-gold/30 bg-gold/[0.08] p-5">
+            <div className="flex items-center gap-2 text-amber-900">
+              <AlertTriangle size={18} className="text-gold-deep" />
+              <p className="font-display text-base font-semibold text-burgundy-deep">Upcoming event — action required</p>
+            </div>
+            <div className="mt-3 space-y-2">
+              {upcomingSoon.map((b) => (
+                <div
+                  key={b.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] bg-white/70 px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-slate">{b.customerName}</p>
+                    <p className="text-xs text-slate-soft">{formatDate(b.eventDate)}</p>
+                  </div>
+                  <p className="font-display text-2xl font-bold text-burgundy-deep">
+                    {b.daysUntil === 0 ? "Today" : b.daysUntil === 1 ? "1 day" : `${b.daysUntil} days`}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
-            <StatCard label="New requests" value={String(newRequests)} icon={<Bell size={18} />} />
-            <StatCard label="Profile views (30d)" value="2,184" delta="+12.4% vs last month" icon={<Eye size={18} />} />
-            <StatCard label="Events completed" value={String(vendor.eventsCompleted)} icon={<CalendarDays size={18} />} />
-            <StatCard label="Response rate" value="99%" icon={<TrendingUp size={18} />} />
-          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard label="New requests" value={String(newRequests)} icon={<Bell size={18} />} accent="burgundy" />
+          <StatCard
+            label="Profile views (30d)"
+            value="2,184"
+            delta="+12.4% vs last month"
+            icon={<Eye size={18} />}
+            accent="gold"
+          />
+          <StatCard label="Events completed" value={String(vendor.eventsCompleted)} icon={<CalendarDays size={18} />} accent="success" />
+          <StatCard label="Response rate" value="99%" icon={<TrendingUp size={18} />} accent="info" />
         </div>
 
         {/* Your public profile card */}

@@ -36,6 +36,8 @@ export const categoryImages: Record<string, string[]> = {
 
 export const heroImage = u("photo-1583939003579-730e3918a45a", 1920);
 export const trustSectionImage = u("photo-1519167758481-83f29c8e8ee0", 1600);
+export const adminLoginImage = u("photo-1478146059778-26028b07395a", 1600);
+export const vendorLoginImage = u("photo-1519741497674-611481863552", 1600);
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),

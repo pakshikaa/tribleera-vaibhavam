@@ -3,9 +3,11 @@ import Link from "next/link";
 import { Store, Users, Wallet, ShieldAlert, ArrowRight, LayoutGrid, Scale } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
+import { Table, THead, Th, Td, Tr } from "@/components/ui/Table";
 import { AdminUsersClient } from "@/components/dashboard/AdminUsersClient";
 import { AdminActivityFeedClient } from "@/components/dashboard/AdminActivityFeedClient";
 import { AdminQuickActionsClient } from "@/components/dashboard/AdminQuickActionsClient";
+import { AdminGreetingBar } from "@/components/dashboard/AdminGreetingBar";
 import { BookingStatusBadge } from "@/components/dashboard/StatusBadge";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { vendors } from "@/lib/data/vendors";
@@ -84,6 +86,9 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Greeting bar */}
+      <AdminGreetingBar />
+
       {/* Page header */}
       <div>
         <h1 className="font-display text-2xl font-bold text-slate">Platform Overview</h1>
@@ -95,10 +100,16 @@ export default function AdminDashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard label="Active vendors" value={String(activeVendors)} icon={<Store size={18} />} />
-        <StatCard label="Pending approvals" value={String(vendorApplications.length)} deltaTone="danger" icon={<ShieldAlert size={18} />} />
-        <StatCard label="Total bookings" value={String(bookings.length)} icon={<Users size={18} />} />
-        <StatCard label="Platform fees earned" value={formatLKR(totalFees)} icon={<Wallet size={18} />} />
+        <StatCard label="Active vendors" value={String(activeVendors)} icon={<Store size={18} />} accent="burgundy" />
+        <StatCard
+          label="Pending approvals"
+          value={String(vendorApplications.length)}
+          deltaTone="danger"
+          icon={<ShieldAlert size={18} />}
+          accent="gold"
+        />
+        <StatCard label="Total bookings" value={String(bookings.length)} icon={<Users size={18} />} accent="info" />
+        <StatCard label="Platform fees earned" value={formatLKR(totalFees)} icon={<Wallet size={18} />} accent="success" />
       </div>
 
       {/* Quick links */}
@@ -123,41 +134,56 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
-      {/* Tabs: Recent bookings + Users */}
-      <Tabs
-        tabs={[
-          { id: "activity", label: "Recent bookings", count: bookings.length },
-          { id: "users", label: "Manage users", count: users.length },
-        ]}
-        panels={{
-          activity: (
-            <div className="space-y-3">
-              {bookings.map((b) => (
-                <div key={b.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate/8 bg-white px-4 py-3.5">
-                  <div>
-                    <p className="text-sm font-semibold text-slate">
-                      {b.id} <span className="font-normal text-slate-soft">&middot; {b.customerName}</span>
-                    </p>
-                    <p className="text-xs text-slate-soft">
-                      {formatDateShort(b.createdAt)} &middot; {b.items.length} vendor(s)
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-burgundy-deep">{formatLKR(b.payableNow)}</span>
-                    <BookingStatusBadge status={b.status} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ),
-          users: <AdminUsersClient initial={users} />,
-        }}
-      />
+      {/* Recent bookings (table) + Activity feed — split layout */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
+        <div>
+          <Tabs
+            tabs={[
+              { id: "bookings", label: "Recent bookings", count: bookings.length },
+              { id: "users", label: "Manage users", count: users.length },
+            ]}
+            panels={{
+              bookings: (
+                <Table>
+                  <THead>
+                    <Th>Booking</Th>
+                    <Th>Customer</Th>
+                    <Th>Service</Th>
+                    <Th>Date</Th>
+                    <Th>Status</Th>
+                    <Th className="text-right">Amount</Th>
+                  </THead>
+                  <tbody>
+                    {bookings.slice(0, 5).map((b) => (
+                      <Tr key={b.id}>
+                        <Td className="font-medium text-burgundy-deep">{b.id}</Td>
+                        <Td>{b.customerName}</Td>
+                        <Td>
+                          {b.items[0]?.vendorName ?? "—"}
+                          {b.items.length > 1 && (
+                            <span className="text-slate-soft"> +{b.items.length - 1}</span>
+                          )}
+                        </Td>
+                        <Td className="text-slate-soft">{formatDateShort(b.eventDate)}</Td>
+                        <Td>
+                          <BookingStatusBadge status={b.status} />
+                        </Td>
+                        <Td className="text-right font-medium text-burgundy-deep">{formatLKR(b.payableNow)}</Td>
+                      </Tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ),
+              users: <AdminUsersClient initial={users} />,
+            }}
+          />
+        </div>
 
-      {/* Recent Activity Feed */}
-      <div>
-        <h2 className="mb-4 font-display text-lg font-semibold text-slate">Recent Activity</h2>
-        <AdminActivityFeedClient staticFeed={ACTIVITY_FEED} />
+        {/* Recent Activity Feed */}
+        <div>
+          <h2 className="mb-4 font-display text-lg font-semibold text-slate">Recent Activity</h2>
+          <AdminActivityFeedClient staticFeed={ACTIVITY_FEED} />
+        </div>
       </div>
     </div>
   );

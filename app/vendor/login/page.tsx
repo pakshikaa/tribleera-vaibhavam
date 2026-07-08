@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Camera, Shield, Star, TrendingUp } from "lucide-react";
+import { vendorLoginImage } from "@/lib/data/images";
 
 type ApprovedVendor = {
   slug: string;
@@ -18,6 +19,13 @@ type ApprovedVendor = {
 const STATIC_FALLBACK = [
   { slug: "pushpa-florals-and-decor", phone: "+94771000001", businessName: "Pushpa Florals & Decor" },
   { slug: "jaffna-frames-studio",     phone: "+94771000002", businessName: "Jaffna Frames Studio" },
+];
+
+const BENEFITS = [
+  { icon: TrendingUp, text: "Earn LKR 50K–350K per event" },
+  { icon: Shield, text: "Advance secured in escrow — always paid" },
+  { icon: Star, text: "Grow your trust score and get more bookings" },
+  { icon: Camera, text: "Professional profile visible to 1000s of couples" },
 ];
 
 function normalisePhone(raw: string) {
@@ -81,31 +89,69 @@ export default function VendorLoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left panel */}
-      <div className="relative hidden overflow-hidden lg:flex lg:w-1/2 lg:flex-col lg:items-center lg:justify-center lg:bg-[#15040C] lg:px-12">
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
-          <svg viewBox="0 0 200 200" fill="none" className="h-full w-full">
-            <path d="M40 180 V100 C40 50 65 15 100 15 C135 15 160 50 160 100 V180" stroke="#D4AF6A" strokeWidth="3" />
-            <path d="M62 180 V104 C62 68 78 38 100 38 C122 38 138 68 138 104 V180" stroke="#D4AF6A" strokeWidth="3" />
-          </svg>
-        </div>
-        <Image
-          src="/logo/tribleera-mark-192.png"
-          alt="TRIBLEERA"
-          width={64}
-          height={64}
-          className="mb-6 rounded-[12px]"
-          style={{ boxShadow: "0 0 30px rgba(212,175,106,0.3)" }}
+      {/* Left panel — image + benefits */}
+      <div className="relative hidden w-[45%] shrink-0 overflow-hidden lg:block">
+        <Image src={vendorLoginImage} alt="" fill sizes="45vw" priority className="object-cover object-top" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(21,4,12,0.7) 0%, rgba(21,4,12,0.35) 45%, rgba(21,4,12,0.9) 100%)",
+          }}
         />
-        <h1 className="mb-3 text-center font-display text-3xl font-bold text-[#F7EEE2]">
-          Your studio.<br />Your bookings.
-        </h1>
-        <p className="max-w-xs text-center text-sm leading-relaxed text-[#C9BCAF]">
-          Manage requests, update your profile, and track your revenue — all in one place.
-        </p>
-        <p className="mt-8 font-display text-sm italic text-[#D4AF6A]/70">
-          தேர்வின் செம்மை, வைபவத்தின் பெருமை
-        </p>
+        <div className="absolute inset-0 bg-burgundy-950/20" />
+
+        <div className="relative z-10 flex h-full flex-col p-9">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <Image
+              src="/logo/tribleera-mark-192.png"
+              alt="TRIBLEERA"
+              width={36}
+              height={36}
+              className="rounded-[8px] shadow-[0_0_18px_rgba(212,175,106,0.35)]"
+            />
+            <div className="leading-none">
+              <p className="font-display text-[13px] font-bold tracking-[0.18em] text-gold">TRIBLEERA</p>
+              <p className="mt-1 font-display text-[7.5px] tracking-[0.28em] text-gold-light/70">VAIBHAVAM</p>
+            </div>
+          </div>
+
+          {/* Headline */}
+          <div className="flex flex-1 flex-col justify-center">
+            <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-gold/70">Vendor Partner Portal</p>
+            <h1
+              className="mb-3.5 font-display text-3xl font-bold leading-tight text-cream"
+              style={{ textShadow: "0 2px 20px rgba(21,4,12,0.9)" }}
+            >
+              Your studio.
+              <br />
+              <span className="text-gold">Your success.</span>
+            </h1>
+            <p className="max-w-[300px] text-[13px] leading-relaxed text-cream-dim/70">
+              Manage bookings, respond to requests, and grow your business with Jaffna&rsquo;s most trusted
+              wedding platform.
+            </p>
+          </div>
+
+          {/* Why vendors choose us */}
+          <div>
+            <p className="mb-2.5 text-[9.5px] uppercase tracking-[0.14em] text-gold/55">Why vendors choose us</p>
+            <div className="flex flex-col gap-2">
+              {BENEFITS.map(({ icon: Icon, text }) => (
+                <div key={text} className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-gold/20 bg-gold/[0.12]">
+                    <Icon size={13} className="text-gold" aria-hidden="true" />
+                  </div>
+                  <span className="text-xs leading-tight text-cream-dim/75">{text}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 font-display text-[10px] italic text-cream-faint/40">
+              தேர்வின் செம்மை, வைபவத்தின் பெருமை
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Right panel */}
@@ -141,6 +187,7 @@ export default function VendorLoginPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+94 77 XXX XXXX"
                 required
+                autoComplete="tel"
                 className="w-full rounded border border-slate/20 bg-white px-4 py-3 text-sm text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
               />
             </div>
@@ -161,6 +208,7 @@ export default function VendorLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                autoComplete="current-password"
                 className="w-full rounded border border-slate/20 bg-white px-4 py-3 text-sm text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
               />
             </div>
