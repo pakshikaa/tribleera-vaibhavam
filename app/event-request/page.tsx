@@ -281,9 +281,11 @@ export default function EventRequestPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Input
                   label="Wedding date"
+                  id="eventDate"
                   type="date"
                   min={today}
                   required
+                  aria-label="Wedding event date"
                   error={errors.eventDate?.message}
                   {...register("eventDate")}
                 />

@@ -2,7 +2,8 @@ import { test, expect, Page } from "@playwright/test";
 
 async function fillStep1(page: Page) {
   const futureDate = new Date(Date.now() + 90 * 86400000).toISOString().split("T")[0];
-  await page.locator("input[type='date']").fill(futureDate);
+  await page.waitForSelector("input[name='eventDate']", { state: "visible", timeout: 5000 });
+  await page.locator("input[name='eventDate']").fill(futureDate);
   await page.locator("select").first().selectOption("Jaffna");
   await page.locator("input[type='number']").fill("150");
   await page.locator("button", { hasText: "LKR 50K-150K" }).click();
@@ -19,7 +20,8 @@ test.describe("Event Request Form", () => {
 
   test("past date shows validation error", async ({ page }) => {
     await page.goto("/event-request");
-    await page.locator("input[type='date']").fill("2020-01-01");
+    await page.waitForSelector("input[name='eventDate']", { state: "visible", timeout: 5000 });
+    await page.locator("input[name='eventDate']").fill("2020-01-01");
     await page.locator("button", { hasText: /continue/i }).click();
     await expect(page.locator("text=future date")).toBeVisible();
   });
