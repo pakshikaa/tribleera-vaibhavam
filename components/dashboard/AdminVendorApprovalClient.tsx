@@ -162,8 +162,8 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                   <p className="font-display text-lg text-slate">{app.businessName}</p>
                   <p className="text-xs text-slate-soft">
                     {getCategoryBySlug(app.categorySlug)?.name ?? app.categorySlug}
-                    {" Â· "}{app.city}
-                    {app.experienceYears > 0 && ` Â· ${app.experienceYears} yrs`}
+                    {" · "}{app.city}
+                    {app.experienceYears > 0 && ` · ${app.experienceYears} yrs`}
                   </p>
                   <div className="mt-1 flex flex-wrap gap-3 text-xs text-slate-soft">
                     <span className="flex items-center gap-1"><Phone size={11} /> {app.phone}</span>
@@ -218,7 +218,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                     rows={2}
                     value={adminNotes[app.id] ?? app.adminNotes ?? ""}
                     onChange={(e) => setAdminNotes((prev) => ({ ...prev, [app.id]: e.target.value }))}
-                    placeholder="Internal notes about this applicationâ€¦"
+                    placeholder="Internal notes about this application…"
                     className="mt-1.5 w-full rounded-[6px] border border-slate/15 bg-ivory px-3 py-2 text-sm text-slate placeholder:text-slate/40 focus:border-burgundy/40 focus:outline-none"
                   />
                 </div>

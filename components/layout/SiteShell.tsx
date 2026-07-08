@@ -10,13 +10,15 @@ import { BackToTop } from "@/components/ui/BackToTop";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { CookieConsent } from "@/components/ui/CookieConsent";
 
-const ADMIN_PREFIXES = ["/dashboard/admin", "/admin/"];
+// Vendor/admin portal routes get their own dedicated layout (sidebar or a
+// standalone login screen) and must not show the public marketing chrome.
+const PORTAL_PREFIXES = ["/dashboard/admin", "/admin/", "/dashboard/vendor", "/vendor/"];
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = ADMIN_PREFIXES.some((p) => pathname.startsWith(p));
+  const isPortal = PORTAL_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (isAdmin) {
+  if (isPortal) {
     return <>{children}</>;
   }
 

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +24,22 @@ const STEP_FIELDS: (keyof VendorRegisterInput)[][] = [
   ["portfolioCount"],
   ["agreeTerms", "agreeEscrow"],
 ];
+
+// Public Header/Footer are hidden on /vendor/* routes (mid-registration flow
+// shouldn't show the marketing nav) — this replaces it with minimal branding.
+function TopBar() {
+  return (
+    <div className="flex items-center gap-2.5 border-b border-slate/10 bg-white px-6 py-3.5">
+      <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={28} height={28} className="rounded-[6px]" />
+      <span className="font-display text-[13px] font-bold tracking-widest text-burgundy-deep">TRIBLEERA</span>
+      <span className="mt-0.5 text-[9px] font-semibold tracking-[0.15em] text-slate-soft uppercase">VAIBHAVAM</span>
+      <div className="flex-1" />
+      <Link href="/" className="text-[11px] text-slate-soft hover:text-burgundy">
+        ← Back to site
+      </Link>
+    </div>
+  );
+}
 
 export default function VendorRegisterPage() {
   const [step, setStep] = useState(0);
@@ -126,6 +143,7 @@ export default function VendorRegisterPage() {
   if (submitted) {
     return (
       <div className="bg-ivory min-h-screen">
+        <TopBar />
         <Container className="py-20">
           <div className="mx-auto max-w-lg text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-pale text-success">
@@ -134,7 +152,7 @@ export default function VendorRegisterPage() {
             <h1 className="mt-6 font-display text-3xl text-burgundy-deep">Application received</h1>
             <p className="mt-3 leading-relaxed text-slate-soft">
               Thank you, <strong>{values.businessName || "partner"}</strong>. We&rsquo;ll review your
-              application within 24â€“48 hours. You&rsquo;ll receive credentials to{" "}
+              application within 24–48 hours. You&rsquo;ll receive credentials to{" "}
               <strong>{values.email || "your inbox"}</strong> once approved.
             </p>
 
@@ -143,7 +161,7 @@ export default function VendorRegisterPage() {
               <ol className="mt-3 space-y-2.5 text-sm text-slate-soft">
                 {[
                   "Our team reviews your portfolio and business details",
-                  "If approved, youâ€™ll receive your login credentials by email",
+                  "If approved, you’ll receive your login credentials by email",
                   "Log in to complete your profile and add your packages",
                   "Your studio goes live on TRIBLEERA for couples to discover",
                 ].map((step, i) => (
@@ -180,6 +198,7 @@ export default function VendorRegisterPage() {
 
   return (
     <div className="bg-ivory">
+      <TopBar />
       <section className="border-b border-slate/8 bg-white py-10">
         <Container>
           <div className="mx-auto max-w-2xl">
@@ -252,7 +271,7 @@ export default function VendorRegisterPage() {
           >
             <h2 className="mb-6 font-display text-xl text-burgundy-deep">{STEPS[step]}</h2>
 
-            {/* STEP 1 â€” Identity */}
+            {/* STEP 1 — Identity */}
             {step === 0 && (
               <div className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -300,7 +319,7 @@ export default function VendorRegisterPage() {
               </div>
             )}
 
-            {/* STEP 2 â€” Service */}
+            {/* STEP 2 — Service */}
             {step === 1 && (
               <div className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -334,14 +353,14 @@ export default function VendorRegisterPage() {
                   required
                   placeholder="e.g. Timeless floral designs for your heritage celebration"
                   error={errors.tagline?.message}
-                  hint="10â€“100 characters. Shown on your vendor card."
+                  hint="10–100 characters. Shown on your vendor card."
                   {...register("tagline")}
                 />
                 <Textarea
                   label="About your business"
                   required
                   rows={4}
-                  placeholder="What makes your work distinct? Notable weddings, specialities, awardsâ€¦"
+                  placeholder="What makes your work distinct? Notable weddings, specialities, awards…"
                   hint={`${(values.about as string | undefined)?.length ?? 0} / 600 characters`}
                   error={errors.about?.message}
                   {...register("about")}
@@ -369,11 +388,11 @@ export default function VendorRegisterPage() {
               </div>
             )}
 
-            {/* STEP 3 â€” Portfolio Upload */}
+            {/* STEP 3 — Portfolio Upload */}
             {step === 2 && (
               <div className="space-y-4">
                 <p className="text-sm text-slate-soft">
-                  Upload your 3â€“12 best wedding photos. These will be reviewed by TRIBLEERA before
+                  Upload your 3–12 best wedding photos. These will be reviewed by TRIBLEERA before
                   your profile goes live.
                 </p>
 
@@ -390,7 +409,7 @@ export default function VendorRegisterPage() {
                     {portfolio.length === 0 ? "Click to upload photos" : "Add more photos"}
                   </span>
                   <span className="text-xs text-slate-soft">
-                    JPG, PNG or WebP Â· {portfolio.length}/12 uploaded
+                    JPG, PNG or WebP · {portfolio.length}/12 uploaded
                   </span>
                   <input
                     ref={fileInputRef}
@@ -435,13 +454,13 @@ export default function VendorRegisterPage() {
                 )}
 
                 <p className="text-xs text-slate-soft">
-                  At least 3 required Â· {12 - portfolio.length} more allowed Â·
+                  At least 3 required · {12 - portfolio.length} more allowed ·
                   Photos are reviewed privately and never shared without approval
                 </p>
               </div>
             )}
 
-            {/* STEP 4 â€” Review & Agree */}
+            {/* STEP 4 — Review & Agree */}
             {step === 3 && (
               <div className="space-y-5">
                 <p className="text-sm text-slate-soft">
@@ -455,17 +474,17 @@ export default function VendorRegisterPage() {
                     ["Phone", values.phone],
                     ["WhatsApp", values.whatsapp],
                     ["Email", values.email],
-                    ["Category", categories.find((c) => c.slug === values.category)?.name ?? "â€”"],
+                    ["Category", categories.find((c) => c.slug === values.category)?.name ?? "—"],
                     ["City", values.city],
                     ["Location", values.location],
                     ["Tagline", values.tagline],
                     ["Experience", values.experienceYears ? `${values.experienceYears} years` : "0"],
-                    ["Starting price", values.startingPrice ? formatLKR(Number(values.startingPrice)) : "â€”"],
+                    ["Starting price", values.startingPrice ? formatLKR(Number(values.startingPrice)) : "—"],
                     ["Portfolio", `${portfolio.length} photo${portfolio.length !== 1 ? "s" : ""} uploaded`],
                   ].map(([label, value]) => (
                     <div key={label as string} className="flex flex-wrap justify-between px-4 py-2.5">
                       <dt className="text-slate-soft">{label}</dt>
-                      <dd className="font-medium text-slate">{value || "â€”"}</dd>
+                      <dd className="font-medium text-slate">{value || "—"}</dd>
                     </div>
                   ))}
                 </dl>
@@ -537,7 +556,7 @@ export default function VendorRegisterPage() {
                 {step < STEPS.length - 1
                   ? "Continue"
                   : isSubmitting
-                    ? "Submittingâ€¦"
+                    ? "Submitting…"
                     : "Submit application"}
               </Button>
             </div>

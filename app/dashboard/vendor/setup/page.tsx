@@ -211,7 +211,7 @@ export default function VendorSetupPage() {
         <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
           <h2 className="mb-6 font-display text-xl text-burgundy-deep">{STEPS[step]}</h2>
 
-          {/* STEP 1 â€” Profile photo */}
+          {/* STEP 1 — Profile photo */}
           {step === 0 && (
             <div className="flex flex-col items-center gap-6">
               <p className="text-sm text-slate-soft">
@@ -246,7 +246,7 @@ export default function VendorSetupPage() {
               />
 
               {photoPreview && (
-                <p className="text-xs text-success">Photo selected â€” looking great!</p>
+                <p className="text-xs text-success">Photo selected — looking great!</p>
               )}
 
               <button
@@ -259,11 +259,11 @@ export default function VendorSetupPage() {
             </div>
           )}
 
-          {/* STEP 2 â€” Service info */}
+          {/* STEP 2 — Service info */}
           {step === 1 && (
             <div className="space-y-4">
               <p className="text-sm text-slate-soft">
-                Pre-filled from your registration â€” review and enhance before going live.
+                Pre-filled from your registration — review and enhance before going live.
               </p>
               <Input
                 label="Tagline"
@@ -271,7 +271,7 @@ export default function VendorSetupPage() {
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value)}
                 placeholder="Timeless floral designs for your heritage celebration"
-                hint="10â€“100 characters. Shown on your vendor card."
+                hint="10–100 characters. Shown on your vendor card."
                 error={step2Errors.tagline}
               />
               <Textarea
@@ -307,7 +307,7 @@ export default function VendorSetupPage() {
             </div>
           )}
 
-          {/* STEP 3 â€” First package */}
+          {/* STEP 3 — First package */}
           {step === 2 && (
             <div className="space-y-4">
               <p className="text-sm text-slate-soft">

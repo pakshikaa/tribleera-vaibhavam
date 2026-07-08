@@ -74,7 +74,7 @@ export function Header() {
             }}
             className="rounded-md"
           >
-            {/* Desktop logo â€” 36Ã—36 per Figma */}
+            {/* Desktop logo — 36×36 per Figma */}
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLEERA VAIBHAVAM"
@@ -83,7 +83,7 @@ export function Header() {
               className="hidden rounded-[8px] shrink-0 md:block"
               priority
             />
-            {/* Mobile logo â€” 32Ã—32 per Figma */}
+            {/* Mobile logo — 32×32 per Figma */}
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLEERA VAIBHAVAM"
@@ -138,7 +138,7 @@ export function Header() {
         {/* Desktop right section */}
         <div className="hidden items-center gap-1.5 md:flex">
 
-          {/* Notification bell â€” desktop only */}
+          {/* Notification bell — desktop only */}
           <NotificationPanel
             triggerClassName={cn(
               "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
@@ -236,7 +236,7 @@ export function Header() {
 
         </div>
 
-        {/* Mobile right â€” hamburger ONLY, no bell */}
+        {/* Mobile right — hamburger ONLY, no bell */}
         <div className="flex items-center gap-3 md:hidden">
           <Sheet>
             <SheetTrigger aria-label="Open menu">

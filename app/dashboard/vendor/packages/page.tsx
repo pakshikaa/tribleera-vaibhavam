@@ -154,7 +154,7 @@ export default function VendorPackagesPage() {
                         )
                       }
                     >
-                      Ã—
+                      ×
                     </button>
                   </div>
                 ))}

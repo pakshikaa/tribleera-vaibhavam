@@ -101,10 +101,10 @@ export default function VendorLoginPage() {
           Your studio.<br />Your bookings.
         </h1>
         <p className="max-w-xs text-center text-sm leading-relaxed text-[#C9BCAF]">
-          Manage requests, update your profile, and track your revenue â€” all in one place.
+          Manage requests, update your profile, and track your revenue — all in one place.
         </p>
         <p className="mt-8 font-display text-sm italic text-[#D4AF6A]/70">
-          à®¤à¯‡à®°à¯à®µà®¿à®©à¯ à®šà¯†à®®à¯à®®à¯ˆ, à®µà¯ˆà®ªà®µà®¤à¯à®¤à®¿à®©à¯ à®ªà¯†à®°à¯à®®à¯ˆ
+          தேர்வின் செம்மை, வைபவத்தின் பெருமை
         </p>
       </div>
 
@@ -125,7 +125,7 @@ export default function VendorLoginPage() {
           <p className="mb-8 text-sm text-[#4B5563]">
             New vendor?{" "}
             <Link href="/vendor/register" className="font-semibold text-[#7A1F3D] hover:underline">
-              Register your studio â†’
+              Register your studio →
             </Link>
           </p>
 
@@ -159,7 +159,7 @@ export default function VendorLoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 required
                 className="w-full rounded border border-slate/20 bg-white px-4 py-3 text-sm text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
               />
@@ -177,7 +177,7 @@ export default function VendorLoginPage() {
               disabled={loading}
               className="w-full rounded bg-[#7A1F3D] py-3 text-sm font-semibold text-white transition-all hover:bg-[#5C0427] disabled:opacity-60"
             >
-              {loading ? "Signing inâ€¦" : "Sign in to vendor portal"}
+              {loading ? "Signing in…" : "Sign in to vendor portal"}
             </button>
           </form>
 
@@ -190,7 +190,7 @@ export default function VendorLoginPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-[#4B5563]">
-            <Link href="/" className="hover:text-[#7A1F3D]">â† Back to TRIBLEERA</Link>
+            <Link href="/" className="hover:text-[#7A1F3D]">← Back to TRIBLEERA</Link>
           </p>
         </div>
       </div>

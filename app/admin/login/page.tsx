@@ -17,6 +17,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
     // Mock auth — replace with real API call when backend ready
+    // Demo credentials: admin / TRIBLEERA2026
     setTimeout(() => {
       if (username === "admin" && password === "TRIBLEERA2026") {
         try {

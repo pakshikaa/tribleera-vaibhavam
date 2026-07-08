@@ -19,11 +19,6 @@ const NAV_ITEMS = [
   { href: "/dashboard/vendor/packages",  label: "Packages",  icon: Package },
 ];
 
-const BOTTOM_ITEMS = [
-  { href: "/contact",  label: "Support",  icon: HelpCircle },
-  { href: "/",         label: "Log Out",  icon: LogOut },
-];
-
 function NavItem({ href, label, icon: Icon, active }: { href: string; label: string; icon: React.ElementType; active: boolean }) {
   return (
     <Link
@@ -41,7 +36,7 @@ function NavItem({ href, label, icon: Icon, active }: { href: string; label: str
   );
 }
 
-function SidebarContent({ pathname }: { pathname: string }) {
+function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: () => void }) {
   function isActive(href: string) {
     return href === "/dashboard/vendor" ? pathname === href : pathname.startsWith(href);
   }
@@ -59,9 +54,15 @@ function SidebarContent({ pathname }: { pathname: string }) {
           <NavItem key={item.href} {...item} active={isActive(item.href)} />
         ))}
         <div className="my-3 mx-4 h-px bg-slate/10" />
-        {BOTTOM_ITEMS.map((item) => (
-          <NavItem key={item.href} {...item} active={false} />
-        ))}
+        <NavItem href="/contact" label="Support" icon={HelpCircle} active={false} />
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="flex w-full items-center gap-3 border-l-4 border-transparent px-4 py-3 text-left text-sm text-[#4B5563] transition-all hover:bg-[#FAF7F2] hover:text-[#1F2937]"
+        >
+          <LogOut size={17} aria-hidden="true" />
+          Log Out
+        </button>
       </nav>
     </div>
   );
@@ -85,11 +86,20 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
 
   if (!checked) return null;
 
+  function handleSignOut() {
+    try {
+      sessionStorage.removeItem("vendor-auth");
+      sessionStorage.removeItem("vendor-slug");
+      sessionStorage.removeItem("vendor-name");
+    } catch {}
+    router.push("/vendor/login");
+  }
+
   return (
     <div className="flex min-h-screen bg-[#FAF7F2]">
       {/* Desktop sidebar */}
       <aside className="hidden w-56 shrink-0 border-r border-slate/10 bg-white md:flex md:flex-col">
-        <SidebarContent pathname={pathname} />
+        <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
       </aside>
 
       {/* Main area */}
@@ -106,7 +116,7 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
             </SheetTrigger>
             <SheetContent className="w-56 p-0">
               <SheetTitle className="sr-only">Navigation</SheetTitle>
-              <SidebarContent pathname={pathname} />
+              <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
             </SheetContent>
           </Sheet>
         </div>
