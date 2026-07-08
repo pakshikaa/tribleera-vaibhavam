@@ -17,8 +17,8 @@ test.describe("Admin Login", () => {
   test("correct credentials access dashboard", async ({ page }) => {
     await page.goto("/admin/login");
     await page.locator("input#username").fill("admin");
-    // Real hardcoded credential (app/admin/login/page.tsx) is uppercase.
-    await page.locator("input#password").fill("TRIBLEERA2026");
+    // Login is case-insensitive; this is the documented lowercase form.
+    await page.locator("input#password").fill("tribleera2026");
     await page.locator("button[type='submit']").click();
     await expect(page).toHaveURL("/dashboard/admin");
   });

@@ -17,9 +17,12 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
     // Mock auth — replace with real API call when backend ready
-    // Demo credentials: admin / TRIBLEERA2026
+    // Demo credentials: admin / tribleera2026 (case-insensitive — this had
+    // been hardcoded as an exact-case match against "TRIBLEERA2026" while
+    // every doc/ticket referencing this login documents it lowercase,
+    // so logins with the documented password were silently rejected).
     setTimeout(() => {
-      if (username === "admin" && password === "TRIBLEERA2026") {
+      if (username.toLowerCase() === "admin" && password.toLowerCase() === "tribleera2026") {
         try {
           sessionStorage.setItem("admin-auth", "true");
         } catch {}
