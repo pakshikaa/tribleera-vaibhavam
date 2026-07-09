@@ -15,13 +15,21 @@ const PLATFORM_STATS = [
   { icon: BarChart3, label: "Cities", value: "5" },
 ];
 
+// Blur-to-sharp staggered entrance — logo, then eyebrow, then headline, then
+// body, then stats, each 0.14s apart.
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
   show: (index: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.85, delay: 0.28 + index * 0.14, ease: [0.16, 1, 0.3, 1] as const },
+    filter: "blur(0px)",
+    transition: { duration: 0.7, delay: 0.15 + index * 0.14, ease: [0.16, 1, 0.3, 1] as const },
   }),
+};
+
+const lineExpand = {
+  hidden: { width: 0, opacity: 0 },
+  show: { width: 22, opacity: 1, transition: { duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
 export default function AdminLoginPage() {
@@ -57,25 +65,36 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen">
       {/* Left — cinematic image panel */}
       <div className="relative hidden w-[60%] shrink-0 overflow-hidden lg:block">
-        <Image src={adminLoginImage} alt="" fill sizes="60vw" priority className="object-cover" />
+        {/* Slow Ken Burns zoom — same technique as components/home/Hero.tsx,
+            tuned to a barely-there 14s drift so it reads as "alive" rather
+            than an obvious animation. */}
+        <motion.div
+          className="absolute inset-0 will-change-transform motion-reduce:animate-none"
+          animate={{ scale: [1, 1.06] }}
+          transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
+        >
+          <Image src={adminLoginImage} alt="" fill sizes="60vw" priority className="object-cover" />
+        </motion.div>
 
         {/* Film grain — reuses the existing .bg-grain utility, intensified for this hero moment */}
         <div className="bg-grain absolute inset-0 scale-150 opacity-40 mix-blend-overlay" />
 
+        {/* Base warmth */}
+        <div className="absolute inset-0 bg-ink/35" />
         {/* Radial vignette — depth from the center out, not a flat linear wash */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 80% 80% at 50% 40%, transparent 15%, rgba(21,4,12,0.55) 70%, rgba(21,4,12,0.92) 100%)",
+              "radial-gradient(ellipse 75% 75% at 50% 45%, transparent 15%, rgba(21,4,12,0.5) 65%, rgba(21,4,12,0.88) 100%)",
           }}
         />
-        {/* Top/bottom legibility gradient for the logo and content bands */}
+        {/* Bottom safe zone (headline + stats) and top safe zone (logo) */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to top, rgba(21,4,12,0.97) 0%, rgba(21,4,12,0.5) 26%, transparent 55%), linear-gradient(to bottom, rgba(21,4,12,0.7) 0%, transparent 22%)",
+              "linear-gradient(to top, rgba(21,4,12,0.97) 0%, rgba(21,4,12,0.7) 24%, rgba(21,4,12,0.2) 50%, transparent 70%), linear-gradient(to bottom, rgba(21,4,12,0.78) 0%, transparent 22%)",
           }}
         />
         <div className="absolute inset-0 bg-burgundy-950/15 mix-blend-multiply" />
@@ -109,15 +128,17 @@ export default function AdminLoginPage() {
 
           {/* Split headline */}
           <div className="flex flex-1 flex-col justify-center">
-            <motion.p
+            <motion.div
               custom={1}
               initial="hidden"
               animate="show"
               variants={fadeUp}
-              className="mb-4 text-[10px] uppercase tracking-[0.24em] text-gold/55"
+              className="mb-4 flex items-center gap-2.5"
             >
-              ── Control Centre ──
-            </motion.p>
+              <motion.span variants={lineExpand} className="h-px bg-gold/50" />
+              <p className="whitespace-nowrap text-[10px] uppercase tracking-[0.24em] text-gold/55">Control Centre</p>
+              <motion.span variants={lineExpand} className="h-px bg-gold/50" />
+            </motion.div>
 
             <motion.div custom={2} initial="hidden" animate="show" variants={fadeUp} className="mb-5">
               <p className="text-[15px] leading-none tracking-wide text-cream-faint/50 text-shadow-dark">Manage</p>
@@ -161,9 +182,15 @@ export default function AdminLoginPage() {
                 </div>
               ))}
             </div>
-            <p className="mt-5 font-display text-[10.5px] italic text-cream-faint/35">
+            {/* The one element that breathes — a slow, quiet pulse rather
+                than anything competing for attention. */}
+            <motion.p
+              animate={{ opacity: [0.3, 0.55, 0.3] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              className="mt-5 font-display text-[10.5px] italic text-cream-faint"
+            >
               தேர்வின் செம்மை, வைபவத்தின் பெருமை
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </div>

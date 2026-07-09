@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AlertCircle, Sparkles } from "lucide-react";
+import { AlertCircle, Heart, Sparkles } from "lucide-react";
 import { vendorLoginImage } from "@/lib/data/images";
 
 type ApprovedVendor = {
@@ -29,12 +29,15 @@ const AVATARS = [
   { initials: "NL", bg: "#220714" },
 ];
 
+// Blur-to-sharp staggered entrance — logo, then eyebrow, then headline, then
+// body, then bottom block, each ~0.13s apart.
 const fadeUp = {
-  hidden: { opacity: 0, y: 22 },
+  hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
   show: (index: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, delay: 0.24 + index * 0.13, ease: [0.16, 1, 0.3, 1] as const },
+    filter: "blur(0px)",
+    transition: { duration: 0.65, delay: 0.12 + index * 0.13, ease: [0.16, 1, 0.3, 1] as const },
   }),
 };
 
@@ -101,14 +104,14 @@ export default function VendorLoginPage() {
     <div className="flex min-h-screen">
       {/* Left panel — cinematic image */}
       <div className="relative hidden w-[52%] shrink-0 overflow-hidden lg:block">
-        <Image
-          src={vendorLoginImage}
-          alt=""
-          fill
-          sizes="52vw"
-          priority
-          className="object-cover object-center"
-        />
+        {/* Slow Ken Burns zoom — same technique as components/home/Hero.tsx */}
+        <motion.div
+          className="absolute inset-0 will-change-transform motion-reduce:animate-none"
+          animate={{ scale: [1, 1.06] }}
+          transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
+        >
+          <Image src={vendorLoginImage} alt="" fill sizes="52vw" priority className="object-cover object-center" />
+        </motion.div>
 
         {/* Film grain */}
         <div className="bg-grain absolute inset-0 scale-150 opacity-35 mix-blend-overlay" />
@@ -157,15 +160,23 @@ export default function VendorLoginPage() {
 
           {/* Split headline */}
           <div className="flex flex-1 flex-col justify-center">
-            <motion.p
+            <motion.div
               custom={1}
               initial="hidden"
               animate="show"
               variants={fadeUp}
-              className="mb-3.5 text-[10px] uppercase tracking-[0.22em] text-gold/60"
+              className="mb-3.5 flex items-center gap-2"
             >
-              ── Vendor Partner Portal ──
-            </motion.p>
+              <motion.span
+                animate={{ scale: [1, 1.18, 1, 1.12, 1] }}
+                transition={{ duration: 2.8, repeat: Infinity, times: [0, 0.14, 0.28, 0.42, 1], ease: "easeInOut" }}
+              >
+                <Heart size={11} className="fill-gold/25 text-gold" aria-hidden="true" />
+              </motion.span>
+              <p className="whitespace-nowrap text-[10px] uppercase tracking-[0.22em] text-gold/60">
+                Vendor Partner Portal
+              </p>
+            </motion.div>
 
             <motion.div custom={2} initial="hidden" animate="show" variants={fadeUp} className="mb-4">
               <p className="mb-1 text-sm leading-none text-cream-faint/55">The platform where</p>
@@ -235,9 +246,14 @@ export default function VendorLoginPage() {
               </p>
             </div>
 
-            <p className="font-display text-[10.5px] italic text-cream-faint/25">
+            {/* The one element that breathes */}
+            <motion.p
+              animate={{ opacity: [0.2, 0.42, 0.2] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="font-display text-[10.5px] italic text-cream-faint"
+            >
               தேர்வின் செம்மை, வைபவத்தின் பெருமை
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </div>
