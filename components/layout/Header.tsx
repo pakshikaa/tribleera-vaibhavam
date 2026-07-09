@@ -34,8 +34,6 @@ export function Header() {
 
   const isHome = mounted ? pathname === "/" : false;
   const homeAtTop = isHome && !scrolled;
-  const homeScrolled = isHome && scrolled;
-
   return (
     <motion.header
       initial={{ y: -24, opacity: 0 }}
@@ -46,66 +44,39 @@ export function Header() {
         isHome ? "fixed inset-x-0 top-0" : "sticky top-0",
         homeAtTop
           ? "border-transparent bg-transparent"
-          : homeScrolled
-            ? "border-gold/20 bg-[#15040C]/85 backdrop-blur-xl shadow-[0_2px_20px_rgba(0,0,0,0.4)]"
-            : "border-slate/10 bg-white/95 backdrop-blur-md shadow-sm"
+          : "border-slate/10 bg-white/95 backdrop-blur-md shadow-sm"
       )}
     >
-      <Container className="flex h-16 items-center justify-between md:h-20">
+      <Container className="flex min-h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <motion.span
-            whileHover={{ scale: 1.05 }}
-            animate={
-              isHome
-                ? {
-                    boxShadow: [
-                      "0 0 0 1px rgba(212,175,106,0.25), 0 4px 20px rgba(212,175,106,0.1)",
-                      "0 0 0 1px rgba(212,175,106,0.5), 0 8px 30px rgba(212,175,106,0.25)",
-                      "0 0 0 1px rgba(212,175,106,0.25), 0 4px 20px rgba(212,175,106,0.1)",
-                    ],
-                  }
-                : undefined
-            }
-            transition={{
-              duration: homeAtTop ? 3 : 0.3,
-              repeat: homeAtTop ? Infinity : 0,
-              ease: "easeInOut",
-            }}
-            className="rounded-md"
-          >
-            {/* Desktop logo — 36×36 per Figma */}
+        <Link
+          href="/"
+          aria-label="TRIBLEERA VAIBHAVAM - Home"
+          className="flex shrink-0 items-center gap-[9px]"
+        >
+          <motion.span whileHover={{ scale: 1.04 }} className="overflow-hidden rounded-[8px] border border-[rgba(212,175,106,0.25)]">
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA VAIBHAVAM"
+              alt=""
               width={36}
               height={36}
-              className="hidden rounded-[8px] shrink-0 md:block"
-              priority
-            />
-            {/* Mobile logo — 32×32 per Figma */}
-            <Image
-              src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA VAIBHAVAM"
-              width={32}
-              height={32}
-              className="rounded-[8px] shrink-0 md:hidden"
+              className="h-9 w-9 shrink-0 object-cover"
               priority
             />
           </motion.span>
-          <span className="flex flex-col leading-none">
+          <span className="flex select-none flex-col leading-none">
             <span
               className={cn(
-                "font-display text-[15px] font-bold tracking-widest",
-                isHome ? "text-white" : "text-burgundy-deep"
+                "font-display text-[15px] font-bold tracking-[0.15em] transition-colors duration-300",
+                homeAtTop ? "text-[#F7EEE2]" : "text-[#1F2937]"
               )}
             >
               TRIBLEERA
             </span>
             <span
               className={cn(
-                "font-display text-[9px] font-semibold tracking-[0.25em] opacity-70",
-                isHome ? "text-white" : "text-burgundy-deep"
+                "mt-0.5 font-display text-[8px] font-medium tracking-[0.3em] transition-colors duration-300",
+                homeAtTop ? "text-[rgba(247,238,226,0.58)]" : "text-[rgba(31,41,55,0.55)]"
               )}
             >
               VAIBHAVAM
@@ -120,14 +91,12 @@ export function Header() {
               key={link.href}
               href={link.href}
               className={cn(
-                "text-[13px] font-medium tracking-wide transition-colors",
+                "text-[14px] font-medium tracking-[0.01em] transition-colors",
                 link.gold
-                  ? isHome
-                    ? "text-gold font-semibold hover:text-gold-light"
-                    : "text-[#775a1d] font-semibold hover:text-burgundy"
-                  : isHome
-                    ? "text-white/75 hover:text-white"
-                    : "text-slate/70 hover:text-burgundy"
+                  ? "font-semibold text-gold hover:text-gold-light"
+                  : homeAtTop
+                    ? "text-[#F7EEE2] hover:text-white"
+                    : "text-[#1F2937] hover:text-burgundy"
               )}
             >
               {link.label}
@@ -142,7 +111,7 @@ export function Header() {
           <NotificationPanel
             triggerClassName={cn(
               "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
-              isHome
+              homeAtTop
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
@@ -154,7 +123,7 @@ export function Header() {
             aria-label="Your shortlist"
             className={cn(
               "relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
-              isHome
+              homeAtTop
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
@@ -179,7 +148,7 @@ export function Header() {
             aria-label="Your cart"
             className={cn(
               "relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
-              isHome
+              homeAtTop
                 ? "text-white/70 hover:text-white hover:bg-white/10"
                 : "text-slate/60 hover:text-burgundy hover:bg-burgundy/5"
             )}
@@ -203,7 +172,7 @@ export function Header() {
             href="/login"
             className={cn(
               "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              isHome
+              homeAtTop
                 ? "text-white/70 hover:bg-white/10 hover:text-white"
                 : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
             )}
@@ -213,25 +182,16 @@ export function Header() {
           </Link>
 
           {/* Divider */}
-          <div className={cn("h-5 w-px", isHome ? "bg-white/15" : "bg-slate/15")} />
+          <div className={cn("h-5 w-px", homeAtTop ? "bg-white/15" : "bg-slate/15")} />
 
-          {/* For Vendors â†’ vendor login */}
+          {/* Vendor portal */}
           <Button
             href="/vendor/login"
-            variant={isHome ? "glass" : "secondary"}
+            variant={homeAtTop ? "glass" : "secondary"}
             size="sm"
             className="hidden lg:inline-flex"
           >
-            For Vendors
-          </Button>
-
-          {/* Primary CTA */}
-          <Button
-            href="/vendors"
-            variant={isHome ? "gold" : "primary"}
-            size="sm"
-          >
-            Find Vendors
+            Vendor Portal
           </Button>
 
         </div>
@@ -240,7 +200,7 @@ export function Header() {
         <div className="flex items-center gap-3 md:hidden">
           <Sheet>
             <SheetTrigger aria-label="Open menu">
-              <Menu size={24} className={isHome ? "text-white" : "text-slate"} />
+              <Menu size={24} className={homeAtTop ? "text-white" : "text-slate"} />
             </SheetTrigger>
             <SheetContent>
               <SheetTitle>Menu</SheetTitle>
@@ -286,7 +246,7 @@ export function Header() {
                     href="/vendor/login"
                     className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory border-t border-slate/10"
                   >
-                    Vendor sign in
+                    Vendor Portal
                   </Link>
                 </SheetClose>
               </nav>

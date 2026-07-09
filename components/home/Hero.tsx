@@ -130,14 +130,24 @@ export function Hero() {
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          className="mt-7 flex flex-col items-center gap-3"
         >
-          <Button href="/vendors" variant="gold" size="lg">
-            Find Vendors
-          </Button>
-          <Button href="/event-request" variant="glass" size="lg">
-            Plan Your Wedding
-          </Button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button
+              href="/vendors"
+              variant="gold"
+              className="min-h-0 px-8 py-[13px] text-[15px] font-bold tracking-[0.02em]"
+            >
+              Find Vendors
+            </Button>
+            <Button
+              href="/event-request"
+              variant="glass"
+              className="min-h-0 border-white/20 bg-white/10 px-8 py-[13px] text-[15px] font-semibold text-[#F7EEE2] hover:bg-white/15 hover:text-[#F7EEE2]"
+            >
+              Plan Your Wedding
+            </Button>
+          </div>
         </motion.div>
 
         <motion.div
