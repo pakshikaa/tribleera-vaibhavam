@@ -23,12 +23,25 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { formatDate, formatLKR } from "@/lib/utils/format";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import {
+  DEFAULT_CUSTOMER_PROFILE,
+  readActiveCustomerProfile,
+  writeActiveCustomerProfile,
+} from "@/lib/utils/customer-profile";
 import { safeGet } from "@/lib/utils/store";
-import type { Booking, BookingLineItem, BookingStatus } from "@/types";
+import type { Booking, BookingLineItem, BookingStatus, CustomerProfile } from "@/types";
 
-const CUSTOMER_NAME = "Niranjala & Kajan";
-const BOOKING_STORAGE_KEY = "TRIBLEERA-customer-bookings";
-const CANCELLATION_STORAGE_KEY = "TRIBLEERA-cancellations";
+function bookingsStorageKey(email: string) {
+  return `TRIBLEERA-customer-bookings:${email.toLowerCase()}`;
+}
+
+function cancellationsStorageKey(email: string) {
+  return `TRIBLEERA-cancellations:${email.toLowerCase()}`;
+}
+
+function reviewsStorageKey(email: string) {
+  return `TRIBLEERA-reviews:${email.toLowerCase()}`;
+}
 
 interface TvResponse {
   requestId: string;
@@ -59,7 +72,7 @@ function mapTvBooking(raw: TvBookingRecord): Booking | null {
   if (!raw.bookingId || !raw.items || !raw.totals) return null;
   return {
     id: raw.bookingId,
-    customerName: raw.customerName ?? CUSTOMER_NAME,
+    customerName: raw.customerName ?? DEFAULT_CUSTOMER_PROFILE.name,
     customerCity: raw.customerCity ?? "Jaffna",
     eventDate: raw.eventDate ?? new Date().toISOString(),
     createdAt: raw.submittedAt ?? new Date().toISOString(),
@@ -73,10 +86,17 @@ function mapTvBooking(raw: TvBookingRecord): Booking | null {
   };
 }
 
-function readLiveBookings(): Booking[] {
+function getCustomerBookingNames(profile: CustomerProfile) {
+  return profile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
+    ? Array.from(new Set([profile.name, DEFAULT_CUSTOMER_PROFILE.name]))
+    : [profile.name];
+}
+
+function readLiveBookings(profile: CustomerProfile): Booking[] {
+  const eligibleNames = new Set(getCustomerBookingNames(profile));
   return safeGet<TvBookingRecord[]>("tv-bookings", [])
     .map(mapTvBooking)
-    .filter((booking): booking is Booking => booking !== null && booking.customerName === CUSTOMER_NAME);
+    .filter((booking): booking is Booking => booking !== null && eligibleNames.has(booking.customerName));
 }
 
 function calculateRefund(booking: Booking) {
@@ -107,24 +127,45 @@ function getRefundStatus(cancelledAt: string): CancellationRecord["refundStatus"
 export function CustomerDashboardClient() {
   const router = useRouter();
   const { showToast } = useToast();
-  const initialBookings = seedBookings.filter((booking) => booking.customerName === CUSTOMER_NAME);
-  const initialCancellations = seedCancelledBookings.filter((record) => record.customerId === "customer-niranjala-kajan");
-  const initialEventRequest = seedEventRequests[0] ?? null;
+  const [customerProfile, setCustomerProfile] = useState<CustomerProfile>(() =>
+    typeof window === "undefined" ? DEFAULT_CUSTOMER_PROFILE : readActiveCustomerProfile()
+  );
+  const [profileDraft, setProfileDraft] = useState<CustomerProfile>(() =>
+    typeof window === "undefined" ? DEFAULT_CUSTOMER_PROFILE : readActiveCustomerProfile()
+  );
+  const initialBookings =
+    customerProfile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
+      ? seedBookings.filter((booking) => getCustomerBookingNames(customerProfile).includes(booking.customerName))
+      : [];
+  const initialCancellations =
+    customerProfile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
+      ? seedCancelledBookings.filter((record) => record.customerId === "customer-niranjala-kajan")
+      : [];
+  const initialEventRequest =
+    customerProfile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
+      ? (seedEventRequests[0] ?? null)
+      : null;
   const [currentTime] = useState(() => Date.now());
   const [bookings, setBookings] = useState<Booking[]>(() =>
-    typeof window === "undefined" ? initialBookings : readLocalStorage<Booking[]>(BOOKING_STORAGE_KEY, initialBookings)
+    typeof window === "undefined"
+      ? initialBookings
+      : readLocalStorage<Booking[]>(bookingsStorageKey(customerProfile.email), initialBookings)
   );
   const [cancellations, setCancellations] = useState<CancellationRecord[]>(() =>
     typeof window === "undefined"
       ? initialCancellations
-      : readLocalStorage<CancellationRecord[]>(CANCELLATION_STORAGE_KEY, initialCancellations)
+      : readLocalStorage<CancellationRecord[]>(cancellationsStorageKey(customerProfile.email), initialCancellations)
   );
   const [eventRequest] = useState<EventRequest | null>(() =>
-    typeof window === "undefined" ? initialEventRequest : readLocalStorage<EventRequest | null>("TRIBLEERA-event-request", initialEventRequest)
+    typeof window === "undefined"
+      ? initialEventRequest
+      : customerProfile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
+        ? readLocalStorage<EventRequest | null>("TRIBLEERA-event-request", initialEventRequest)
+        : initialEventRequest
   );
   const [liveResponses, setLiveResponses] = useState<TvResponse[]>(() => safeGet<TvResponse[]>("tv-responses", []));
   const [liveBookings, setLiveBookings] = useState<Booking[]>(() =>
-    typeof window === "undefined" ? [] : readLiveBookings()
+    typeof window === "undefined" ? [] : readLiveBookings(customerProfile)
   );
   const [cancelBooking, setCancelBooking] = useState<Booking | null>(null);
   const [cancelStep, setCancelStep] = useState(1);
@@ -134,26 +175,28 @@ export function CustomerDashboardClient() {
   const [reviewedKeys, setReviewedKeys] = useState<string[]>(() =>
     typeof window === "undefined"
       ? []
-      : readLocalStorage<{ bookingId: string; vendorId: string }[]>("TRIBLEERA-reviews", []).map(
-          (r) => `${r.bookingId}-${r.vendorId}`
-        )
+      : readLocalStorage<string[]>(reviewsStorageKey(customerProfile.email), [])
   );
 
   useEffect(() => {
-    writeLocalStorage(BOOKING_STORAGE_KEY, bookings);
-  }, [bookings]);
+    writeLocalStorage(bookingsStorageKey(customerProfile.email), bookings);
+  }, [bookings, customerProfile.email]);
 
   useEffect(() => {
-    writeLocalStorage(CANCELLATION_STORAGE_KEY, cancellations);
-  }, [cancellations]);
+    writeLocalStorage(cancellationsStorageKey(customerProfile.email), cancellations);
+  }, [cancellations, customerProfile.email]);
+
+  useEffect(() => {
+    writeLocalStorage(reviewsStorageKey(customerProfile.email), reviewedKeys);
+  }, [reviewedKeys, customerProfile.email]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setLiveResponses(safeGet<TvResponse[]>("tv-responses", []));
-      setLiveBookings(readLiveBookings());
+      setLiveBookings(readLiveBookings(customerProfile));
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [customerProfile]);
 
   const allBookings = useMemo(() => {
     const liveIds = new Set(liveBookings.map((booking) => booking.id));
@@ -225,17 +268,30 @@ export function CustomerDashboardClient() {
     setReviewTarget(null);
   }
 
+  function handleProfileSave() {
+    const nextProfile = {
+      ...customerProfile,
+      name: profileDraft.name.trim() || customerProfile.name,
+      city: profileDraft.city.trim() || customerProfile.city,
+      phone: profileDraft.phone.trim() || customerProfile.phone,
+    };
+
+    setCustomerProfile(nextProfile);
+    writeActiveCustomerProfile(nextProfile);
+    showToast("Profile updated successfully.", "success");
+  }
+
   return (
     <div className="bg-ivory">
       <section className="border-b border-slate/8 bg-white py-10">
         <Container className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <Avatar name={CUSTOMER_NAME} size={56} />
+            <Avatar name={customerProfile.name} size={56} />
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-soft">Welcome back</p>
-              <h1 className="font-display text-2xl">{CUSTOMER_NAME}</h1>
+              <h1 className="font-display text-2xl">{customerProfile.name}</h1>
               <p className="flex items-center gap-1 text-sm text-slate-soft">
-                <MapPin size={13} /> Jaffna
+                <MapPin size={13} /> {customerProfile.city}
               </p>
             </div>
           </div>
@@ -489,12 +545,31 @@ export function CustomerDashboardClient() {
               profile: (
                 <div className="max-w-lg rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Input label="Full name" defaultValue={CUSTOMER_NAME} />
-                    <Input label="City" defaultValue="Jaffna" />
-                    <Input label="Phone" defaultValue="+94 77 410 0012" />
-                    <Input label="Email" defaultValue="niranjala.kajan@example.com" type="email" />
+                    <Input
+                      label="Full name"
+                      value={profileDraft.name}
+                      onChange={(event) => setProfileDraft((prev) => ({ ...prev, name: event.target.value }))}
+                    />
+                    <Input
+                      label="City"
+                      value={profileDraft.city}
+                      onChange={(event) => setProfileDraft((prev) => ({ ...prev, city: event.target.value }))}
+                    />
+                    <Input
+                      label="Phone"
+                      value={profileDraft.phone}
+                      onChange={(event) => setProfileDraft((prev) => ({ ...prev, phone: event.target.value }))}
+                    />
+                    <Input
+                      label="Email"
+                      value={customerProfile.email}
+                      type="email"
+                      disabled
+                      hint="Email cannot be changed."
+                      className="cursor-not-allowed bg-slate/5 text-slate-soft"
+                    />
                   </div>
-                  <Button className="mt-5">Save changes</Button>
+                  <Button className="mt-5" onClick={handleProfileSave}>Save changes</Button>
                 </div>
               ),
             }}
@@ -582,7 +657,7 @@ export function CustomerDashboardClient() {
       <SubmitReviewSheet
         bookingId={reviewTarget?.bookingId ?? ""}
         vendorId={reviewTarget?.vendorId ?? ""}
-        author={CUSTOMER_NAME}
+        author={customerProfile.name}
         open={!!reviewTarget}
         onOpenChange={(open) => {
           if (!open) setReviewTarget(null);

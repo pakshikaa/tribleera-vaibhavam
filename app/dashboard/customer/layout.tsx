@@ -29,7 +29,7 @@ export default function CustomerDashboardLayout({ children }: { children: React.
     }
 
     if (!customerAuth) {
-      router.replace("/login?redirect=/dashboard/customer");
+      router.replace("/login?redirect=/");
     }
   }, [customerAuth, router]);
 

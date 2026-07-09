@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { AuthShell } from "@/components/ui/AuthShell";
+import { writeActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -44,8 +45,12 @@ export default function SignupPage() {
 
     setTimeout(() => {
       try {
-        sessionStorage.setItem("customer-auth", email);
-        sessionStorage.setItem("customer-name", name.trim());
+        writeActiveCustomerProfile({
+          name: name.trim(),
+          email,
+          city: "Jaffna",
+          phone: "+94 77 410 0012",
+        });
       } catch {}
       router.push(redirectPath);
     }, 700);

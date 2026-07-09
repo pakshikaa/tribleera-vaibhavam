@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { AuthShell } from "@/components/ui/AuthShell";
+import { readCustomerProfile, writeActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const redirectPath = searchParams.get("redirect") || "/dashboard/customer";
+  const redirectPath = searchParams.get("redirect") || "/";
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -24,7 +25,8 @@ export default function LoginPage() {
     setTimeout(() => {
       if (email && password.length >= 6) {
         try {
-          sessionStorage.setItem("customer-auth", email);
+          const profile = readCustomerProfile(email);
+          writeActiveCustomerProfile(profile);
         } catch {}
         router.push(redirectPath);
       } else {

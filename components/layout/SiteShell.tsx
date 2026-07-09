@@ -45,13 +45,13 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     }
 
     if (!customerAuth && !isAuthRoute) {
-      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
-      return;
-    }
+        router.replace("/login?redirect=%2F");
+        return;
+      }
 
-    if (customerAuth && isAuthRoute) {
-      router.replace("/dashboard/customer");
-    }
+      if (customerAuth && isAuthRoute) {
+        router.replace("/");
+      }
   }, [customerAuth, isAuthRoute, isPortal, pathname, router]);
 
   if (isPortal) {
