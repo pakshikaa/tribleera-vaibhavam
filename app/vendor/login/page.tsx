@@ -107,7 +107,7 @@ export default function VendorLoginPage() {
           fill
           sizes="52vw"
           priority
-          className="object-cover object-[center_35%]"
+          className="object-cover object-center"
         />
 
         {/* Film grain */}
@@ -128,21 +128,30 @@ export default function VendorLoginPage() {
               "linear-gradient(to top, rgba(21,4,12,0.97) 0%, rgba(21,4,12,0.55) 26%, transparent 55%), linear-gradient(to bottom, rgba(21,4,12,0.72) 0%, transparent 18%)",
           }}
         />
+        {/* Text-protection gradient — guarantees the headline reads cleanly
+            no matter what's behind it in the source photo, independent of
+            the radial vignette above. */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to right, rgba(21,4,12,0.75) 0%, rgba(21,4,12,0.3) 55%, transparent 85%)",
+          }}
+        />
         <div className="absolute inset-0 bg-burgundy-950/15 mix-blend-multiply" />
 
         <div className="relative z-10 flex h-full flex-col p-10">
-          {/* Brand */}
+          {/* Brand — sized to match the site header exactly */}
           <motion.div custom={0} initial="hidden" animate="show" variants={fadeUp} className="flex items-center gap-2.5">
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLEERA"
-              width={38}
-              height={38}
-              className="rounded-[9px] shadow-[0_0_0_1px_rgba(212,175,106,0.4),0_0_26px_rgba(212,175,106,0.25)]"
+              width={36}
+              height={36}
+              className="rounded-[8px] shadow-[0_0_0_1px_rgba(212,175,106,0.4),0_0_26px_rgba(212,175,106,0.25)]"
             />
             <div className="leading-none">
-              <p className="font-display text-[13px] font-bold tracking-[0.2em] text-gold text-shadow-dark">TRIBLEERA</p>
-              <p className="mt-1 font-display text-[7.5px] tracking-[0.32em] text-gold-light/65">VAIBHAVAM</p>
+              <p className="font-display text-[15px] font-bold tracking-widest text-gold text-shadow-dark">TRIBLEERA</p>
+              <p className="mt-1 font-display text-[9px] font-semibold tracking-[0.25em] text-gold-light/70">VAIBHAVAM</p>
             </div>
           </motion.div>
 
@@ -233,8 +242,10 @@ export default function VendorLoginPage() {
         </div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex flex-1 items-center justify-center px-6 py-12 lg:px-16">
+      {/* Right panel — min-w-0 so this flex child can actually shrink below
+          its content's intrinsic width instead of overflowing the viewport
+          on narrower windows (flexbox default is min-width:auto). */}
+      <div className="flex min-w-0 flex-1 items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex justify-center lg:hidden">
             <Image

@@ -39,8 +39,10 @@ export const trustSectionImage = u("photo-1519167758481-83f29c8e8ee0", 1600);
 // Golden bokeh reception lights — deliberately more emotive than the other
 // curated shots, reserved for the admin login's cinematic first impression.
 export const adminLoginImage = u("photo-1519741497674-611481863552", 1920) + "&q=95";
-// Romantic golden-hour outdoor wedding — reserved for vendor login.
-export const vendorLoginImage = u("photo-1465495976277-4387d4b0b4c6", 1920) + "&q=95";
+// Same romantic couple photo proven on the homepage hero, at full quality —
+// reserved for vendor login so the emotional tone matches what the team
+// already recognises and trusts from the main site.
+export const vendorLoginImage = u("photo-1583939003579-730e3918a45a", 1920) + "&q=95";
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),

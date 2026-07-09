@@ -81,7 +81,7 @@ export default function AdminLoginPage() {
         <div className="absolute inset-0 bg-burgundy-950/15 mix-blend-multiply" />
 
         <div className="relative z-10 flex h-full flex-col p-11">
-          {/* Brand */}
+          {/* Brand — sized to match the site header exactly */}
           <motion.div
             custom={0}
             initial="hidden"
@@ -92,15 +92,15 @@ export default function AdminLoginPage() {
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLEERA"
-              width={40}
-              height={40}
-              className="rounded-[10px] shadow-[0_0_0_1px_rgba(212,175,106,0.5),0_0_32px_rgba(212,175,106,0.3)]"
+              width={36}
+              height={36}
+              className="rounded-[8px] shadow-[0_0_0_1px_rgba(212,175,106,0.5),0_0_32px_rgba(212,175,106,0.3)]"
             />
             <div className="leading-none">
-              <p className="font-display text-[14px] font-bold tracking-[0.22em] text-gold text-shadow-dark">
+              <p className="font-display text-[15px] font-bold tracking-widest text-gold text-shadow-dark">
                 TRIBLEERA
               </p>
-              <p className="mt-1 font-display text-[7.5px] tracking-[0.35em] text-gold-light/65">VAIBHAVAM</p>
+              <p className="mt-1 font-display text-[9px] font-semibold tracking-[0.25em] text-gold-light/70">VAIBHAVAM</p>
             </div>
             <div className="ml-1 rounded border border-gold/30 bg-gold/10 px-2.5 py-1 backdrop-blur-md">
               <p className="text-[9.5px] uppercase tracking-[0.14em] text-gold">Admin Portal</p>
@@ -168,8 +168,9 @@ export default function AdminLoginPage() {
         </div>
       </div>
 
-      {/* Right — login form */}
-      <div className="flex flex-1 items-center justify-center bg-ink px-5 py-12">
+      {/* Right — login form. min-w-0 so this flex child can shrink below its
+          content's intrinsic width instead of overflowing on narrower windows. */}
+      <div className="flex min-w-0 flex-1 items-center justify-center bg-ink px-5 py-12">
         {/* Arch watermark */}
         <svg
           className="pointer-events-none absolute inset-0 m-auto h-[500px] w-[500px] text-gold/[0.06] lg:hidden"
