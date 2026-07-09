@@ -4,15 +4,25 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { AlertCircle, BarChart3, ShoppingBag, Star, Users } from "lucide-react";
 import { adminLoginImage } from "@/lib/data/images";
 
 const PLATFORM_STATS = [
-  { icon: Users, label: "Verified vendors", value: "25+" },
-  { icon: ShoppingBag, label: "Bookings managed", value: "100+" },
-  { icon: Star, label: "Average trust score", value: "4.8★" },
-  { icon: BarChart3, label: "Cities active", value: "5" },
+  { icon: Users, label: "Vendors", value: "25+" },
+  { icon: ShoppingBag, label: "Rating", value: "4.8★" },
+  { icon: Star, label: "Advance", value: "20%" },
+  { icon: BarChart3, label: "Cities", value: "5" },
 ];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.85, delay: 0.28 + index * 0.14, ease: [0.16, 1, 0.3, 1] as const },
+  }),
+};
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -45,83 +55,116 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left — image + platform stats panel */}
-      <div className="relative hidden w-[55%] shrink-0 overflow-hidden lg:block">
-        <Image
-          src={adminLoginImage}
-          alt=""
-          fill
-          sizes="55vw"
-          priority
-          className="object-cover"
-        />
+      {/* Left — cinematic image panel */}
+      <div className="relative hidden w-[60%] shrink-0 overflow-hidden lg:block">
+        <Image src={adminLoginImage} alt="" fill sizes="60vw" priority className="object-cover" />
+
+        {/* Film grain — reuses the existing .bg-grain utility, intensified for this hero moment */}
+        <div className="bg-grain absolute inset-0 scale-150 opacity-40 mix-blend-overlay" />
+
+        {/* Radial vignette — depth from the center out, not a flat linear wash */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(21,4,12,0.65) 0%, rgba(21,4,12,0.4) 40%, rgba(21,4,12,0.9) 100%)",
+              "radial-gradient(ellipse 80% 80% at 50% 40%, transparent 15%, rgba(21,4,12,0.55) 70%, rgba(21,4,12,0.92) 100%)",
           }}
         />
-        <div className="absolute inset-0 bg-ink/25" />
+        {/* Top/bottom legibility gradient for the logo and content bands */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(21,4,12,0.97) 0%, rgba(21,4,12,0.5) 26%, transparent 55%), linear-gradient(to bottom, rgba(21,4,12,0.7) 0%, transparent 22%)",
+          }}
+        />
+        <div className="absolute inset-0 bg-burgundy-950/15 mix-blend-multiply" />
 
-        <div className="relative z-10 flex h-full flex-col p-10">
+        <div className="relative z-10 flex h-full flex-col p-11">
           {/* Brand */}
-          <div className="flex items-center gap-3">
+          <motion.div
+            custom={0}
+            initial="hidden"
+            animate="show"
+            variants={fadeUp}
+            className="flex items-center gap-3"
+          >
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLEERA"
               width={40}
               height={40}
-              className="rounded-[9px] shadow-[0_0_20px_rgba(212,175,106,0.4)]"
+              className="rounded-[10px] shadow-[0_0_0_1px_rgba(212,175,106,0.5),0_0_32px_rgba(212,175,106,0.3)]"
             />
             <div className="leading-none">
-              <p className="font-display text-[15px] font-bold tracking-[0.18em] text-gold">TRIBLEERA</p>
-              <p className="mt-1 font-display text-[8px] tracking-[0.3em] text-gold-light/70">VAIBHAVAM</p>
+              <p className="font-display text-[14px] font-bold tracking-[0.22em] text-gold text-shadow-dark">
+                TRIBLEERA
+              </p>
+              <p className="mt-1 font-display text-[7.5px] tracking-[0.35em] text-gold-light/65">VAIBHAVAM</p>
             </div>
-            <span className="ml-2 rounded border border-gold/30 bg-gold/[0.15] px-2 py-0.5 text-[10px] tracking-[0.15em] text-gold">
-              CONTROL CENTRE
-            </span>
-          </div>
+            <div className="ml-1 rounded border border-gold/30 bg-gold/10 px-2.5 py-1 backdrop-blur-md">
+              <p className="text-[9.5px] uppercase tracking-[0.14em] text-gold">Admin Portal</p>
+            </div>
+          </motion.div>
 
-          {/* Headline */}
+          {/* Split headline */}
           <div className="flex flex-1 flex-col justify-center">
-            <h1
-              className="mb-4 font-display text-4xl font-bold leading-tight text-cream"
-              style={{ textShadow: "0 2px 20px rgba(21,4,12,0.8)" }}
+            <motion.p
+              custom={1}
+              initial="hidden"
+              animate="show"
+              variants={fadeUp}
+              className="mb-4 text-[10px] uppercase tracking-[0.24em] text-gold/55"
             >
-              Manage your
-              <br />
-              <span className="text-gold">wedding platform</span>
-              <br />
-              from one place.
-            </h1>
-            <p className="max-w-[360px] text-sm leading-relaxed text-cream-dim/80">
-              Approve vendors, verify payments, resolve disputes, and monitor your platform analytics — all in
-              one dashboard.
-            </p>
+              ── Control Centre ──
+            </motion.p>
+
+            <motion.div custom={2} initial="hidden" animate="show" variants={fadeUp} className="mb-5">
+              <p className="text-[15px] leading-none tracking-wide text-cream-faint/50 text-shadow-dark">Manage</p>
+              <p
+                className="bg-gradient-to-br from-cream via-gold to-gold-light bg-clip-text text-[52px] font-extrabold leading-[0.95] tracking-tight text-transparent drop-shadow-[0_2px_16px_rgba(21,4,12,0.9)]"
+              >
+                Every
+              </p>
+              <p
+                className="bg-gradient-to-br from-cream via-gold to-gold-light bg-clip-text text-[52px] font-extrabold leading-[0.95] tracking-tight text-transparent drop-shadow-[0_2px_16px_rgba(21,4,12,0.9)]"
+              >
+                Celebration.
+              </p>
+            </motion.div>
+
+            <motion.p
+              custom={3}
+              initial="hidden"
+              animate="show"
+              variants={fadeUp}
+              className="max-w-[360px] text-[13.5px] leading-relaxed text-cream-dim/70"
+            >
+              From vendor approvals to payment verification — TRIBLEERA VAIBHAVAM&rsquo;s control centre puts
+              every tool in your hands.
+            </motion.p>
           </div>
 
-          {/* Platform stats */}
-          <div>
-            <p className="mb-3 text-[10px] uppercase tracking-[0.15em] text-gold/60">Platform overview</p>
-            <div className="grid grid-cols-2 gap-2.5">
+          {/* Stats + shimmer divider */}
+          <motion.div custom={4} initial="hidden" animate="show" variants={fadeUp}>
+            <div className="mb-4 h-px w-full overflow-hidden rounded-full bg-cream/10">
+              <div className="h-full w-full animate-[loading_2.4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-gold to-transparent" />
+            </div>
+            <div className="grid grid-cols-4 gap-2.5">
               {PLATFORM_STATS.map(({ icon: Icon, label, value }) => (
-                <div
-                  key={label}
-                  className="rounded-[8px] border border-gold/15 bg-cream/[0.06] p-3.5 backdrop-blur-sm"
-                >
-                  <div className="mb-1 flex items-center gap-2">
-                    <Icon size={14} className="text-gold" aria-hidden="true" />
-                    <span className="text-[10px] text-cream-faint">{label}</span>
-                  </div>
-                  <p className="font-display text-xl font-bold leading-none text-gold-light">{value}</p>
+                <div key={label} className="rounded-[9px] border border-gold/15 bg-cream/[0.06] p-3 text-center backdrop-blur-md">
+                  <Icon size={13} className="mx-auto mb-1 text-gold" aria-hidden="true" />
+                  <p className="bg-gradient-to-b from-gold-light to-gold bg-clip-text font-display text-xl font-bold leading-none text-transparent">
+                    {value}
+                  </p>
+                  <p className="mt-1 text-[9.5px] tracking-wide text-cream-faint/60">{label}</p>
                 </div>
               ))}
             </div>
-            <p className="mt-5 font-display text-[11px] italic text-cream-faint/50">
+            <p className="mt-5 font-display text-[10.5px] italic text-cream-faint/35">
               தேர்வின் செம்மை, வைபவத்தின் பெருமை
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
 
