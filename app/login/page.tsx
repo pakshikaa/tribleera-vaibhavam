@@ -1,18 +1,20 @@
 ﻿"use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import { AuthShell } from "@/components/ui/AuthShell";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const redirectPath = searchParams.get("redirect") || "/dashboard/customer";
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -24,7 +26,7 @@ export default function LoginPage() {
         try {
           sessionStorage.setItem("customer-auth", email);
         } catch {}
-        router.push("/dashboard/customer");
+        router.push(redirectPath);
       } else {
         setError("Invalid email or password. Please try again.");
         setLoading(false);
@@ -33,49 +35,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ivory px-5 py-12">
-      {/* Arch watermark */}
-      <svg
-        className="pointer-events-none absolute inset-0 m-auto h-[500px] w-[500px] text-burgundy/[0.04]"
-        viewBox="0 0 200 200"
-        fill="none"
-      >
-        <path
-          d="M40 180 V100 C40 50 65 15 100 15 C135 15 160 50 160 100 V180"
-          stroke="currentColor"
-          strokeWidth="5"
-        />
-        <path
-          d="M62 180 V104 C62 68 78 38 100 38 C122 38 138 68 138 104 V180"
-          stroke="currentColor"
-          strokeWidth="5"
-        />
-      </svg>
-
-      <div className="relative z-10 w-full max-w-sm">
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/">
-            <Image
-              src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA"
-              width={64}
-              height={64}
-              className="mx-auto mb-3 rounded-[12px] shadow-[0_0_30px_rgba(92,4,39,0.15)]"
-            />
-          </Link>
-          <p className="font-display text-xl tracking-widest text-burgundy-deep">TRIBLEERA</p>
-          <p className="mt-0.5 font-display text-[10px] tracking-[0.35em] text-burgundy/50">VAIBHAVAM</p>
-          <p className="mt-3 text-xs uppercase tracking-[0.2em] text-slate-soft">
-            Welcome back
-          </p>
-        </div>
-
-        {/* Form */}
-        <form
-          onSubmit={handleLogin}
-          className="rounded-[14px] border border-slate/10 bg-white p-7 shadow-soft space-y-5"
-        >
+    <AuthShell
+      mode="login"
+      eyebrow="Plan faster"
+      title="Sign in and continue"
+      subtitle="Your shortlisted vendors, booking updates, and planning steps stay in one calm, curated place."
+      alternateLabel="New to TRIBLEERA?"
+      alternateHref={`/signup?redirect=${encodeURIComponent(redirectPath)}`}
+      alternateText="Create an account"
+    >
+      <form onSubmit={handleLogin} className="space-y-5">
           <div>
             <label
               htmlFor="email"
@@ -133,17 +102,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-[6px] bg-burgundy py-3 text-sm font-bold text-cream shadow-sm transition-all hover:-translate-y-0.5 hover:bg-burgundy-deep disabled:opacity-60"
+            className="w-full rounded-[10px] bg-burgundy py-3.5 text-sm font-bold text-cream shadow-[0_16px_30px_rgba(92,4,39,0.18)] transition-all hover:-translate-y-0.5 hover:bg-burgundy-deep disabled:opacity-60"
           >
             {loading ? "Signing in…" : "Sign In"}
           </button>
-
-          <p className="text-center text-xs text-slate-soft">
-            New to TRIBLEERA?{" "}
-            <Link href="/event-request" className="font-semibold text-burgundy hover:underline">
-              Plan your wedding
-            </Link>
-          </p>
         </form>
 
         <p className="mt-5 text-center text-xs text-slate-soft">
@@ -158,7 +120,6 @@ export default function LoginPage() {
             Admin access
           </Link>
         </p>
-      </div>
-    </div>
+    </AuthShell>
   );
 }
