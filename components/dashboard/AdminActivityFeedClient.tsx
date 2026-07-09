@@ -23,6 +23,8 @@ const TYPE_COLORS: Record<string, string> = {
   payment: "bg-gold/10 border-gold/30 text-gold-deep",
   payment_verified: "bg-success-pale border-success/30 text-success",
   event_completed: "bg-gold/10 border-gold/30 text-gold-deep",
+  request_submitted: "bg-blue-50 border-blue-200 text-blue-700",
+  request_rerouted: "bg-amber-50 border-amber-200 text-amber-800",
   dispute: "bg-rose-pale border-rose/30 text-burgundy",
 };
 

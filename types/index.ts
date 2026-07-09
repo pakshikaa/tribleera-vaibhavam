@@ -170,13 +170,6 @@ export interface CustomerProfile {
   phone: string;
 }
 
-export interface CustomerProfile {
-  name: string;
-  email: string;
-  city: string;
-  phone: string;
-}
-
 export interface VendorApplication {
   id: string;
   slug?: string;

@@ -5,15 +5,17 @@ import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, CheckCircle2, ImageIcon, Mic, Square, Users, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, CheckCircle2, Heart, ImageIcon, Mic, Square, Users, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Input, Select, Textarea } from "@/components/ui/Field";
 import { StepProgress } from "@/components/ui/StepProgress";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { useShortlist } from "@/context/ShortlistContext";
 import { categories } from "@/lib/data/categories";
 import { vendors } from "@/lib/data/vendors";
 import { writeLocalStorage } from "@/lib/utils/browser-storage";
+import { readActiveCustomerProfile } from "@/lib/utils/customer-profile";
 import { formatLKR } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
@@ -42,7 +44,15 @@ const eventRequestSchema = z.object({
 
 type EventRequestValues = z.infer<typeof eventRequestSchema>;
 
-const STEPS = ["Your Celebration", "Select Services", "Your Priorities", "Review & Submit"];
+const STEPS = ["Your Celebration", "Select Services", "Choose Vendors", "Review & Submit"];
+const MAX_PRIORITY_VENDORS = 5;
+type ServiceOption = (typeof SERVICE_OPTIONS)[number];
+
+type ServiceVendorSelection = {
+  categorySlug: ServiceOption;
+  rankedVendorSlugs: string[];
+  primaryVendorSlug: string;
+};
 
 function calculateAdvance(budgetRange: EventRequestValues["budgetRange"]) {
   const selected = BUDGET_OPTIONS.find((option) => option.value === budgetRange) ?? BUDGET_OPTIONS[1];
@@ -57,30 +67,41 @@ function calculateAdvance(budgetRange: EventRequestValues["budgetRange"]) {
   };
 }
 
-function createEventRequestRecord(formValues: EventRequestValues, hasVoiceNote: boolean) {
+function createEventRequestRecord(
+  formValues: EventRequestValues,
+  hasVoiceNote: boolean,
+  serviceSelections: ServiceVendorSelection[]
+) {
   const createdAt = new Date().toISOString();
+  const customerProfile = readActiveCustomerProfile();
 
   return {
     id: `EVT-${new Date(createdAt).getFullYear()}${createdAt.replace(/\D/g, "").slice(-5)}`,
     createdAt,
-    customerId: "customer-niranjala-kajan",
-    customerName: "Niranjala & Kajan",
+    customerId: `customer-${customerProfile.email.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+    customerName: customerProfile.name,
+    customerEmail: customerProfile.email,
+    customerPhone: customerProfile.phone,
     status: "pending",
     deadline: new Date(new Date(createdAt).getTime() + 24 * 60 * 60 * 1000).toISOString(),
     hasVoiceNote,
     responses: [],
+    serviceSelections,
     ...formValues,
   };
 }
 
 export default function EventRequestPage() {
   const router = useRouter();
+  const { slugs: shortlistedVendorSlugs, hydrated: shortlistHydrated } = useShortlist();
   const [step, setStep] = useState(1);
   const [inspirationFiles, setInspirationFiles] = useState<File[]>([]);
   const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
   const [voiceUrl, setVoiceUrl] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [serviceVendorPriorities, setServiceVendorPriorities] = useState<Record<string, string[]>>({});
+  const [serviceSelectionError, setServiceSelectionError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -120,9 +141,34 @@ export default function EventRequestPage() {
     },
   });
   const budgetRange = values.budgetRange ?? "50k-150k";
-  const selectedServices = values.selectedServices ?? [];
-  const priorities = values.priorities ?? [];
+  const selectedServices = useMemo(() => values.selectedServices ?? [], [values.selectedServices]);
+  const priorities = useMemo(() => values.priorities ?? [], [values.priorities]);
   const summary = useMemo(() => calculateAdvance(budgetRange), [budgetRange]);
+  const vendorOptionsByService = useMemo(() => {
+    const shortlistSet = new Set(shortlistedVendorSlugs);
+
+    return selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
+      acc[service] = vendors
+        .filter((vendor) => vendor.categorySlug === service && vendor.status === "approved")
+        .sort((a, b) => {
+          const aShortlisted = shortlistSet.has(a.slug) ? 1 : 0;
+          const bShortlisted = shortlistSet.has(b.slug) ? 1 : 0;
+          if (aShortlisted !== bShortlisted) return bShortlisted - aShortlisted;
+          if (a.trustScore !== b.trustScore) return b.trustScore - a.trustScore;
+          return a.startingPrice - b.startingPrice;
+        });
+      return acc;
+    }, {});
+  }, [selectedServices, shortlistedVendorSlugs]);
+
+  const rankedSelections = useMemo(
+    () =>
+      selectedServices.map((service) => ({
+        categorySlug: service,
+        rankedVendorSlugs: serviceVendorPriorities[service] ?? [],
+      })),
+    [selectedServices, serviceVendorPriorities]
+  );
 
   async function nextStep() {
     const fieldsByStep: Record<number, (keyof EventRequestValues)[]> = {
@@ -133,19 +179,36 @@ export default function EventRequestPage() {
     };
 
     const valid = await trigger(fieldsByStep[step]);
-    if (valid) {
-      setStep((current) => Math.min(current + 1, 4));
+    if (!valid) return;
+
+    if (step === 3) {
+      const missingSelections = selectedServices.filter((service) => (serviceVendorPriorities[service] ?? []).length === 0);
+      if (missingSelections.length > 0) {
+        setServiceSelectionError("Select at least one vendor for every chosen service.");
+        return;
+      }
     }
+
+    setServiceSelectionError(null);
+    setStep((current) => Math.min(current + 1, 4));
   }
 
   function toggleService(service: (typeof SERVICE_OPTIONS)[number]) {
     const current = selectedServices;
     const exists = current.includes(service);
+    setServiceSelectionError(null);
     setValue(
       "selectedServices",
       exists ? current.filter((item) => item !== service) : [...current, service],
       { shouldValidate: true }
     );
+    if (exists) {
+      setServiceVendorPriorities((prev) => {
+        const next = { ...prev };
+        delete next[service];
+        return next;
+      });
+    }
   }
 
   function togglePriority(priority: (typeof PRIORITIES)[number]) {
@@ -162,6 +225,32 @@ export default function EventRequestPage() {
     if (current.length < 3) {
       setValue("priorities", [...current, priority], { shouldValidate: true });
     }
+  }
+
+  function toggleVendorPriority(categorySlug: ServiceOption, vendorSlug: string) {
+    setServiceSelectionError(null);
+    setServiceVendorPriorities((prev) => {
+      const current = prev[categorySlug] ?? [];
+      if (current.includes(vendorSlug)) {
+        return { ...prev, [categorySlug]: current.filter((slug) => slug !== vendorSlug) };
+      }
+      if (current.length >= MAX_PRIORITY_VENDORS) {
+        return prev;
+      }
+      return { ...prev, [categorySlug]: [...current, vendorSlug] };
+    });
+  }
+
+  function moveVendorPriority(categorySlug: ServiceOption, vendorSlug: string, direction: "up" | "down") {
+    setServiceVendorPriorities((prev) => {
+      const current = [...(prev[categorySlug] ?? [])];
+      const index = current.indexOf(vendorSlug);
+      if (index === -1) return prev;
+      const swapIndex = direction === "up" ? index - 1 : index + 1;
+      if (swapIndex < 0 || swapIndex >= current.length) return prev;
+      [current[index], current[swapIndex]] = [current[swapIndex], current[index]];
+      return { ...prev, [categorySlug]: current };
+    });
   }
 
   function saveForLater() {
@@ -214,13 +303,28 @@ export default function EventRequestPage() {
   }
 
   const onSubmit = handleSubmit((formValues) => {
-    const record = createEventRequestRecord(formValues, Boolean(voiceBlob));
+    const incompleteServices = selectedServices.filter((service) => (serviceVendorPriorities[service] ?? []).length === 0);
+    if (incompleteServices.length > 0) {
+      setServiceSelectionError("Select at least one vendor for every chosen service.");
+      setStep(3);
+      return;
+    }
+
+    const serviceSelections: ServiceVendorSelection[] = selectedServices.map((service) => ({
+      categorySlug: service,
+      rankedVendorSlugs: serviceVendorPriorities[service] ?? [],
+      primaryVendorSlug: (serviceVendorPriorities[service] ?? [])[0],
+    }));
+
+    const record = createEventRequestRecord(formValues, Boolean(voiceBlob), serviceSelections);
     writeLocalStorage("TRIBLEERA-event-request", record);
 
     const bridgeRequest = {
       id: record.id,
       customerId: record.customerId,
       customerName: record.customerName,
+      customerEmail: record.customerEmail,
+      customerPhone: record.customerPhone,
       status: "pending" as const,
       submittedAt: record.createdAt,
       deadline: record.deadline,
@@ -230,27 +334,42 @@ export default function EventRequestPage() {
       budgetRange: formValues.budgetRange,
       requirements: formValues.specialRequirements ?? "",
       selectedServices: formValues.selectedServices,
+      serviceSelections,
       priorities: formValues.priorities ?? [],
       hasVoiceNote: Boolean(voiceBlob),
     };
 
     safePush("tv-requests", bridgeRequest);
-
-    formValues.selectedServices.forEach((categorySlug) => {
-      const matchedVendors = vendors.filter((v) => v.categorySlug === categorySlug && v.status === "approved");
-      matchedVendors.forEach((vendor) => {
-        const inbox = safeGet<Record<string, unknown[]>>("tv-vendor-inbox", {});
-        if (!inbox[vendor.slug]) inbox[vendor.slug] = [];
-        inbox[vendor.slug].unshift({ ...bridgeRequest, vendorSlug: vendor.slug });
-        safeSet("tv-vendor-inbox", inbox);
+    const inbox = safeGet<Record<string, unknown[]>>("tv-vendor-inbox", {});
+    serviceSelections.forEach((selection) => {
+      const firstVendorSlug = selection.primaryVendorSlug;
+      if (!firstVendorSlug) return;
+      if (!inbox[firstVendorSlug]) inbox[firstVendorSlug] = [];
+      inbox[firstVendorSlug].unshift({
+        ...bridgeRequest,
+        id: `${record.id}-${selection.categorySlug}`,
+        requestId: record.id,
+        vendorSlug: firstVendorSlug,
+        categorySlug: selection.categorySlug,
+        rankedVendorSlugs: selection.rankedVendorSlugs,
+        currentPriorityIndex: 0,
       });
+    });
+    safeSet("tv-vendor-inbox", inbox);
+
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "request_submitted",
+      message: `${record.customerName} submitted a request for ${serviceSelections.length} selected service${serviceSelections.length !== 1 ? "s" : ""}`,
+      time: new Date().toISOString(),
+      icon: "📨",
     });
 
     safePush("tv-notifications-cust-demo", {
       id: generateId("N"),
       type: "request_sent",
       title: "Your wedding request is live",
-      message: `Vendors for ${formValues.selectedServices.length} service${formValues.selectedServices.length !== 1 ? "s" : ""} have been notified.`,
+      message: `Your top-ranked vendors for ${formValues.selectedServices.length} service${formValues.selectedServices.length !== 1 ? "s" : ""} have been notified.`,
       href: "/dashboard/customer",
       read: false,
       createdAt: new Date().toISOString(),
@@ -267,7 +386,7 @@ export default function EventRequestPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">TRIBLEERA Concierge Flow</p>
             <h1 className="mt-4 font-display text-4xl text-cream md:text-5xl">Tell Us About Your Celebration</h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-cream-dim">
-              Share your date, city, service mix, and priorities. We will route the request to matching premium vendors.
+              Share your date, city, services, and vendor priorities. We will route the request to your chosen premium vendors.
             </p>
           </div>
           <StepProgress steps={STEPS} current={step} />
@@ -278,7 +397,7 @@ export default function EventRequestPage() {
         <form onSubmit={onSubmit} className="rounded-[10px] bg-white p-6 shadow-soft md:p-8">
           {step === 1 && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-start">
                 <Input
                   label="Wedding date"
                   id="eventDate"
@@ -400,8 +519,164 @@ export default function EventRequestPage() {
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h2 className="font-display text-2xl text-slate">Your Priorities</h2>
-                <p className="mt-1 text-sm text-slate-soft">Tap up to three items in order of importance.</p>
+                <h2 className="font-display text-2xl text-slate">Choose Vendors</h2>
+                <p className="mt-1 text-sm text-slate-soft">
+                  For each selected service, choose at least one vendor. Priority 1 receives the request first, and backup vendors are used only if needed.
+                </p>
+              </div>
+
+              {serviceSelectionError && (
+                <p className="text-sm font-medium text-danger">{serviceSelectionError}</p>
+              )}
+
+              <div className="space-y-6">
+                {selectedServices.map((service) => {
+                  const serviceCategory = categories.find((category) => category.slug === service);
+                  const rankedVendorSlugs = serviceVendorPriorities[service] ?? [];
+                  const rankedVendors = rankedVendorSlugs
+                    .map((slug) => vendorOptionsByService[service]?.find((vendor) => vendor.slug === slug))
+                    .filter((vendor): vendor is NonNullable<typeof vendor> => Boolean(vendor));
+                  const serviceVendors = vendorOptionsByService[service] ?? [];
+
+                  return (
+                    <div key={service} className="rounded-[10px] border border-slate/10 bg-ivory/60 p-4 md:p-5">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                        <div>
+                          <h3 className="font-display text-xl text-slate">{serviceCategory?.name ?? service}</h3>
+                          <p className="text-sm text-slate-soft">
+                            Pick 1 to {MAX_PRIORITY_VENDORS} vendors. The first one is mandatory.
+                          </p>
+                        </div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-burgundy">
+                          {rankedVendorSlugs.length}/{MAX_PRIORITY_VENDORS} selected
+                        </p>
+                      </div>
+
+                      {rankedVendors.length > 0 && (
+                        <div className="mt-4 rounded-[8px] border border-burgundy/15 bg-white p-4">
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-burgundy">Priority queue</p>
+                          <div className="mt-3 space-y-3">
+                            {rankedVendors.map((vendor, index) => (
+                              <div key={vendor.slug} className="flex flex-col gap-3 rounded-[8px] border border-slate/10 bg-ivory px-4 py-3 md:flex-row md:items-center md:justify-between">
+                                <div className="flex items-center gap-3">
+                                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-burgundy text-xs font-bold text-white">
+                                    {index + 1}
+                                  </span>
+                                  <div>
+                                    <p className="font-medium text-slate">{vendor.name}</p>
+                                    <p className="text-xs text-slate-soft">
+                                      {vendor.location} · {formatLKR(vendor.startingPrice)}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => moveVendorPriority(service, vendor.slug, "up")}
+                                    disabled={index === 0}
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate/15 text-slate transition-colors hover:border-burgundy/30 hover:text-burgundy disabled:cursor-not-allowed disabled:opacity-30"
+                                  >
+                                    <ArrowUp size={14} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => moveVendorPriority(service, vendor.slug, "down")}
+                                    disabled={index === rankedVendors.length - 1}
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate/15 text-slate transition-colors hover:border-burgundy/30 hover:text-burgundy disabled:cursor-not-allowed disabled:opacity-30"
+                                  >
+                                    <ArrowDown size={14} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleVendorPriority(service, vendor.slug)}
+                                    className="inline-flex items-center rounded-full border border-rose-200 px-3 py-1.5 text-xs font-semibold text-burgundy transition-colors hover:bg-rose-50"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="mt-4">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <p className="text-sm font-semibold text-slate">
+                            {shortlistHydrated && shortlistedVendorSlugs.some((slug) => serviceVendors.some((vendor) => vendor.slug === slug))
+                              ? "Saved vendors come first"
+                              : "Available vendors"}
+                          </p>
+                          <p className="text-xs text-slate-soft">Tap a vendor card to add or remove it from the queue</p>
+                        </div>
+                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                          {serviceVendors.map((vendor) => {
+                            const shortlisted = shortlistedVendorSlugs.includes(vendor.slug);
+                            const priorityIndex = rankedVendorSlugs.indexOf(vendor.slug);
+
+                            return (
+                              <button
+                                key={vendor.slug}
+                                type="button"
+                                onClick={() => toggleVendorPriority(service, vendor.slug)}
+                                className={cn(
+                                  "overflow-hidden rounded-[10px] border bg-white text-left transition-all",
+                                  priorityIndex >= 0
+                                    ? "border-burgundy shadow-lift"
+                                    : "border-slate/10 hover:border-burgundy/20 hover:shadow-soft"
+                                )}
+                              >
+                                <div className="relative aspect-[4/3]">
+                                  <SmartImage
+                                    src={vendor.imageUrl}
+                                    alt={vendor.name}
+                                    fallbackVariant={vendor.motif}
+                                    fallbackTone={vendor.tone}
+                                    fallbackSeed={vendor.id.length}
+                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                  />
+                                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.04)_0%,rgba(21,4,12,0.08)_45%,rgba(21,4,12,0.7)_100%)]" />
+                                  <div className="absolute left-3 top-3 flex gap-2">
+                                    {shortlisted && (
+                                      <span className="inline-flex items-center gap-1 rounded-full bg-white/92 px-2.5 py-1 text-[10.5px] font-semibold text-burgundy">
+                                        <Heart size={11} className="fill-burgundy text-burgundy" /> Saved
+                                      </span>
+                                    )}
+                                    {priorityIndex >= 0 && (
+                                      <span className="inline-flex rounded-full bg-gold px-2.5 py-1 text-[10.5px] font-bold text-ink">
+                                        Priority {priorityIndex + 1}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="absolute bottom-3 left-3 right-3">
+                                    <p className="font-display text-base text-white">{vendor.name}</p>
+                                    <p className="mt-1 text-xs text-white/78">{vendor.location}</p>
+                                  </div>
+                                </div>
+                                <div className="space-y-3 p-4">
+                                  <p className="line-clamp-2 text-sm text-slate-soft">{vendor.tagline}</p>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-sm font-semibold text-burgundy-deep">
+                                      {formatLKR(vendor.startingPrice)}
+                                    </span>
+                                    <span className="text-xs font-medium text-slate-soft">
+                                      Trust {vendor.trustScore.toFixed(1)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div>
+                <h3 className="font-display text-xl text-slate">Routing preferences</h3>
+                <p className="mt-1 text-sm text-slate-soft">Optional: tell us what matters most while routing your prioritized requests.</p>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 {PRIORITIES.map((priority) => {
@@ -543,6 +818,23 @@ export default function EventRequestPage() {
                     </span>
                   ))}
                 </div>
+                <div className="mt-5 space-y-3">
+                  {rankedSelections.map((selection) => {
+                    const category = categories.find((item) => item.slug === selection.categorySlug);
+                    return (
+                      <div key={selection.categorySlug} className="rounded-[8px] border border-slate/10 bg-white p-4">
+                        <p className="text-sm font-semibold text-slate">{category?.name ?? selection.categorySlug}</p>
+                        <p className="mt-2 text-xs text-slate-soft">
+                          {selection.rankedVendorSlugs.length > 0
+                            ? selection.rankedVendorSlugs
+                                .map((slug, index) => `${index + 1}. ${vendors.find((vendor) => vendor.slug === slug)?.name ?? slug}`)
+                                .join("  •  ")
+                            : "No vendor selected"}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
                 <div className="mt-5 rounded-[8px] border border-gold/30 bg-white p-4">
                   <p className="text-sm font-semibold text-burgundy-deep">Estimated amount payable now</p>
                   <div className="mt-3 space-y-2 text-sm text-slate-soft">
@@ -558,11 +850,11 @@ export default function EventRequestPage() {
             </div>
           )}
 
-          <div className="mt-8 flex flex-col gap-3 border-t border-slate/10 pt-6 sm:flex-row sm:justify-between">
+          <div className="mt-8 flex flex-col gap-3 border-t border-slate/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <Button type="button" variant="secondary" onClick={saveForLater}>
               Save for Later
             </Button>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap items-center justify-end gap-3">
               {step === 1 && (
                 <BackButton href="/" label="Home" />
               )}

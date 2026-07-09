@@ -18,9 +18,9 @@ export function StepProgress({
           const complete = stepNumber < current;
 
           return (
-            <div key={step} className="space-y-2">
+            <div key={step} className="min-w-0 space-y-2">
               <div className={cn("h-1 rounded-full", complete || active ? "bg-gold" : "bg-white/15")} />
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <span
                   className={cn(
                     "flex h-6 w-6 items-center justify-center rounded-full border text-xs font-semibold",
@@ -31,7 +31,7 @@ export function StepProgress({
                 >
                   {stepNumber}
                 </span>
-                <span className={cn("hidden text-xs font-medium sm:block", active || complete ? "text-cream" : "text-cream-faint")}>
+                <span className={cn("hidden truncate text-xs font-medium sm:block", active || complete ? "text-cream" : "text-cream-faint")}>
                   {step}
                 </span>
               </div>

@@ -32,16 +32,22 @@ const DEFAULT_VENDOR_SLUG = "pushpa-florals-and-decor";
 
 interface InboxEntry {
   id: string;
+  requestId?: string;
   customerName: string;
+  customerPhone?: string;
+  customerEmail?: string;
   eventDate: string;
   location?: string;
   guestCount?: number;
   budgetRange?: string;
   requirements?: string;
+  categorySlug: string;
   submittedAt: string;
   status: "pending" | "accepted" | "rejected";
   rejectionReason?: string;
   vendorSlug: string;
+  rankedVendorSlugs?: string[];
+  currentPriorityIndex?: number;
 }
 
 function deadlineForRequest(receivedAt: string) {
@@ -59,16 +65,17 @@ function getVendorSlug(): string {
 function buildLiveRequests(vendorSlug: string): VendorBookingRequest[] {
   const inbox = safeGet<Record<string, InboxEntry[]>>("tv-vendor-inbox", {});
   const entries = inbox[vendorSlug] ?? [];
-  const vendor = getVendorBySlug(vendorSlug);
 
   return entries.map((entry) => ({
     id: entry.id,
     customerName: entry.customerName,
+    customerPhone: entry.customerPhone,
+    customerEmail: entry.customerEmail,
     eventDate: entry.eventDate,
     location: entry.location,
     guestCount: entry.guestCount,
     budgetRange: entry.budgetRange,
-    categorySlug: vendor?.categorySlug ?? "general",
+    categorySlug: entry.categorySlug,
     packageName: "Custom request",
     price: 0,
     status: entry.status === "accepted" ? "accepted" : entry.status === "rejected" ? "declined" : "new",
@@ -126,10 +133,10 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
 
       safePush("tv-responses", {
         id: generateId("RES"),
-        requestId: acceptTarget.id,
+        requestId: liveEntry.requestId ?? acceptTarget.id,
         vendorSlug,
         vendorName: vendor.name,
-        categorySlug: vendor.categorySlug,
+        categorySlug: liveEntry.categorySlug,
         startingPrice: vendor.startingPrice,
         status: "accepted",
         respondedAt: new Date().toISOString(),
@@ -163,26 +170,61 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
       );
       safeSet("tv-vendor-inbox", inbox);
 
+      const rankedVendorSlugs = liveEntry.rankedVendorSlugs ?? [];
+      const nextPriorityIndex = (liveEntry.currentPriorityIndex ?? 0) + 1;
+      const nextVendorSlug = rankedVendorSlugs[nextPriorityIndex];
+      const categoryLabel = getCategoryBySlug(liveEntry.categorySlug)?.name ?? "vendor";
+
       safePush("tv-responses", {
         id: generateId("RES"),
-        requestId: rejectTarget.id,
+        requestId: liveEntry.requestId ?? rejectTarget.id,
         vendorSlug,
         vendorName: vendor.name,
-        categorySlug: vendor.categorySlug,
+        categorySlug: liveEntry.categorySlug,
         status: "rejected",
         rejectionReason: reason,
         respondedAt: new Date().toISOString(),
       });
 
-      safePush("tv-notifications-cust-demo", {
-        id: generateId("N"),
-        type: "vendor_rejected",
-        title: `${vendor.name} is not available`,
-        message: `Reason: ${reason}. Choose another ${getCategoryBySlug(vendor.categorySlug)?.name ?? "vendor"}.`,
-        href: "/dashboard/customer",
-        read: false,
-        createdAt: new Date().toISOString(),
-      });
+      if (nextVendorSlug) {
+        if (!inbox[nextVendorSlug]) inbox[nextVendorSlug] = [];
+        inbox[nextVendorSlug].unshift({
+          ...liveEntry,
+          vendorSlug: nextVendorSlug,
+          currentPriorityIndex: nextPriorityIndex,
+          status: "pending",
+          rejectionReason: undefined,
+        });
+        safeSet("tv-vendor-inbox", inbox);
+
+        safePush("tv-admin-notifications", {
+          id: generateId("AN"),
+          type: "request_rerouted",
+          message: `${liveEntry.customerName}'s ${categoryLabel} request was rerouted to the next preferred vendor`,
+          time: new Date().toISOString(),
+          icon: "🔁",
+        });
+
+        safePush("tv-notifications-cust-demo", {
+          id: generateId("N"),
+          type: "vendor_rerouted",
+          title: `${vendor.name} is not available`,
+          message: `Reason: ${reason}. Your request is now moving to your next preferred ${categoryLabel} vendor.`,
+          href: "/dashboard/customer",
+          read: false,
+          createdAt: new Date().toISOString(),
+        });
+      } else {
+        safePush("tv-notifications-cust-demo", {
+          id: generateId("N"),
+          type: "vendor_rejected",
+          title: `${vendor.name} is not available`,
+          message: `Reason: ${reason}. No more ranked ${categoryLabel} vendors are left for this service.`,
+          href: "/dashboard/customer",
+          read: false,
+          createdAt: new Date().toISOString(),
+        });
+      }
     }
 
     setRequests((prev) =>
