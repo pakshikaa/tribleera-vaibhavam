@@ -36,14 +36,14 @@ export const categoryImages: Record<string, string[]> = {
 
 export const heroImage = u("photo-1583939003579-730e3918a45a", 1920);
 export const trustSectionImage = u("photo-1519167758481-83f29c8e8ee0", 1600);
-// Candid laughing couple, faces fully visible — swapped from a bouquet shot
-// where both faces were cropped out and the moment read as decorative
-// rather than emotional. Distinct from vendorLoginImage below.
-export const adminLoginImage = u("photo-1606216794074-735e91aa2c92", 1920) + "&q=95";
-// Same romantic couple photo proven on the homepage hero, at full quality —
-// reserved for vendor login so the emotional tone matches what the team
-// already recognises and trusts from the main site.
-export const vendorLoginImage = u("photo-1583939003579-730e3918a45a", 1920) + "&q=95";
+// Golden-hour lakeside bride & groom, formally dressed, both faces visible —
+// warm gold palette matches the admin portal's gold styling. Chosen after
+// visual inspection; must stay clearly distinct from vendorLoginImage below.
+export const adminLoginImage = u("photo-1591604466107-ec97de577aff", 1920) + "&q=95";
+// Beach couple wrapped in a flowing veil — soft, simple, romantic, and a
+// completely different scene from both the admin image and the homepage hero
+// (the two portals previously read as "the same image" to the team).
+export const vendorLoginImage = u("photo-1537633552985-df8429e8048b", 1920) + "&q=95";
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),

@@ -163,7 +163,7 @@ export default function VendorRegisterPage() {
                   "Our team reviews your portfolio and business details",
                   "If approved, you’ll receive your login credentials by email",
                   "Log in to complete your profile and add your packages",
-                  "Your studio goes live on TRIBLEERA for couples to discover",
+                  "Your business goes live on TRIBLEERA for couples to discover",
                 ].map((step, i) => (
                   <li key={i} className="flex gap-2.5">
                     <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gold/20 text-[10px] font-bold text-gold-deep">
@@ -184,7 +184,7 @@ export default function VendorRegisterPage() {
                   setPortfolio([]);
                 }}
               >
-                Register another studio
+                Register another business
               </Button>
               <Button href="/" variant="primary">
                 Back to home
@@ -312,7 +312,7 @@ export default function VendorRegisterPage() {
                   label="Email address"
                   type="email"
                   required
-                  placeholder="studio@example.com"
+                  placeholder="business@example.com"
                   error={errors.email?.message}
                   {...register("email")}
                 />

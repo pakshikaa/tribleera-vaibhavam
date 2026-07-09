@@ -184,7 +184,7 @@ export default function VendorLoginPage() {
                 Jaffna&rsquo;s
               </p>
               <p className="mb-3 bg-gradient-to-br from-cream via-gold to-gold-light bg-clip-text text-[46px] font-extrabold leading-[0.92] tracking-tight text-transparent drop-shadow-[0_2px_20px_rgba(21,4,12,0.95)]">
-                finest studios
+                finest vendors
               </p>
               <p className="text-sm leading-none text-cream-faint/50">find their couples.</p>
             </motion.div>
@@ -196,8 +196,8 @@ export default function VendorLoginPage() {
               variants={fadeUp}
               className="max-w-[340px] text-[13px] leading-relaxed text-cream-dim/70"
             >
-              Join TRIBLEERA VAIBHAVAM — where verified studios connect with couples seeking authentic Tamil
-              celebrations.
+              Join TRIBLEERA VAIBHAVAM — where photographers, decorators, cake artists, makeup studios and
+              more connect with couples seeking authentic Tamil celebrations.
             </motion.p>
           </div>
 
@@ -240,7 +240,7 @@ export default function VendorLoginPage() {
                 ))}
               </div>
               <p className="text-[11px] leading-tight text-cream-dim/65">
-                <strong className="text-gold-light">25+ studios</strong> already
+                <strong className="text-gold-light">25+ vendors</strong> already
                 <br />
                 partnered with TRIBLEERA
               </p>
@@ -277,7 +277,7 @@ export default function VendorLoginPage() {
           <p className="mb-8 text-sm text-[#4B5563]">
             New vendor?{" "}
             <Link href="/vendor/register" className="font-semibold text-[#7A1F3D] hover:underline">
-              Register your studio →
+              Register your business →
             </Link>
           </p>
 
