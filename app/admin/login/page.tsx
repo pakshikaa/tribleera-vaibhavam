@@ -171,6 +171,7 @@ export default function AdminLoginPage() {
             <div className="mb-4 h-px w-full overflow-hidden rounded-full bg-cream/10">
               <div className="h-full w-full animate-[loading_2.4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-gold to-transparent" />
             </div>
+            <p className="mb-2.5 text-[9px] uppercase tracking-[0.16em] text-gold/40">Platform at a glance</p>
             <div className="grid grid-cols-4 gap-2.5">
               {PLATFORM_STATS.map(({ icon: Icon, label, value }) => (
                 <div key={label} className="rounded-[9px] border border-gold/15 bg-cream/[0.06] p-3 text-center backdrop-blur-md">

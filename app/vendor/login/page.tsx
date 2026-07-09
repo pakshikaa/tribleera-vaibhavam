@@ -329,7 +329,7 @@ export default function VendorLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded bg-[#7A1F3D] py-3 text-sm font-semibold text-white transition-all hover:bg-[#5C0427] disabled:opacity-60"
+              className="w-full rounded bg-[#7A1F3D] py-3 text-sm font-semibold text-white shadow-[0_3px_16px_rgba(92,4,39,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#5C0427] hover:shadow-[0_6px_22px_rgba(92,4,39,0.36)] disabled:opacity-60"
             >
               {loading ? "Signing in…" : "Sign in to vendor portal"}
             </button>
