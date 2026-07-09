@@ -73,14 +73,24 @@ export default function AdminLoginPage() {
           animate={{ scale: [1, 1.06] }}
           transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
         >
-          <Image src={adminLoginImage} alt="" fill sizes="60vw" priority className="object-cover" />
+          {/* B&W portrait: bride's face sits right-of-centre, so anchor right
+              and let the dark left half carry the text column. */}
+          <Image
+            src={adminLoginImage}
+            alt="TRIBLEERA — professional wedding management"
+            fill
+            sizes="60vw"
+            priority
+            className="object-cover object-right brightness-[0.92] contrast-105"
+          />
         </motion.div>
 
         {/* Film grain — reuses the existing .bg-grain utility, intensified for this hero moment */}
         <div className="bg-grain absolute inset-0 scale-150 opacity-40 mix-blend-overlay" />
 
-        {/* Base warmth */}
-        <div className="absolute inset-0 bg-ink/35" />
+        {/* Base warmth — lighter than before: the B&W portrait is already
+            naturally dark, so a heavy base would crush it to black. */}
+        <div className="absolute inset-0 bg-ink/25" />
         {/* Radial vignette — depth from the center out, not a flat linear wash */}
         <div
           className="absolute inset-0"

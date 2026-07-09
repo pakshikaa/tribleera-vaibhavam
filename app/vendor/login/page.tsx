@@ -110,7 +110,16 @@ export default function VendorLoginPage() {
           animate={{ scale: [1, 1.06] }}
           transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
         >
-          <Image src={vendorLoginImage} alt="" fill sizes="52vw" priority className="object-cover object-center" />
+          {/* Sunset silhouette: couple is centred in the upper half of the
+              frame, so anchor there; slight saturate lifts the golds. */}
+          <Image
+            src={vendorLoginImage}
+            alt="TRIBLEERA — beautiful Tamil wedding celebration"
+            fill
+            sizes="52vw"
+            priority
+            className="object-cover object-[center_30%] brightness-[0.88] saturate-[1.1]"
+          />
         </motion.div>
 
         {/* Film grain */}
