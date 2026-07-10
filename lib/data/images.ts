@@ -49,10 +49,10 @@ export const trustSectionImage = "/images/portal/testimonials.jpg";
 // jewellery against a bright ground. The timeless monochrome mood suits
 // the admin portal's authority feel.
 export const adminLoginImage = "/images/portal/admin-hero.jpg";
-// Champagne handhold — groom in ivory suit and bride in a sequinned saree
-// holding hands amid soft greenery. Warm, aspirational mood for the vendor
-// pitch ("these are the moments you help create").
-export const vendorLoginImage = "/images/portal/vendor-hero.jpg";
+// Portrait Tamil couple moment — bride in silk saree and groom in ivory
+// sherwani. The image is tall with a bright sky, so vendor portal consumers
+// should anchor slightly above centre to keep the faces in frame.
+export const vendorLoginImage = "/images/portal/vendor-portal-couple.jpg";
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),

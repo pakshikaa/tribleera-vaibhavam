@@ -155,9 +155,9 @@ export default function VendorLoginPage() {
 
       {/* Full-bleed background — homepage-hero pattern */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden" }} aria-hidden="true">
-        {/* Champagne handhold: the clasped hands sit in the lower-middle of
-            the frame, so anchor there; the photo is bright, so pull
-            brightness down for the overlays to bite. */}
+        {/* Portrait couple frame: faces sit around the mid-upper band with a
+            bright sky above, so anchor slightly high to keep both subjects in
+            frame across desktop crops. */}
         <Image
           src={vendorLoginImage}
           alt=""
@@ -168,8 +168,8 @@ export default function VendorLoginPage() {
           className="kb ir"
           style={{
             objectFit: "cover",
-            objectPosition: "center 60%",
-            filter: "brightness(0.80) saturate(1.05)",
+            objectPosition: "center 34%",
+            filter: "brightness(0.72) saturate(1.02)",
           }}
         />
         <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.55)" }} />
@@ -218,15 +218,15 @@ export default function VendorLoginPage() {
           }}
         >
           <Image
-            src="/images/portal/vendor-hero.jpg"
+            src={vendorLoginImage}
             alt=""
             fill
             sizes="100vw"
             priority
             style={{
               objectFit: "cover",
-              objectPosition: "center 30%",
-              filter: "brightness(0.72) saturate(1.1)",
+              objectPosition: "center 24%",
+              filter: "brightness(0.70) saturate(1.02)",
             }}
           />
           <div
