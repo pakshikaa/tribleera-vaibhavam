@@ -47,9 +47,12 @@ export function AuthShell({
               fill
               priority
               sizes="(min-width: 1024px) 52vw, 100vw"
-              className="object-cover object-[center_24%]"
+              className="scale-105 object-cover object-[center_24%] blur-[3px] lg:scale-100 lg:blur-0"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.30)_0%,rgba(21,4,12,0.44)_32%,rgba(21,4,12,0.70)_72%,rgba(21,4,12,0.88)_100%)]" />
+            {/* Mobile-only reinforcement — the softened photo needs a slightly
+                deeper scrim so the headline and feature cards sit calmly on it. */}
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.22)_0%,rgba(33,7,20,0.4)_45%,rgba(21,4,12,0.55)_100%)] lg:hidden" />
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(21,4,12,0.08)_0%,rgba(21,4,12,0.14)_35%,rgba(21,4,12,0.72)_100%)]" />
             <div className="absolute inset-y-0 right-0 hidden w-28 bg-[linear-gradient(90deg,rgba(21,4,12,0)_0%,rgba(21,4,12,0.55)_40%,rgba(255,250,244,0.86)_100%)] lg:block" />
 
@@ -80,7 +83,7 @@ export function AuthShell({
                 <p className="inline-flex rounded-full border border-gold/30 bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-light backdrop-blur">
                   {eyebrow}
                 </p>
-                <h1 className="mt-5 max-w-[9ch] font-display text-[clamp(2.8rem,5vw,5.2rem)] font-bold leading-[0.9] tracking-[-0.045em] text-[#7A103B] text-shadow-dark sm:max-w-[8ch]">
+                <h1 className="mt-5 max-w-[9ch] font-display text-[clamp(2.8rem,5vw,5.2rem)] font-bold leading-[0.9] tracking-[-0.045em] text-[#F6E7D2] text-shadow-dark sm:max-w-[8ch] lg:text-[#7A103B]">
                   {title}
                 </h1>
                 <p className="mt-4 max-w-[44ch] text-[15px] leading-7 text-white/84 sm:text-[16px]">

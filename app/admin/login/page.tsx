@@ -212,14 +212,18 @@ export default function AdminLoginPage() {
         {/* Mobile-only backdrop — the hero photo, blurred and darkened so the
             form stays readable while the brand image still shows through. */}
         <div className="fixed inset-0 lg:hidden" aria-hidden="true">
+          {/* Heavy blur turns the B&W portrait into a soft tonal wash; the
+              gradient scrim stays calm behind the form while the gold halo
+              gives the logo zone a quiet glow. */}
           <Image
             src={adminLoginImage}
             alt=""
             fill
             sizes="100vw"
-            className="scale-110 object-cover object-right blur-[4px] brightness-[0.5]"
+            className="scale-110 object-cover object-right blur-[10px] brightness-[0.68]"
           />
-          <div className="absolute inset-0 bg-[rgba(21,4,12,0.78)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.7)_0%,rgba(21,4,12,0.48)_30%,rgba(33,7,20,0.6)_62%,rgba(21,4,12,0.85)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_36%_at_50%_10%,rgba(212,175,106,0.14),transparent_70%)]" />
         </div>
 
         {/* Arch watermark */}
@@ -266,7 +270,7 @@ export default function AdminLoginPage() {
           {/* Form */}
           <form
             onSubmit={handleLogin}
-            className="space-y-5 rounded-[14px] border border-slate/10 bg-white p-5 shadow-soft lg:border-[rgba(212,175,106,0.28)] lg:bg-[rgb(247_238_226_/_0.06)] lg:p-7 lg:shadow-none lg:backdrop-blur-[20px]"
+            className="space-y-5 rounded-[14px] border border-slate/10 bg-white p-5 shadow-[0_24px_60px_rgba(0,0,0,0.35)] lg:border-[rgba(212,175,106,0.28)] lg:bg-[rgb(247_238_226_/_0.06)] lg:p-7 lg:shadow-none lg:backdrop-blur-[20px]"
           >
             <div>
               <label
@@ -321,7 +325,7 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Demo credentials */}
-          <div className="mt-5 rounded-[8px] border border-slate/10 bg-white p-3 text-[13px] leading-relaxed text-slate-soft lg:border-gold/15 lg:bg-cream/[0.05] lg:text-cream-faint">
+          <div className="mt-5 rounded-[8px] border border-slate/10 bg-white p-3 text-[13px] leading-relaxed text-slate-soft shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:border-gold/15 lg:bg-cream/[0.05] lg:text-cream-faint lg:shadow-none">
             <strong className="text-slate lg:text-cream-dim">Demo credentials:</strong>
             <br />
             Username: <code className="text-burgundy-deep lg:text-gold-light">admin</code>

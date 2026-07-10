@@ -276,14 +276,18 @@ export default function VendorLoginPage() {
             Fixed (not absolute) because this panel is its own scroll container,
             so an absolute layer would stop at one viewport-height. */}
         <div className="fixed inset-0 lg:hidden" aria-hidden="true">
+          {/* Heavy blur turns the photo into a soft warm colour-wash rather
+              than a competing subject; the gradient scrim keeps the middle
+              (form zone) calm while letting the sunset golds glow at the top. */}
           <Image
             src={vendorLoginImage}
             alt=""
             fill
             sizes="100vw"
-            className="scale-110 object-cover object-[center_30%] blur-[4px] brightness-[0.55]"
+            className="scale-110 object-cover object-[center_30%] blur-[10px] brightness-[0.72] saturate-[1.15]"
           />
-          <div className="absolute inset-0 bg-[rgba(21,4,12,0.72)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.72)_0%,rgba(21,4,12,0.48)_28%,rgba(33,7,20,0.6)_62%,rgba(21,4,12,0.85)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_36%_at_50%_10%,rgba(212,175,106,0.16),transparent_70%)]" />
         </div>
 
         <div className="relative z-10 w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
@@ -339,7 +343,10 @@ export default function VendorLoginPage() {
             </Link>
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form
+            onSubmit={handleLogin}
+            className="space-y-4 rounded-2xl border border-white/10 bg-[rgba(21,4,12,0.35)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none"
+          >
             <div>
               <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-cream-dim lg:text-[#4B5563]">
                 Phone number
@@ -393,7 +400,7 @@ export default function VendorLoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 rounded border border-slate/10 bg-white p-3">
+          <div className="mt-6 rounded border border-slate/10 bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:shadow-none">
             <p className="text-[13px] leading-relaxed text-[#4B5563]">
               <strong>Demo credentials:</strong><br />
               Phone: +94771000001<br />
