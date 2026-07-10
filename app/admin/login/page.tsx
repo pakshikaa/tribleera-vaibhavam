@@ -209,6 +209,19 @@ export default function AdminLoginPage() {
       {/* Right — login form. min-w-0 so this flex child can shrink below its
           content's intrinsic width instead of overflowing on narrower windows. */}
       <div className="relative flex min-w-0 flex-1 items-start justify-center bg-[#FAF7F2] px-0 py-0 lg:items-center lg:bg-ink lg:px-5 lg:py-12">
+        {/* Mobile-only backdrop — the hero photo, blurred and darkened so the
+            form stays readable while the brand image still shows through. */}
+        <div className="fixed inset-0 lg:hidden" aria-hidden="true">
+          <Image
+            src={adminLoginImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="scale-110 object-cover object-right blur-[4px] brightness-[0.5]"
+          />
+          <div className="absolute inset-0 bg-[rgba(21,4,12,0.78)]" />
+        </div>
+
         {/* Arch watermark */}
         <svg
           className="pointer-events-none absolute inset-0 m-auto h-[500px] w-[500px] text-gold/[0.06] lg:hidden"
@@ -225,7 +238,7 @@ export default function AdminLoginPage() {
             className="mb-7 text-center lg:hidden"
             style={{
               padding: "28px 0 24px",
-              borderBottom: "0.5px solid #E5E7EB",
+              borderBottom: "0.5px solid rgba(212,175,106,0.28)",
               marginBottom: 28,
             }}
           >
@@ -237,7 +250,7 @@ export default function AdminLoginPage() {
               className="mx-auto mb-2.5 rounded-[10px]"
             />
             <p className="text-[15px] font-bold tracking-[0.18em] text-[#D4AF6A]">TRIBLEERA</p>
-            <p className="mt-0.5 text-[9px] uppercase tracking-[0.22em] text-[#6B7280]">
+            <p className="mt-0.5 text-[9px] uppercase tracking-[0.22em] text-cream-faint">
               VAIBHAVAM · ADMIN PORTAL
             </p>
           </div>
@@ -246,7 +259,7 @@ export default function AdminLoginPage() {
             <h2 className="font-display text-2xl font-bold text-cream">Admin sign in</h2>
             <p className="mt-1 text-sm text-cream-faint">Authorized personnel only</p>
           </div>
-          <p className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-[#6B7280] lg:hidden">
+          <p className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-cream-faint lg:hidden">
             Admin Portal
           </p>
 
@@ -317,12 +330,12 @@ export default function AdminLoginPage() {
           </div>
 
           <p className="mt-5 text-center">
-            <Link href="/" className="inline-block py-3 text-[13px] text-slate-soft hover:text-slate lg:text-[11px] lg:text-cream-faint lg:hover:text-cream-dim">
+            <Link href="/" className="inline-block py-3 text-[13px] text-cream-faint hover:text-cream-dim lg:text-[11px]">
               ← Back to TRIBLEERA VAIBHAVAM
             </Link>
           </p>
 
-          <p className="mt-3 text-center text-[13px] text-slate-soft lg:text-[11px] lg:text-cream-faint">
+          <p className="mt-3 text-center text-[13px] text-cream-faint lg:text-[11px]">
             Admin access only. All sessions are monitored and logged.
           </p>
         </div>

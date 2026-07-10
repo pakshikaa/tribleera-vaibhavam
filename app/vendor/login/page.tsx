@@ -270,14 +270,29 @@ export default function VendorLoginPage() {
       {/* Right panel — min-w-0 so this flex child can actually shrink below
           its content's intrinsic width instead of overflowing the viewport
           on narrower windows (flexbox default is min-width:auto). */}
-      <div className="flex min-w-0 flex-1 flex-col items-center justify-start overflow-y-auto bg-[#FAF7F2] px-0 py-0 lg:justify-center lg:px-16 lg:py-12">
-        <div className="w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
+      <div className="relative flex min-w-0 flex-1 flex-col items-center justify-start overflow-y-auto bg-[#FAF7F2] px-0 py-0 lg:justify-center lg:px-16 lg:py-12">
+        {/* Mobile-only backdrop — the hero photo, blurred and darkened so the
+            form stays readable while the brand image still shows through.
+            Fixed (not absolute) because this panel is its own scroll container,
+            so an absolute layer would stop at one viewport-height. */}
+        <div className="fixed inset-0 lg:hidden" aria-hidden="true">
+          <Image
+            src={vendorLoginImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="scale-110 object-cover object-[center_30%] blur-[4px] brightness-[0.55]"
+          />
+          <div className="absolute inset-0 bg-[rgba(21,4,12,0.72)]" />
+        </div>
+
+        <div className="relative z-10 w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
           <div
             className="lg:hidden"
             style={{
               textAlign: "center",
               padding: "32px 24px 28px",
-              borderBottom: "0.5px solid #E8D5BF",
+              borderBottom: "0.5px solid rgba(212,175,106,0.28)",
               marginBottom: 28,
             }}
           >
@@ -316,17 +331,17 @@ export default function VendorLoginPage() {
             </p>
           </div>
 
-          <h2 className="mb-1 font-display text-2xl font-semibold text-[#1F2937]">Vendor sign in</h2>
-          <p className="mb-8 text-sm text-[#4B5563]">
+          <h2 className="mb-1 font-display text-2xl font-semibold text-cream lg:text-[#1F2937]">Vendor sign in</h2>
+          <p className="mb-8 text-sm text-cream-dim lg:text-[#4B5563]">
             New vendor?{" "}
-            <Link href="/vendor/register" className="mt-1 block py-1 font-semibold text-[#7A1F3D] hover:underline">
+            <Link href="/vendor/register" className="mt-1 block py-1 font-semibold text-gold-light lg:text-[#7A1F3D] hover:underline">
               Register your studio →
             </Link>
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#4B5563]">
+              <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-cream-dim lg:text-[#4B5563]">
                 Phone number
               </label>
               <input
@@ -343,10 +358,10 @@ export default function VendorLoginPage() {
 
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-[#4B5563]">
+                <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-cream-dim lg:text-[#4B5563]">
                   Password
                 </label>
-                <Link href="/contact" className="text-xs text-[#7A1F3D] hover:underline">
+                <Link href="/contact" className="text-xs text-gold-light lg:text-[#7A1F3D] hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -386,8 +401,8 @@ export default function VendorLoginPage() {
             </p>
           </div>
 
-          <p className="mt-6 text-center text-xs text-[#4B5563]">
-            <Link href="/" className="inline-block py-3 hover:text-[#7A1F3D]">← Back to TRIBLEERA VAIBHAVAM</Link>
+          <p className="mt-6 text-center text-xs text-cream-faint lg:text-[#4B5563]">
+            <Link href="/" className="inline-block py-3 hover:text-gold-light lg:hover:text-[#7A1F3D]">← Back to TRIBLEERA VAIBHAVAM</Link>
           </p>
         </div>
       </div>
