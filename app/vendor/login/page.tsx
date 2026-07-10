@@ -4,8 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { AlertCircle, Heart, Sparkles } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { vendorLoginImage } from "@/lib/data/images";
 
 type ApprovedVendor = {
@@ -21,25 +20,6 @@ const STATIC_FALLBACK = [
   { slug: "pushpa-florals-and-decor", phone: "+94771000001", businessName: "Pushpa Florals & Decor" },
   { slug: "jaffna-frames-studio",     phone: "+94771000002", businessName: "Jaffna Frames Studio" },
 ];
-
-const AVATARS = [
-  { initials: "PF", bg: "#5C0427" },
-  { initials: "AJ", bg: "#7A1F3D" },
-  { initials: "JF", bg: "#380C1E" },
-  { initials: "NL", bg: "#220714" },
-];
-
-// Blur-to-sharp staggered entrance — logo, then eyebrow, then headline, then
-// body, then bottom block, each ~0.13s apart.
-const fadeUp = {
-  hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
-  show: (index: number) => ({
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, delay: 0.12 + index * 0.13, ease: [0.16, 1, 0.3, 1] as const },
-  }),
-};
 
 function normalisePhone(raw: string) {
   return raw.replace(/[\s\-()]/g, "");
@@ -101,318 +81,298 @@ export default function VendorLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen font-[Arial,sans-serif]" data-portal="true">
-      {/* Left panel — cinematic image */}
-      <div className="relative hidden w-[52%] shrink-0 overflow-hidden lg:block">
-        {/* Slow Ken Burns zoom — same technique as components/home/Hero.tsx */}
-        <motion.div
-          className="absolute inset-0 will-change-transform motion-reduce:animate-none"
-          animate={{ scale: [1, 1.06] }}
-          transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
-        >
-          {/* Pinky-hold amid pink drapes: the linked hands sit in the upper
-              half of the frame, so anchor there; slight saturate lifts the
-              pinks and golds. */}
-          <Image
-            src={vendorLoginImage}
-            alt="TRIBLEERA — beautiful Tamil wedding celebration"
-            fill
-            sizes="52vw"
-            priority
-            className="object-cover object-[center_30%] brightness-[0.88] saturate-[1.1]"
-          />
-        </motion.div>
+    <div data-portal="true" className="font-[Arial,sans-serif]">
+      <style>{`
+        @keyframes kenBurns {
+          from { transform: scale(1.00); }
+          to   { transform: scale(1.08); }
+        }
+        @keyframes imgReveal {
+          from { opacity: 0; filter: blur(8px); }
+          to   { opacity: 1; filter: blur(0); }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes goldShimmer {
+          0%   { background-position: -300% center; }
+          100% { background-position:  300% center; }
+        }
+        @keyframes breathe {
+          0%, 100% { opacity: 0.38; }
+          50%      { opacity: 0.68; }
+        }
+        .kb { animation: kenBurns 18s ease-in-out infinite alternate; }
+        .ir { animation: imgReveal .9s cubic-bezier(.16,1,.3,1) both; }
+        .s1 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .10s both; }
+        .s2 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .22s both; }
+        .s3 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .34s both; }
+        .s4 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .46s both; }
+        .s5 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .58s both; }
+        .breathe { animation: breathe 4s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .kb, .ir, .s1, .s2, .s3, .s4, .s5, .breathe { animation: none; }
+        }
+        .goldtext {
+          background: linear-gradient(90deg,#D4AF6A,#E9CE9C,#F7EEE2,#E9CE9C,#D4AF6A);
+          background-size: 300% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: goldShimmer 4s linear infinite;
+        }
+        .v-inp {
+          width: 100%; padding: 12px 14px;
+          border: 1.5px solid #E5E7EB; border-radius: 6px;
+          font-size: 16px; color: #1F2937; background: #FFFFFF;
+          outline: none; box-sizing: border-box;
+          font-family: Arial, sans-serif;
+          transition: border-color .2s, box-shadow .2s;
+        }
+        .v-inp::placeholder { color: rgba(31,41,55,0.35); }
+        .v-inp:focus {
+          border-color: #7A1F3D;
+          box-shadow: 0 0 0 3px rgba(122,31,61,0.10);
+        }
+        .v-btn {
+          width: 100%; padding: 13px 0; border: none;
+          border-radius: 6px; font-size: 15px; font-weight: 600;
+          cursor: pointer; font-family: Arial, sans-serif;
+          background: linear-gradient(135deg,#7A1F3D 0%,#5C0427 100%);
+          color: #FFFFFF;
+          box-shadow: 0 4px 18px rgba(92,4,39,0.30);
+          transition: transform .16s, box-shadow .16s;
+        }
+        .v-btn:hover:not(:disabled) {
+          transform: translateY(-1.5px);
+          box-shadow: 0 6px 24px rgba(92,4,39,0.40);
+        }
+        .v-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .v-backlink { color: rgba(247,238,226,0.5); text-decoration: none; transition: color .15s; }
+        .v-backlink:hover { color: rgba(212,175,106,0.85); }
+      `}</style>
 
-        {/* Film grain */}
-        <div className="bg-grain absolute inset-0 scale-150 opacity-35 mix-blend-overlay" />
-
-        {/* Radial vignette */}
-        <div
-          className="absolute inset-0"
+      {/* Full-bleed background — homepage-hero pattern */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden" }} aria-hidden="true">
+        {/* Champagne handhold: the clasped hands sit in the lower-middle of
+            the frame, so anchor there; the photo is bright, so pull
+            brightness down for the overlays to bite. */}
+        <Image
+          src={vendorLoginImage}
+          alt=""
+          fill
+          sizes="100vw"
+          priority
+          quality={90}
+          className="kb ir"
           style={{
+            objectFit: "cover",
+            objectPosition: "center 60%",
+            filter: "brightness(0.80) saturate(1.05)",
+          }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.55)" }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
             background:
-              "radial-gradient(ellipse 90% 90% at 50% 45%, transparent 20%, rgba(21,4,12,0.45) 70%, rgba(21,4,12,0.9) 100%)",
+              "radial-gradient(ellipse 85% 85% at 50% 40%, transparent 18%, rgba(21,4,12,0.55) 68%, rgba(21,4,12,0.90) 100%)",
           }}
         />
         <div
-          className="absolute inset-0"
           style={{
+            position: "absolute",
+            inset: 0,
             background:
-              "linear-gradient(to top, rgba(21,4,12,0.97) 0%, rgba(21,4,12,0.55) 26%, transparent 55%), linear-gradient(to bottom, rgba(21,4,12,0.72) 0%, transparent 18%)",
+              "linear-gradient(to bottom, rgba(21,4,12,0.50) 0%, transparent 35%, rgba(21,4,12,0.70) 100%)",
           }}
         />
-        {/* Text-protection gradient — guarantees the headline reads cleanly
-            no matter what's behind it in the source photo, independent of
-            the radial vignette above. */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(to right, rgba(21,4,12,0.75) 0%, rgba(21,4,12,0.3) 55%, transparent 85%)",
-          }}
-        />
-        <div className="absolute inset-0 bg-burgundy-950/15 mix-blend-multiply" />
-
-        <div className="relative z-10 flex h-full flex-col p-10">
-          {/* Brand — sized to match the site header exactly */}
-          <motion.div custom={0} initial="hidden" animate="show" variants={fadeUp} className="flex items-center gap-2.5">
-            <Image
-              src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA"
-              width={36}
-              height={36}
-              className="rounded-[8px] shadow-[0_0_0_1px_rgba(212,175,106,0.4),0_0_26px_rgba(212,175,106,0.25)]"
-            />
-            <div className="leading-none">
-              <p className="font-display text-[15px] font-bold tracking-widest text-gold text-shadow-dark">TRIBLEERA</p>
-              <p className="mt-1 font-display text-[9px] font-semibold tracking-[0.25em] text-gold-light/70">VAIBHAVAM</p>
-            </div>
-          </motion.div>
-
-          {/* Split headline */}
-          <div className="flex flex-1 flex-col justify-center">
-            <motion.div
-              custom={1}
-              initial="hidden"
-              animate="show"
-              variants={fadeUp}
-              className="mb-3.5 flex items-center gap-2"
-            >
-              <motion.span
-                animate={{ scale: [1, 1.18, 1, 1.12, 1] }}
-                transition={{ duration: 2.8, repeat: Infinity, times: [0, 0.14, 0.28, 0.42, 1], ease: "easeInOut" }}
-              >
-                <Heart size={11} className="fill-gold/25 text-gold" aria-hidden="true" />
-              </motion.span>
-              <p className="whitespace-nowrap text-[10px] uppercase tracking-[0.22em] text-gold/60">
-                Vendor Partner Portal
-              </p>
-            </motion.div>
-
-            <motion.div custom={2} initial="hidden" animate="show" variants={fadeUp} className="mb-4">
-              <p className="mb-1 text-sm leading-none text-cream-faint/55">The platform where</p>
-              <p className="bg-gradient-to-br from-cream via-gold to-gold-light bg-clip-text text-[46px] font-extrabold leading-[0.92] tracking-tight text-transparent drop-shadow-[0_2px_20px_rgba(21,4,12,0.95)]">
-                Jaffna&rsquo;s
-              </p>
-              <p className="mb-3 bg-gradient-to-br from-cream via-gold to-gold-light bg-clip-text text-[46px] font-extrabold leading-[0.92] tracking-tight text-transparent drop-shadow-[0_2px_20px_rgba(21,4,12,0.95)]">
-                finest vendors
-              </p>
-              <p className="text-sm leading-none text-cream-faint/50">find their couples.</p>
-            </motion.div>
-
-            <motion.p
-              custom={3}
-              initial="hidden"
-              animate="show"
-              variants={fadeUp}
-              className="max-w-[340px] text-[13px] leading-relaxed text-cream-dim/70"
-            >
-              Join TRIBLEERA VAIBHAVAM — where photographers, decorators, cake artists, makeup studios and
-              more connect with couples seeking authentic Tamil celebrations.
-            </motion.p>
-          </div>
-
-          {/* Bottom: shimmer divider, quote, social proof */}
-          <motion.div custom={4} initial="hidden" animate="show" variants={fadeUp}>
-            <div className="mb-4 h-px w-full overflow-hidden rounded-full bg-cream/10">
-              <div className="h-full w-full animate-[loading_2.4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-gold to-transparent" />
-            </div>
-
-            <div className="mb-4 flex items-start gap-2.5">
-              <motion.span
-                animate={{ opacity: [0.55, 0.9, 0.55] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                className="mt-0.5 shrink-0"
-              >
-                <Sparkles size={14} className="text-gold" aria-hidden="true" />
-              </motion.span>
-              <p className="text-[12.5px] italic leading-relaxed text-cream-dim/60">
-                &ldquo;Every great wedding starts with the right vendors. Be the reason a family says — it was
-                perfect.&rdquo;
-              </p>
-            </div>
-
-            <div className="mb-4 inline-flex items-center gap-2.5 rounded-[8px] border border-gold/[0.18] bg-cream/[0.06] px-3.5 py-2 backdrop-blur-md">
-              <div className="flex">
-                {AVATARS.map((a, i) => (
-                  <div
-                    key={a.initials}
-                    className="flex h-[22px] w-[22px] items-center justify-center rounded-full border-2 text-[7.5px] font-bold text-gold"
-                    style={{
-                      background: a.bg,
-                      borderColor: "rgba(212,175,106,0.35)",
-                      marginLeft: i > 0 ? -7 : 0,
-                      zIndex: 4 - i,
-                      position: "relative",
-                    }}
-                  >
-                    {a.initials}
-                  </div>
-                ))}
-              </div>
-              <p className="text-[11px] leading-tight text-cream-dim/65">
-                <strong className="text-gold-light">25+ vendors</strong> already
-                <br />
-                partnered with TRIBLEERA
-              </p>
-            </div>
-
-            {/* The one element that breathes */}
-            <motion.p
-              animate={{ opacity: [0.2, 0.42, 0.2] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="font-display text-[10.5px] italic text-cream-faint"
-            >
-              தேர்வின் செம்மை, வைபவத்தின் பெருமை
-            </motion.p>
-          </motion.div>
-        </div>
       </div>
 
-      {/* Right panel — min-w-0 so this flex child can actually shrink below
-          its content's intrinsic width instead of overflowing the viewport
-          on narrower windows (flexbox default is min-width:auto). */}
-      <div className="relative flex min-w-0 flex-1 flex-col items-center justify-start overflow-y-auto bg-[#FAF7F2] px-0 py-0 lg:justify-center lg:px-16 lg:py-12">
-        {/* Mobile-only backdrop — the hero photo, blurred and darkened so the
-            form stays readable while the brand image still shows through.
-            Fixed (not absolute) because this panel is its own scroll container,
-            so an absolute layer would stop at one viewport-height. */}
-        <div className="fixed inset-0 lg:hidden" aria-hidden="true">
-          {/* Heavy blur turns the photo into a soft warm colour-wash rather
-              than a competing subject; the gradient scrim keeps the middle
-              (form zone) calm while letting the sunset golds glow at the top. */}
+      {/* Centered content */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 10,
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px 20px",
+        }}
+      >
+        {/* Brand */}
+        <div className="s1" style={{ textAlign: "center", marginBottom: 28 }}>
           <Image
-            src={vendorLoginImage}
-            alt=""
-            fill
-            sizes="100vw"
-            className="scale-110 object-cover object-[center_30%] blur-[10px] brightness-[0.72] saturate-[1.15]"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.72)_0%,rgba(21,4,12,0.48)_28%,rgba(33,7,20,0.6)_62%,rgba(21,4,12,0.85)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_36%_at_50%_10%,rgba(212,175,106,0.16),transparent_70%)]" />
-        </div>
-
-        <div className="relative z-10 mx-auto w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
-          <div
-            className="lg:hidden"
+            src="/logo/tribleera-mark-192.png"
+            alt="TRIBLEERA VAIBHAVAM"
+            width={50}
+            height={50}
             style={{
-              textAlign: "center",
-              padding: "32px 24px 28px",
-              borderBottom: "0.5px solid rgba(212,175,106,0.28)",
-              marginBottom: 28,
+              borderRadius: 10,
+              margin: "0 auto 10px",
+              display: "block",
+              boxShadow: "0 0 0 1px rgba(212,175,106,.40), 0 0 26px rgba(212,175,106,.24)",
+            }}
+          />
+          <p className="goldtext" style={{ fontWeight: 700, fontSize: 15, letterSpacing: "0.20em" }}>
+            TRIBLEERA
+          </p>
+          <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 7.5, letterSpacing: "0.30em", marginTop: 2 }}>
+            VAIBHAVAM
+          </p>
+          <p
+            style={{
+              color: "rgba(247,238,226,0.35)",
+              fontSize: 9,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              marginTop: 8,
             }}
           >
-            <Image
-              src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA VAIBHAVAM"
-              width={52}
-              height={52}
-              style={{
-                borderRadius: 11,
-                margin: "0 auto 12px",
-                display: "block",
-              }}
-            />
-            <p
-              style={{
-                color: "#D4AF6A",
-                fontWeight: 700,
-                fontSize: 16,
-                letterSpacing: "0.18em",
-                lineHeight: 1,
-                marginBottom: 3,
-              }}
-            >
-              TRIBLEERA
-            </p>
-            <p
-              style={{
-                color: "#9CA3AF",
-                fontSize: 9,
-                letterSpacing: "0.28em",
-                textTransform: "uppercase",
-              }}
-            >
-              VAIBHAVAM
-            </p>
-          </div>
+            Vendor Portal
+          </p>
+        </div>
 
-          <h2 className="mb-1 font-display text-2xl font-semibold text-cream lg:text-[#1F2937]">Vendor sign in</h2>
-          <p className="mb-8 text-sm text-cream-dim lg:text-[#4B5563]">
+        {/* Floating ivory card */}
+        <div
+          className="s2"
+          style={{
+            width: "100%",
+            maxWidth: 420,
+            background: "rgba(250,247,242,0.96)",
+            border: "1px solid rgba(212,175,106,0.20)",
+            borderRadius: 16,
+            padding: "32px 28px",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            boxShadow: "0 24px 64px rgba(21,4,12,0.45)",
+          }}
+        >
+          <h1
+            className="s3"
+            style={{ color: "#1F2937", fontSize: 23, fontWeight: 700, marginBottom: 4, letterSpacing: "-0.01em" }}
+          >
+            Vendor sign in
+          </h1>
+          <p className="s3" style={{ color: "#6B7280", fontSize: 13, marginBottom: 24 }}>
             New vendor?{" "}
-            <Link href="/vendor/register" className="mt-1 block py-1 font-semibold text-gold-light lg:text-[#7A1F3D] hover:underline">
+            <Link href="/vendor/register" style={{ color: "#7A1F3D", fontWeight: 600, textDecoration: "none" }}>
               Register your studio →
             </Link>
           </p>
 
-          <form
-            onSubmit={handleLogin}
-            className="space-y-4 rounded-2xl border border-white/10 bg-[rgba(21,4,12,0.35)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-md lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none"
-          >
-            <div>
-              <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-cream-dim lg:text-[#4B5563]">
+          <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="s4">
+              <label
+                htmlFor="v-ph"
+                style={{
+                  display: "block",
+                  fontSize: 9.5,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.14em",
+                  color: "#6B7280",
+                  marginBottom: 6,
+                }}
+              >
                 Phone number
               </label>
               <input
-                id="phone"
+                id="v-ph"
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+94 77 XXX XXXX"
                 required
                 autoComplete="tel"
-                className="min-h-12 w-full rounded border border-slate/20 bg-white px-[14px] py-3 text-base text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
+                placeholder="+94 77 XXX XXXX"
+                onChange={(e) => setPhone(e.target.value)}
+                className="v-inp"
               />
             </div>
 
-            <div>
-              <div className="mb-1.5 flex items-center justify-between">
-                <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-cream-dim lg:text-[#4B5563]">
+            <div className="s4">
+              <div
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}
+              >
+                <label
+                  htmlFor="v-pw"
+                  style={{
+                    fontSize: 9.5,
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.14em",
+                    color: "#6B7280",
+                  }}
+                >
                   Password
                 </label>
-                <Link href="/contact" className="text-xs text-gold-light lg:text-[#7A1F3D] hover:underline">
+                <Link href="/contact" style={{ fontSize: 11, color: "#7A1F3D", textDecoration: "none" }}>
                   Forgot password?
                 </Link>
               </div>
               <input
-                id="password"
+                id="v-pw"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
                 required
                 autoComplete="current-password"
-                className="min-h-12 w-full rounded border border-slate/20 bg-white px-[14px] py-3 text-base text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
+                placeholder="••••••••"
+                onChange={(e) => setPassword(e.target.value)}
+                className="v-inp"
               />
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 rounded border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-700">
-                <AlertCircle size={13} className="mt-0.5 shrink-0" aria-hidden="true" />
-                {error}
+              <div
+                className="s4"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "#FEE2E2",
+                  border: "1px solid #FECACA",
+                  borderRadius: 5,
+                  padding: "9px 12px",
+                  fontSize: 12,
+                  color: "#991B1B",
+                }}
+              >
+                <AlertCircle size={13} aria-hidden="true" /> {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="min-h-[52px] w-full rounded bg-[#7A1F3D] px-4 py-3 text-[15px] font-semibold text-white shadow-[0_3px_16px_rgba(92,4,39,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#5C0427] hover:shadow-[0_6px_22px_rgba(92,4,39,0.36)] disabled:opacity-60"
-            >
+            <button type="submit" disabled={loading} className="s5 v-btn" style={{ marginTop: 4 }}>
               {loading ? "Signing in…" : "Sign in to vendor portal"}
             </button>
           </form>
-
-          <div className="mt-6 rounded-2xl border border-slate/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:rounded lg:p-3 lg:shadow-none">
-            <p className="text-[13px] leading-relaxed text-[#4B5563]">
-              <strong>Demo credentials:</strong><br />
-              Phone: +94771000001<br />
-              Password: vendor2026
-            </p>
-          </div>
-
-          <p className="mt-6 text-center text-xs text-cream-faint lg:text-[#4B5563]">
-            <Link href="/" className="inline-block py-3 hover:text-gold-light lg:hover:text-[#7A1F3D]">← Back to TRIBLEERA VAIBHAVAM</Link>
-          </p>
         </div>
+
+        {/* Bottom */}
+        <div className="s5" style={{ marginTop: 18, textAlign: "center" }}>
+          <Link href="/" className="v-backlink" style={{ fontSize: 12 }}>
+            ← Back to TRIBLEERA VAIBHAVAM
+          </Link>
+        </div>
+
+        <p
+          className="breathe"
+          style={{
+            position: "fixed",
+            bottom: 20,
+            left: 0,
+            right: 0,
+            textAlign: "center",
+            color: "rgba(247,238,226,0.18)",
+            fontSize: 10.5,
+            fontStyle: "italic",
+            zIndex: 5,
+          }}
+        >
+          தேர்வின் செம்மை, வைபவத்தின் பெருமை
+        </p>
       </div>
     </div>
   );

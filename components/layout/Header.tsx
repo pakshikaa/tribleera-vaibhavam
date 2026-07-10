@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, LogIn, Menu, ShoppingBag } from "lucide-react";
@@ -14,6 +14,7 @@ import { useCart } from "@/context/CartContext";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils/cn";
+import { readActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 const NAV_LINKS = [
   { href: "/services",      label: "Services",          gold: false },
@@ -24,16 +25,43 @@ const NAV_LINKS = [
 
 export function Header() {
   const pathname = usePathname();
-  const { items, hydrated } = useCart();
+  const router = useRouter();
+  const { items, hydrated, clear } = useCart();
   const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
   const scrolled = useScrolled(40);
 
   const [mounted, setMounted] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
+  function handleLogout() {
+    try {
+      window.sessionStorage.removeItem("customer-auth");
+      window.sessionStorage.removeItem("customer-name");
+      window.localStorage.removeItem("TRIBLEERA-cart-v1");
+    } catch {}
+    clear();
+    setShowUserMenu(false);
+    router.push("/");
+  }
+
   const isHome = mounted ? pathname === "/" : false;
   const homeAtTop = isHome && !scrolled;
+  const headerSession = (() => {
+    if (!mounted) return { loggedIn: false, name: "" };
+    try {
+      const auth = window.sessionStorage.getItem("customer-auth");
+      return {
+        loggedIn: Boolean(auth),
+        name: auth ? readActiveCustomerProfile().name ?? "" : "",
+      };
+    } catch {
+      return { loggedIn: false, name: "" };
+    }
+  })();
+  const userLoggedIn = headerSession.loggedIn;
+  const userName = headerSession.name;
   return (
     <motion.header
       initial={{ y: -24, opacity: 0 }}
@@ -167,19 +195,67 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Sign In */}
-          <Link
-            href="/login"
-            className={cn(
-              "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              homeAtTop
-                ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
-            )}
-          >
-            <LogIn size={15} strokeWidth={1.75} />
-            Sign In
-          </Link>
+          {userLoggedIn ? (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowUserMenu((value) => !value)}
+                aria-label="Open user menu"
+                className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-gold/40 bg-[linear-gradient(135deg,#7A1F3D,#5C0427)] text-sm font-bold text-gold transition-shadow hover:shadow-[0_0_0_3px_rgba(212,175,106,0.20)]"
+              >
+                {(userName.charAt(0) || "U").toUpperCase()}
+              </button>
+
+              {showUserMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
+                  <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-[200px] overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.14)]">
+                    <div className="border-b border-slate/10 bg-ivory px-4 py-3">
+                      <p className="text-[13px] font-semibold text-slate">{userName || "My Account"}</p>
+                      <p className="mt-0.5 text-[11px] text-slate-soft">Customer account</p>
+                    </div>
+                    {[
+                      { label: "My dashboard", href: "/dashboard/customer" },
+                      { label: "My profile", href: "/dashboard/customer/profile" },
+                      { label: "My shortlist", href: "/shortlist" },
+                      { label: "My bookings", href: "/dashboard/customer" },
+                    ].map((item) => (
+                      <Link
+                        key={item.href + item.label}
+                        href={item.href}
+                        onClick={() => setShowUserMenu(false)}
+                        className="block px-4 py-2.5 text-[13px] text-slate-soft transition-colors hover:bg-slate-50"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                    <div className="border-t border-slate/10">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="block min-h-11 w-full px-4 py-2.5 text-left text-[13px] text-red-600 transition-colors hover:bg-red-50"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                homeAtTop
+                  ? "text-white/70 hover:bg-white/10 hover:text-white"
+                  : "text-slate/60 hover:bg-burgundy/5 hover:text-burgundy"
+              )}
+            >
+              <LogIn size={15} strokeWidth={1.75} />
+              Sign In
+            </Link>
+          )}
 
           {/* Divider */}
           <div className={cn("h-5 w-px", homeAtTop ? "bg-white/15" : "bg-slate/15")} />
@@ -233,14 +309,40 @@ export function Header() {
                   </SheetClose>
                 ))}
                 <div className="my-2 h-px bg-slate/10" />
-                <SheetClose asChild>
-                  <Link
-                    href="/login"
-                    className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory hover:text-burgundy"
-                  >
-                    Sign in
-                  </Link>
-                </SheetClose>
+                {userLoggedIn ? (
+                  <>
+                    {[
+                      { href: "/dashboard/customer", label: "My dashboard" },
+                      { href: "/dashboard/customer/profile", label: "My profile" },
+                      { href: "/shortlist", label: "My shortlist" },
+                    ].map((link) => (
+                      <SheetClose key={link.href} asChild>
+                        <Link
+                          href={link.href}
+                          className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory hover:text-burgundy"
+                        >
+                          {link.label}
+                        </Link>
+                      </SheetClose>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="rounded-md px-3 py-3 text-left text-base font-medium text-red-600 hover:bg-red-50"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <SheetClose asChild>
+                    <Link
+                      href="/login"
+                      className="rounded-md px-3 py-3 text-base font-medium text-slate hover:bg-ivory hover:text-burgundy"
+                    >
+                      Sign in
+                    </Link>
+                  </SheetClose>
+                )}
                 <SheetClose asChild>
                   <Link
                     href="/vendor/login"

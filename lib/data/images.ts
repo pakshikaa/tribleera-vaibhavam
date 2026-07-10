@@ -49,9 +49,9 @@ export const trustSectionImage = "/images/portal/testimonials.jpg";
 // jewellery against a bright ground. The timeless monochrome mood suits
 // the admin portal's authority feel.
 export const adminLoginImage = "/images/portal/admin-hero.jpg";
-// Bride and groom linking pinky fingers amid pink saree drapes and garlands —
-// vivid, celebratory colour that matches the aspirational vendor pitch
-// ("these are the moments you help create").
+// Champagne handhold — groom in ivory suit and bride in a sequinned saree
+// holding hands amid soft greenery. Warm, aspirational mood for the vendor
+// pitch ("these are the moments you help create").
 export const vendorLoginImage = "/images/portal/vendor-hero.jpg";
 
 export const galleryImages = [
