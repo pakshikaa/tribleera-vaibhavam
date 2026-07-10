@@ -33,6 +33,8 @@ export interface VendorPackage {
   inclusions: string[];
   coverImageUrl?: string;
   recommended?: boolean;
+  archived?: boolean;
+  customFields?: Record<string, string>;
 }
 
 export interface Review {
@@ -76,6 +78,7 @@ export type BookingStatus =
   | "pending"
   | "confirmed"
   | "advance_paid"
+  | "cancellation_requested"
   | "completed"
   | "cancelled";
 

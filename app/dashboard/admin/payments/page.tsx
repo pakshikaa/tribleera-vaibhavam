@@ -46,8 +46,8 @@ export default function AdminPaymentsPage() {
       <AdminPendingVerificationClient />
 
       {/* Payments table */}
-      <div className="overflow-hidden rounded-[10px] border border-slate/10 bg-white">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-[10px] border border-slate/10 bg-white">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-slate/8 bg-ivory text-xs font-semibold uppercase tracking-wider text-slate-soft">
               <th className="px-5 py-3 text-left">Booking ID</th>

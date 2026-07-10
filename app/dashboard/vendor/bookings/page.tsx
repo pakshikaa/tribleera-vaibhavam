@@ -38,7 +38,7 @@ export default function VendorBookingsPage() {
   const acceptedRequests = vendorRequests.filter((r) => r.status === "accepted");
 
   return (
-    <div className="bg-ivory">
+    <div className="bg-ivory" data-portal="true">
       {/* Page header */}
       <section className="border-b border-slate/8 bg-white py-8">
         <Container>
@@ -114,13 +114,13 @@ export default function VendorBookingsPage() {
                     </p>
                   )}
 
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4 flex flex-col gap-3 border-t border-slate/8 pt-3 sm:flex-row sm:items-center sm:justify-between sm:border-0 sm:pt-0">
                     <p className="font-display text-lg font-semibold text-burgundy-deep">
                       {formatLKR(req.price)}
                     </p>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="secondary">Decline</Button>
-                      <Button size="sm" variant="primary">Accept</Button>
+                    <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto">
+                      <Button size="sm" variant="secondary" fullWidth>Decline</Button>
+                      <Button size="sm" variant="primary" fullWidth>Accept</Button>
                     </div>
                   </div>
                 </div>

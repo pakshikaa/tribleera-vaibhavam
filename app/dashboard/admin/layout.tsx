@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuPath, setMobileMenuPath] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -52,12 +52,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setAuthChecked(true);
   }, [router]);
 
-  // Close mobile nav on route change
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMobileOpen(false);
-  }, [pathname]);
-
   function handleSignOut() {
     try { sessionStorage.removeItem("admin-auth"); } catch {}
     router.push("/admin/login");
@@ -71,7 +65,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  const Sidebar = (
+  const sidebar = (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-slate/10 bg-white">
       {/* Brand */}
       <div className="flex items-center gap-2.5 border-b border-slate/10 px-5 py-4">
@@ -123,20 +117,66 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </aside>
   );
 
+  const mobileSidebar = (
+    <div className="flex h-full w-[260px] max-w-[80vw] flex-col bg-ink text-cream shadow-[4px_0_20px_rgba(0,0,0,0.25)]">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={26} height={26} className="rounded-[5px]" />
+          <span className="text-[13px] font-bold tracking-[0.1em] text-gold">Admin</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setMobileMenuPath(null)}
+          aria-label="Close admin menu"
+          className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/8 text-cream"
+        >
+          <span className="text-xl leading-none">×</span>
+        </button>
+      </div>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
+        {NAV.map((item) => {
+          const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileMenuPath(null)}
+              className={cn(
+                "flex min-h-11 items-center gap-3 rounded-[8px] px-3 py-3 text-sm font-medium",
+                active ? "bg-burgundy text-cream" : "text-cream-faint"
+              )}
+            >
+              <item.icon size={17} strokeWidth={active ? 2 : 1.75} />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="space-y-1 border-t border-white/10 p-3">
+        <Link href="/" target="_blank" className="flex min-h-11 items-center gap-2.5 rounded-[8px] px-3 py-3 text-sm text-cream-faint">
+          <Globe size={15} /> View website
+        </Link>
+        <button onClick={handleSignOut} className="flex min-h-11 w-full items-center gap-2.5 rounded-[8px] px-3 py-3 text-sm text-cream-faint">
+          <LogOut size={15} /> Sign out
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex min-h-screen bg-[#F5F6FA]">
+    <div className="dashboard-page flex min-h-screen bg-[#F5F6FA]" data-portal="true">
 
       {/* Desktop sidebar */}
       <div className="hidden h-screen sticky top-0 md:flex">
-        {Sidebar}
+        {sidebar}
       </div>
 
       {/* Mobile sidebar overlay */}
-      {mobileOpen && (
+      {mobileMenuPath === pathname && (
         <div className="fixed inset-0 z-50 flex md:hidden">
-          <div className="fixed inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <div className="fixed inset-0 bg-black/40" onClick={() => setMobileMenuPath(null)} />
           <div className="relative z-50 flex h-full">
-            {Sidebar}
+            {mobileSidebar}
           </div>
         </div>
       )}
@@ -145,16 +185,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex flex-1 flex-col min-w-0">
 
         {/* Top bar */}
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate/10 bg-white px-5">
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate/10 bg-[#15040C] px-4 text-cream md:bg-white md:px-5 md:text-slate">
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button
-              className="rounded-lg p-1.5 text-slate-soft hover:bg-ivory md:hidden"
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open navigation"
+              className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/8 text-cream md:hidden"
+              onClick={() => setMobileMenuPath(pathname)}
+              aria-label="Open admin menu"
             >
               <Menu size={20} />
             </button>
+            <div className="flex items-center gap-2 md:hidden">
+              <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={26} height={26} className="rounded-[5px]" />
+              <span className="text-[13px] font-bold tracking-[0.1em] text-gold">Admin</span>
+            </div>
             {/* Breadcrumb */}
             <div className="hidden items-center gap-1.5 text-xs text-slate-soft md:flex">
               <span>Admin</span>
@@ -164,7 +208,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-3 md:flex">
             <div className="flex items-center gap-2 rounded-[8px] bg-burgundy/5 px-3 py-1.5">
               <div className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-xs font-medium text-burgundy-deep">admin</span>
@@ -173,7 +217,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto p-6 md:p-8">
+        <main className="flex-1 overflow-auto overflow-x-hidden p-4 md:p-8">
           {children}
         </main>
       </div>

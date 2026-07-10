@@ -124,14 +124,14 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
   return (
     <div className="space-y-6">
       {/* Filter tabs */}
-      <div className="flex gap-1 border-b border-slate/8">
+      <div className="flex gap-2 overflow-x-auto border-b border-slate/8 pb-1 scrollbar-hide">
         {(["all", "pending", "approved", "rejected"] as FilterTab[]).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
             className={cn(
-              "flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors capitalize",
+              "flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-medium capitalize transition-colors",
               tab === t
                 ? "border-burgundy text-burgundy"
                 : "border-transparent text-slate-soft hover:text-slate"
@@ -226,7 +226,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-between border-t border-slate/8 px-5 py-3">
+            <div className="flex flex-col gap-3 border-t border-slate/8 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
               <button
                 type="button"
                 onClick={() => setExpanded(expanded === app.id ? null : app.id)}
@@ -236,11 +236,12 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                 {expanded === app.id ? "Hide details" : "View details"}
               </button>
               {app.status === "pending" && (
-                <div className="flex gap-2">
+                <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto">
                   <Button
                     size="sm"
                     variant="secondary"
                     icon={<X size={14} />}
+                    fullWidth
                     onClick={() => setRejectDialog({ id: app.id, name: app.businessName })}
                   >
                     Reject
@@ -248,6 +249,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                   <Button
                     size="sm"
                     icon={<Check size={14} />}
+                    fullWidth
                     onClick={() => approve(app)}
                   >
                     Approve
@@ -282,11 +284,11 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
                 </label>
               ))}
             </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button variant="secondary" size="sm" onClick={() => setRejectDialog(null)}>
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:flex sm:justify-end">
+              <Button variant="secondary" size="sm" fullWidth onClick={() => setRejectDialog(null)}>
                 Cancel
               </Button>
-              <Button variant="primary" size="sm" onClick={confirmReject}>
+              <Button variant="primary" size="sm" fullWidth onClick={confirmReject}>
                 Confirm rejection
               </Button>
             </div>

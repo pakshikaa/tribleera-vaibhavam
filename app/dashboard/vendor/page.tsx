@@ -67,7 +67,7 @@ export default function VendorDashboardPage() {
     .sort((a, b) => a.daysUntil - b.daysUntil);
 
   return (
-    <div className="bg-ivory">
+    <div className="bg-ivory" data-portal="true">
       <section
         className="py-10"
         style={{ background: "linear-gradient(135deg, #15040C 0%, #5C0427 100%)" }}
@@ -86,13 +86,13 @@ export default function VendorDashboardPage() {
               <p className="text-sm text-cream-dim">{vendor.location}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <TrustScoreRing score={trustPercent} />
-            <div className="flex flex-wrap gap-2">
-              <Button href="/dashboard/vendor/profile" variant="glass" icon={<Pencil size={15} />}>
+            <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+              <Button href="/dashboard/vendor/profile" variant="glass" icon={<Pencil size={15} />} fullWidth>
                 Edit profile
               </Button>
-              <Button href="/dashboard/vendor/packages" variant="gold">
+              <Button href="/dashboard/vendor/packages" variant="gold" fullWidth>
                 Manage packages
               </Button>
             </div>
@@ -126,7 +126,7 @@ export default function VendorDashboardPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard label="New requests" value={String(newRequests)} icon={<Bell size={18} />} accent="burgundy" />
           <StatCard
             label="Profile views (30d)"
@@ -143,11 +143,11 @@ export default function VendorDashboardPage() {
         <div className="mt-8 rounded-[10px] border border-slate/8 bg-white p-6 shadow-ambient">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-xl text-burgundy-deep">Your public profile</h2>
-            <div className="flex gap-2">
-              <Button href="/dashboard/vendor/profile" variant="secondary" size="sm" icon={<Pencil size={14} />}>
+            <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto">
+              <Button href="/dashboard/vendor/profile" variant="secondary" size="sm" icon={<Pencil size={14} />} fullWidth>
                 Edit
               </Button>
-              <Button href={`/vendors/${vendor.slug}`} variant="secondary" size="sm" icon={<ExternalLink size={14} />}>
+              <Button href={`/vendors/${vendor.slug}`} variant="secondary" size="sm" icon={<ExternalLink size={14} />} fullWidth>
                 View live
               </Button>
             </div>
@@ -256,7 +256,7 @@ export default function VendorDashboardPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <StatCard label="Response Rate" value="99%" />
                       <StatCard label="Booking Success" value="94%" />
                       <StatCard label="Avg Booking Value" value={formatLKR(averageBookingValue)} />

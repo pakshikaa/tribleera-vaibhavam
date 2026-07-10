@@ -45,9 +45,14 @@ export function AdminPendingVerificationClient() {
     };
     safePush("tv-bookings", confirmedBooking);
 
-    const lastBooking = safeGet<{ id?: string } & Record<string, unknown>>("tribleera-last-booking", {});
-    if (lastBooking.id === payment.id || lastBooking.id === payment.bookingId) {
-      safeSet("tribleera-last-booking", { ...lastBooking, adminVerified: true, status: "confirmed" });
+    const uppercaseLastBooking = safeGet<{ id?: string } & Record<string, unknown>>("TRIBLEERA-last-booking", {});
+    if (uppercaseLastBooking.id === payment.id || uppercaseLastBooking.id === payment.bookingId) {
+      safeSet("TRIBLEERA-last-booking", { ...uppercaseLastBooking, adminVerified: true, status: "confirmed" });
+    }
+
+    const lowercaseLastBooking = safeGet<{ id?: string } & Record<string, unknown>>("tribleera-last-booking", {});
+    if (lowercaseLastBooking.id === payment.id || lowercaseLastBooking.id === payment.bookingId) {
+      safeSet("tribleera-last-booking", { ...lowercaseLastBooking, adminVerified: true, status: "confirmed" });
     }
 
     safePush("tv-notifications-cust-demo", {

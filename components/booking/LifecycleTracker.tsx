@@ -12,6 +12,8 @@ function stageIndex(status: BookingStatus): number {
       return 3; // vendor accepted, payment in progress
     case "advance_paid":
       return 4; // booked
+    case "cancellation_requested":
+      return -1;
     case "completed":
       return 5;
     case "cancelled":
@@ -25,20 +27,23 @@ const STAGE_DESCRIPTIONS: Record<BookingStatus, string> = {
   pending: "Your request has been sent to the vendor and is awaiting a response.",
   confirmed: "The vendor accepted your request — complete payment to confirm the booking.",
   advance_paid: "Advance received. Your date is locked in and the vendor has been notified.",
+  cancellation_requested: "A cancellation request has been raised and is waiting for admin review.",
   completed: "This event has been delivered. Thank you for celebrating with TRIBLEERA.",
   cancelled: "This booking was cancelled. See the case notes below for details.",
 };
 
 export function LifecycleTracker({ status }: { status: BookingStatus }) {
-  if (status === "cancelled") {
+  if (status === "cancelled" || status === "cancellation_requested") {
     return (
       <div className="flex items-center gap-3 rounded-[8px] border border-danger/20 bg-danger-pale px-5 py-4">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-danger text-white">
           <X size={16} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-danger">Booking cancelled</p>
-          <p className="text-xs text-danger/80">{STAGE_DESCRIPTIONS.cancelled}</p>
+          <p className="text-sm font-semibold text-danger">
+            {status === "cancellation_requested" ? "Cancellation requested" : "Booking cancelled"}
+          </p>
+          <p className="text-xs text-danger/80">{STAGE_DESCRIPTIONS[status]}</p>
         </div>
       </div>
     );

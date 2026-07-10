@@ -46,6 +46,17 @@ export function PackageCard({ pkg, motif = "arch", tone = "gold", seed = 0, sele
         <h3 className="text-display-sm mt-1">{pkg.name}</h3>
         <p className="mt-2 text-sm text-slate-soft">{pkg.description}</p>
         <p className="mt-5 font-display text-2xl font-bold text-burgundy-deep">{formatLKR(pkg.price)}</p>
+        {pkg.customFields && Object.keys(pkg.customFields).length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {Object.entries(pkg.customFields).map(([key, value]) =>
+              value ? (
+                <span key={key} className="rounded-full bg-ivory px-2.5 py-1 text-[11px] text-slate-soft">
+                  {key.replace(/([A-Z])/g, " $1").replace(/-/g, " ")}: {value}
+                </span>
+              ) : null
+            )}
+          </div>
+        )}
         <ul className="mt-5 flex-1 space-y-2.5">
           {pkg.inclusions.map((inclusion) => (
             <li key={inclusion} className="flex items-start gap-2 text-sm text-slate">

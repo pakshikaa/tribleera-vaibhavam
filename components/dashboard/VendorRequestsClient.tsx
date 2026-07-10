@@ -54,6 +54,12 @@ function deadlineForRequest(receivedAt: string) {
   return new Date(new Date(receivedAt).getTime() + 24 * 60 * 60 * 1000);
 }
 
+function isPastDate(dateStr: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(dateStr) < today;
+}
+
 function getVendorSlug(): string {
   try {
     return sessionStorage.getItem("vendor-slug") ?? DEFAULT_VENDOR_SLUG;
@@ -352,6 +358,10 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
                       <span className="flex items-center gap-1.5 text-xs font-medium text-success">
                         <CheckCircle2 size={14} /> Marked complete
                       </span>
+                    ) : !isPastDate(request.eventDate) ? (
+                      <p className="text-xs italic text-slate-soft">
+                        Available after {formatDate(request.eventDate)}
+                      </p>
                     ) : (
                       <Button size="sm" variant="secondary" icon={<CheckCircle2 size={14} />} onClick={() => markComplete(request)}>
                         Mark Complete

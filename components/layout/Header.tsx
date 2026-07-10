@@ -29,16 +29,27 @@ export function Header() {
   const { items, hydrated, clear } = useCart();
   const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
   const scrolled = useScrolled(40);
+  const isPortalRoute = [
+    "/vendor/login",
+    "/vendor/register",
+    "/dashboard/vendor",
+    "/dashboard/admin",
+    "/admin/login",
+  ].some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   const [mounted, setMounted] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setMounted(true); }, []);
 
+  if (isPortalRoute) return null;
+
   function handleLogout() {
     try {
       window.sessionStorage.removeItem("customer-auth");
       window.sessionStorage.removeItem("customer-name");
+      window.sessionStorage.removeItem("user-auth");
+      window.sessionStorage.removeItem("user-slug");
       window.localStorage.removeItem("TRIBLEERA-cart-v1");
     } catch {}
     clear();
@@ -51,7 +62,7 @@ export function Header() {
   const headerSession = (() => {
     if (!mounted) return { loggedIn: false, name: "" };
     try {
-      const auth = window.sessionStorage.getItem("customer-auth");
+      const auth = window.sessionStorage.getItem("customer-auth") ?? window.sessionStorage.getItem("user-auth");
       return {
         loggedIn: Boolean(auth),
         name: auth ? readActiveCustomerProfile().name ?? "" : "",

@@ -11,7 +11,7 @@ import { Rating } from "@/components/ui/Rating";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { SubHeading } from "@/components/ui/SubHeading";
-import { PackageCard } from "@/components/vendor/PackageCard";
+import { VendorPackagesSection } from "@/components/vendor/VendorPackagesSection";
 import { VendorGalleryClient } from "@/components/vendor/VendorGalleryClient";
 import { VendorMobileBookBar } from "@/components/vendor/VendorMobileBookBar";
 import { ShortlistButton } from "@/components/vendor/ShortlistButton";
@@ -190,13 +190,17 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
             <div className="flex items-center justify-between">
               <SubHeading className="text-display-sm">Curated Packages</SubHeading>
               <Link href={`/vendors/${vendor.slug}/packages`} className="flex items-center gap-1 text-sm font-semibold text-burgundy hover:underline">
-                Compare all <ArrowRight size={14} />
+                View all packages <ArrowRight size={14} />
               </Link>
             </div>
-            <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
-              {vendor.packages.map((pkg) => (
-                <PackageCard key={pkg.id} pkg={pkg} motif={vendor.motif} tone={vendor.tone} seed={vendor.id.length} />
-              ))}
+            <div className="mt-5">
+              <VendorPackagesSection
+                vendorSlug={vendor.slug}
+                staticPackages={vendor.packages}
+                motif={vendor.motif}
+                tone={vendor.tone}
+                seed={vendor.id.length}
+              />
             </div>
             <Button href={`/vendors/${vendor.slug}/packages`} className="mt-6" fullWidth>
               View packages &amp; book

@@ -4,7 +4,7 @@ import { ChangeEvent, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock, ShieldCheck, ShoppingBag, CreditCard, Landmark, Smartphone, Check, Copy } from "lucide-react";
+import { Lock, ShieldCheck, ShoppingBag, CreditCard, Landmark, Smartphone, Check, Copy, Clock } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +20,13 @@ import { useCart } from "@/context/CartContext";
 import { customerDetailsSchema, type CustomerDetailsValues } from "@/lib/schemas";
 import { BackButton } from "@/components/ui/BackButton";
 import { generateId, safePush } from "@/lib/utils/store";
+
+interface VendorResponseSelection {
+  requestId?: string;
+  vendorSlug?: string;
+  categorySlug?: string;
+  status?: "accepted" | "rejected" | "pending";
+}
 
 const PAYMENT_METHODS = [
   {
@@ -51,6 +58,27 @@ export default function PaymentSummaryPage() {
   const [slipPreview, setSlipPreview] = useState<string | null>(null);
   const [slipName, setSlipName] = useState("");
   const fileInputId = useId();
+  const selectedCategory = items[0]?.categorySlug;
+  const acceptedSelection = (() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const selected = JSON.parse(
+        window.localStorage.getItem("TRIBLEERA-payment-selection") ?? "null"
+      ) as VendorResponseSelection | null;
+      if (selected?.status === "accepted") return selected;
+
+      const responses = JSON.parse(
+        window.localStorage.getItem("tv-responses") ?? "[]"
+      ) as VendorResponseSelection[];
+      return responses.find(
+        (response) =>
+          response.status === "accepted" &&
+          (!selectedCategory || response.categorySlug === selectedCategory)
+      ) ?? null;
+    } catch {
+      return null;
+    }
+  })();
 
   const {
     register,
@@ -148,6 +176,35 @@ export default function PaymentSummaryPage() {
         resolve();
       }, 900);
     });
+  }
+
+  if (hydrated && items.length === 0 && !acceptedSelection) {
+    return (
+      <Container className="px-5 py-20">
+        <div className="mx-auto max-w-[520px] text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+            <Clock size={28} color="#D97706" />
+          </div>
+          <h2 className="text-xl font-bold text-slate">Awaiting vendor confirmation</h2>
+          <p className="mt-2 text-sm leading-7 text-slate-soft">
+            Your request has been sent. Payment will be enabled once the vendor confirms
+            availability for your event.
+          </p>
+          <div className="mt-6 rounded-[8px] border border-amber-200 bg-amber-50 px-4 py-4 text-left text-[13px] text-amber-900">
+            <strong>What happens next:</strong>
+            <ol className="mt-2 list-decimal space-y-1 pl-5">
+              <li>Vendor reviews your request within 24 hours</li>
+              <li>If accepted, you will get a notification</li>
+              <li>Return here to pay the 20% advance</li>
+              <li>Vendor contact details unlock after payment</li>
+            </ol>
+          </div>
+          <Button href="/dashboard/customer" className="mt-6" variant="primary">
+            View in my dashboard →
+          </Button>
+        </div>
+      </Container>
+    );
   }
 
   if (hydrated && items.length === 0) {

@@ -160,6 +160,16 @@ export default function EventRequestPage() {
       return acc;
     }, {});
   }, [selectedServices, shortlistedVendorSlugs]);
+  const shortlistedVendorsByService = useMemo(
+    () =>
+      selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
+        acc[service] = (vendorOptionsByService[service] ?? []).filter((vendor) =>
+          shortlistedVendorSlugs.includes(vendor.slug)
+        );
+        return acc;
+      }, {}),
+    [selectedServices, shortlistedVendorSlugs, vendorOptionsByService]
+  );
 
   const rankedSelections = useMemo(
     () =>
@@ -318,6 +328,7 @@ export default function EventRequestPage() {
 
     const record = createEventRequestRecord(formValues, Boolean(voiceBlob), serviceSelections);
     writeLocalStorage("TRIBLEERA-event-request", record);
+    safePush("tribleera-customer-events", record);
 
     const bridgeRequest = {
       id: record.id,
@@ -513,6 +524,53 @@ export default function EventRequestPage() {
                     );
                   })}
               </div>
+
+              {selectedServices.length > 0 && shortlistHydrated && shortlistedVendorSlugs.length > 0 && (
+                <div className="space-y-4 rounded-[10px] border border-gold/30 bg-[linear-gradient(135deg,rgba(212,175,106,0.10),rgba(212,175,106,0.05))] p-4">
+                  <div className="flex items-center gap-2">
+                    <Heart size={14} className="fill-gold text-gold" aria-hidden="true" />
+                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-gold-deep">
+                      Your saved vendors - shown first
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    {selectedServices.map((service) => {
+                      const savedVendors = shortlistedVendorsByService[service] ?? [];
+                      if (savedVendors.length === 0) return null;
+                      const serviceCategory = categories.find((category) => category.slug === service);
+
+                      return (
+                        <div key={service}>
+                          <p className="mb-2 text-sm font-semibold text-slate">
+                            {serviceCategory?.name ?? service}
+                          </p>
+                          <div className="space-y-2">
+                            {savedVendors.map((vendor) => (
+                              <div
+                                key={vendor.slug}
+                                className="flex items-center gap-3 rounded-[8px] border border-gold/20 bg-white/70 px-3 py-2.5"
+                              >
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-burgundy text-sm font-bold text-gold">
+                                  {vendor.name.charAt(0)}
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-[13px] font-semibold text-slate">{vendor.name}</p>
+                                  <p className="text-[11px] text-slate-soft">
+                                    {vendor.city} · From {formatLKR(vendor.startingPrice)}
+                                  </p>
+                                </div>
+                                <span className="rounded-[4px] bg-gold px-2 py-1 text-[9px] font-bold tracking-[0.08em] text-ink">
+                                  SAVED
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

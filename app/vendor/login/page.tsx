@@ -204,8 +204,72 @@ export default function VendorLoginPage() {
           padding: "24px 20px",
         }}
       >
+        <div
+          className="lg:hidden"
+          style={{
+            position: "relative",
+            height: 200,
+            width: "100%",
+            maxWidth: 420,
+            overflow: "hidden",
+            borderRadius: 16,
+            marginBottom: 20,
+            boxShadow: "0 24px 64px rgba(21,4,12,0.35)",
+          }}
+        >
+          <Image
+            src="/images/portal/vendor-hero.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+            style={{
+              objectFit: "cover",
+              objectPosition: "center 30%",
+              filter: "brightness(0.72) saturate(1.1)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to bottom,rgba(21,4,12,0.55) 0%,rgba(21,4,12,0.88) 100%)",
+            }}
+          />
+          <div
+            style={{
+              position: "relative",
+              zIndex: 10,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0 20px",
+            }}
+          >
+            <Image
+              src="/logo/tribleera-mark-192.png"
+              alt="TRIBLEERA"
+              width={44}
+              height={44}
+              style={{
+                borderRadius: 9,
+                marginBottom: 10,
+                boxShadow: "0 0 0 1px rgba(212,175,106,.38),0 0 20px rgba(212,175,106,.22)",
+              }}
+            />
+            <p style={{ color: "#D4AF6A", fontWeight: 700, fontSize: 16, letterSpacing: "0.20em", lineHeight: 1 }}>
+              TRIBLEERA
+            </p>
+            <p style={{ color: "rgba(233,206,156,0.58)", fontSize: 8, letterSpacing: "0.32em", marginTop: 3 }}>
+              VAIBHAVAM · VENDOR PORTAL
+            </p>
+          </div>
+        </div>
+
         {/* Brand */}
-        <div className="s1" style={{ textAlign: "center", marginBottom: 28 }}>
+        <div className="s1 hidden lg:block" style={{ textAlign: "center", marginBottom: 28 }}>
           <Image
             src="/logo/tribleera-mark-192.png"
             alt="TRIBLEERA VAIBHAVAM"

@@ -16,13 +16,14 @@ const FIELDS: {
   key: EditableKey;
   type: string;
   placeholder: string;
+  editable: boolean;
 }[] = [
-  { icon: User,     label: "Full name",     key: "name",        type: "text",  placeholder: "Your full name"  },
-  { icon: Mail,     label: "Email address", key: "email",       type: "email", placeholder: "you@example.com" },
-  { icon: Phone,    label: "Phone number",  key: "phone",       type: "tel",   placeholder: "+94 77 XXX XXXX" },
-  { icon: MapPin,   label: "City",          key: "city",        type: "text",  placeholder: "Your city"       },
-  { icon: User,     label: "Partner name",  key: "partnerName", type: "text",  placeholder: "Partner's name"  },
-  { icon: Calendar, label: "Wedding date",  key: "weddingDate", type: "date",  placeholder: ""                },
+  { icon: User,     label: "Full name",     key: "name",        type: "text",  placeholder: "Your full name",   editable: true },
+  { icon: Mail,     label: "Email address", key: "email",       type: "email", placeholder: "you@example.com",  editable: false },
+  { icon: Phone,    label: "Phone number",  key: "phone",       type: "tel",   placeholder: "+94 77 XXX XXXX", editable: true },
+  { icon: MapPin,   label: "City",          key: "city",        type: "text",  placeholder: "Your city",        editable: true },
+  { icon: User,     label: "Partner name",  key: "partnerName", type: "text",  placeholder: "Partner's name",   editable: true },
+  { icon: Calendar, label: "Wedding date",  key: "weddingDate", type: "date",  placeholder: "",                 editable: true },
 ];
 
 export default function CustomerProfilePage() {
@@ -100,14 +101,21 @@ export default function CustomerProfilePage() {
             Personal information
           </p>
 
-          {FIELDS.map(({ icon: Icon, label, key, type, placeholder }) => (
+          {FIELDS.map(({ icon: Icon, label, key, type, placeholder, editable }) => (
             <div key={key} className="flex items-center gap-3.5 border-b border-slate/5 py-3 last:border-b-0">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-gold/15">
                 <Icon size={15} className="text-burgundy" aria-hidden="true" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[10.5px] uppercase tracking-[0.1em] text-slate-soft">{label}</p>
-                {editing ? (
+                <div className="flex items-center gap-2">
+                  <p className="text-[10.5px] uppercase tracking-[0.1em] text-slate-soft">{label}</p>
+                  {!editable && (
+                    <span className="rounded-[3px] bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-400">
+                      FIXED
+                    </span>
+                  )}
+                </div>
+                {editing && editable ? (
                   <input
                     type={type}
                     value={profile[key] ?? ""}
@@ -119,6 +127,11 @@ export default function CustomerProfilePage() {
                   <p className="mt-0.5 truncate text-sm text-slate">{profile[key]}</p>
                 ) : (
                   <p className="mt-0.5 text-sm italic text-slate/35">Add {label.toLowerCase()}</p>
+                )}
+                {!editable && (
+                  <p className="mt-1 text-[10px] text-slate-400">
+                    Email cannot be changed. Contact support if needed.
+                  </p>
                 )}
               </div>
             </div>

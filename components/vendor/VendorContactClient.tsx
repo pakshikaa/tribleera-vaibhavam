@@ -13,7 +13,9 @@ interface Props {
 
 function checkBooked(vendorId: string): boolean {
   try {
-    const raw = window.localStorage.getItem("TRIBLEERA-last-booking");
+    const raw =
+      window.localStorage.getItem("TRIBLEERA-last-booking")
+      ?? window.localStorage.getItem("tribleera-last-booking");
     if (!raw) return false;
     const record = JSON.parse(raw) as {
       items?: { vendorId: string }[];

@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/Button";
 import { Toast } from "@/components/ui/Toast";
 import { useCart } from "@/context/CartContext";
 import { lineItemBreakdown } from "@/lib/utils/booking";
+import { getVendorPackages } from "@/lib/utils/vendorData";
 
 export function PackageSelectionClient({ vendor }: { vendor: Vendor }) {
   const router = useRouter();
   const { addItem, isInCart, items } = useCart();
+  const livePackages = getVendorPackages(vendor.slug, vendor.packages);
   const alreadyInCart = isInCart(vendor.categorySlug);
   const existingItem = items.find((i) => i.categorySlug === vendor.categorySlug);
   const [selectedId, setSelectedId] = useState<string | null>(
@@ -22,10 +24,10 @@ export function PackageSelectionClient({ vendor }: { vendor: Vendor }) {
   );
   const [showToast, setShowToast] = useState(false);
 
-  const selectedPackage = vendor.packages.find((p) => p.id === selectedId);
+  const selectedPackage = livePackages.find((p) => p.id === selectedId);
 
   function handleSelect(pkgId: string) {
-    const pkg = vendor.packages.find((p) => p.id === pkgId);
+    const pkg = livePackages.find((p) => p.id === pkgId);
     if (!pkg) return;
     setSelectedId(pkgId);
     addItem({
@@ -57,7 +59,7 @@ export function PackageSelectionClient({ vendor }: { vendor: Vendor }) {
           </div>
         )}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-          {vendor.packages.map((pkg) => (
+          {livePackages.map((pkg) => (
             <PackageCard
               key={pkg.id}
               pkg={pkg}

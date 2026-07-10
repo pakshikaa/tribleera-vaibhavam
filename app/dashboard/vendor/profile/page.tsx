@@ -67,14 +67,14 @@ export default function VendorProfilePage() {
   }
 
   return (
-    <div className="bg-ivory py-10">
+    <div className="bg-ivory py-8 md:py-10" data-portal="true">
       <Container className="max-w-4xl">
         <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
         <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
           <h1 className="font-display text-3xl text-burgundy-deep">Edit Vendor Profile</h1>
 
           {/* Photo upload */}
-          <div className="mt-6 flex items-center gap-5">
+          <div className="mt-6 flex flex-wrap items-center gap-4 md:gap-5">
             <button
               type="button"
               aria-label="Change profile photo"
@@ -89,7 +89,7 @@ export default function VendorProfilePage() {
                   <Camera size={24} />
                 </span>
               )}
-              <span className="absolute bottom-0 inset-x-0 flex h-7 items-center justify-center bg-ink/60 text-white">
+              <span className="absolute bottom-0 right-0 flex h-11 w-11 items-center justify-center rounded-full border-2 border-white bg-ink/75 text-white">
                 <Camera size={13} aria-hidden="true" />
               </span>
             </button>
@@ -107,7 +107,7 @@ export default function VendorProfilePage() {
               <button
                 type="button"
                 onClick={() => photoInputRef.current?.click()}
-                className="mt-2 text-xs font-semibold text-burgundy underline underline-offset-2 hover:text-burgundy-deep"
+                className="mt-2 inline-block py-1 text-xs font-semibold text-burgundy underline underline-offset-2 hover:text-burgundy-deep"
               >
                 Upload photo
               </button>
@@ -144,8 +144,8 @@ export default function VendorProfilePage() {
                 </button>
               ))}
             </div>
-            <div className="mt-3 flex gap-3">
-              <Input value={tagInput} onChange={(event) => setTagInput(event.target.value)} placeholder="Add a tag and press Enter" onKeyDown={(event) => {
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Input className="min-w-[100px] flex-1" value={tagInput} onChange={(event) => setTagInput(event.target.value)} placeholder="Add a tag and press Enter" onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   event.preventDefault();
                   if (tagInput.trim() && tags.length < 5) {
@@ -157,7 +157,7 @@ export default function VendorProfilePage() {
             </div>
           </div>
 
-          <Button className="mt-8" variant="gold" onClick={saveProfile}>
+          <Button className="mt-8 w-full md:w-auto" variant="gold" fullWidth onClick={saveProfile}>
             Save changes
           </Button>
         </div>

@@ -3,14 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarClock, Clock, ClipboardList, MapPin, Wallet } from "lucide-react";
+import { CalendarClock, Clock, ClipboardList, Mail, MapPin, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Input, Select, Textarea } from "@/components/ui/Field";
-import { Modal } from "@/components/ui/Modal";
+import { Input } from "@/components/ui/Field";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
 import { SubmitReviewSheet } from "@/components/dashboard/SubmitReviewSheet";
@@ -28,7 +27,7 @@ import {
   readActiveCustomerProfile,
   writeActiveCustomerProfile,
 } from "@/lib/utils/customer-profile";
-import { safeGet } from "@/lib/utils/store";
+import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
 import type { Booking, BookingLineItem, BookingStatus, CustomerProfile } from "@/types";
 
 function bookingsStorageKey(email: string) {
@@ -99,18 +98,26 @@ function readLiveBookings(profile: CustomerProfile): Booking[] {
     .filter((booking): booking is Booking => booking !== null && eligibleNames.has(booking.customerName));
 }
 
+function readCustomerEvents(profile: CustomerProfile, fallback: EventRequest | null): EventRequest[] {
+  const activeCustomerId = `customer-${profile.email.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  const rawEvents = safeGet<EventRequest[]>("tribleera-customer-events", []);
+  const ownEvents = rawEvents.filter((event) => event.customerId === activeCustomerId);
+  if (ownEvents.length > 0) return ownEvents;
+  return fallback ? [fallback] : [];
+}
+
 function calculateRefund(booking: Booking) {
   const eventDate = new Date(booking.eventDate).getTime();
   const daysBeforeEvent = Math.max(0, Math.ceil((eventDate - Date.now()) / (1000 * 60 * 60 * 24)));
 
-  if (daysBeforeEvent >= 30) {
+  if (daysBeforeEvent >= 31) {
     return { amount: Math.round(booking.payableNow * 0.5), label: "You qualify for a 50% refund" };
   }
   if (daysBeforeEvent >= 7) {
     return { amount: Math.round(booking.payableNow * 0.25), label: "You qualify for a 25% refund" };
   }
 
-  return { amount: booking.platformFee, label: "Platform fee is non-refundable" };
+  return { amount: 0, label: "No refund is available within 7 days of the event" };
 }
 
 function getDeadlineHours(deadline: Date): number {
@@ -122,6 +129,10 @@ function getRefundStatus(cancelledAt: string): CancellationRecord["refundStatus"
   if (daysSinceCancellation >= 2) return "credited";
   if (daysSinceCancellation >= 1) return "processing";
   return "pending";
+}
+
+function getDaysUntil(eventDate: string) {
+  return Math.max(0, Math.ceil((new Date(eventDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 }
 
 export function CustomerDashboardClient() {
@@ -156,21 +167,20 @@ export function CustomerDashboardClient() {
       ? initialCancellations
       : readLocalStorage<CancellationRecord[]>(cancellationsStorageKey(customerProfile.email), initialCancellations)
   );
-  const [eventRequest] = useState<EventRequest | null>(() =>
+  const [eventRequests] = useState<EventRequest[]>(() =>
     typeof window === "undefined"
-      ? initialEventRequest
-      : customerProfile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
-        ? readLocalStorage<EventRequest | null>("TRIBLEERA-event-request", initialEventRequest)
-        : initialEventRequest
+      ? (initialEventRequest ? [initialEventRequest] : [])
+      : readCustomerEvents(
+          customerProfile,
+          customerProfile.email.toLowerCase() === DEFAULT_CUSTOMER_PROFILE.email.toLowerCase()
+            ? readLocalStorage<EventRequest | null>("TRIBLEERA-event-request", initialEventRequest)
+            : initialEventRequest
+        )
   );
   const [liveResponses, setLiveResponses] = useState<TvResponse[]>(() => safeGet<TvResponse[]>("tv-responses", []));
   const [liveBookings, setLiveBookings] = useState<Booking[]>(() =>
     typeof window === "undefined" ? [] : readLiveBookings(customerProfile)
   );
-  const [cancelBooking, setCancelBooking] = useState<Booking | null>(null);
-  const [cancelStep, setCancelStep] = useState(1);
-  const [cancelReason, setCancelReason] = useState("Change of plans");
-  const [cancelNotes, setCancelNotes] = useState("");
   const [reviewTarget, setReviewTarget] = useState<{ bookingId: string; vendorId: string } | null>(null);
   const [reviewedKeys, setReviewedKeys] = useState<string[]>(() =>
     typeof window === "undefined"
@@ -198,6 +208,8 @@ export function CustomerDashboardClient() {
     return () => clearInterval(interval);
   }, [customerProfile]);
 
+  const eventRequest = eventRequests[0] ?? null;
+
   const allBookings = useMemo(() => {
     const liveIds = new Set(liveBookings.map((booking) => booking.id));
     return [...liveBookings, ...bookings.filter((booking) => !liveIds.has(booking.id))];
@@ -219,7 +231,12 @@ export function CustomerDashboardClient() {
     ];
   }, [eventRequest, liveResponses]);
 
-  const activeBookings = allBookings.filter((booking) => booking.status !== "completed" && booking.status !== "cancelled");
+  const activeBookings = allBookings.filter(
+    (booking) =>
+      booking.status !== "completed" &&
+      booking.status !== "cancelled" &&
+      booking.status !== "cancellation_requested"
+  );
   const totalPaid = allBookings.reduce((sum, booking) => sum + booking.payableNow, 0);
   const nextEvent = allBookings[0]?.eventDate;
   const requestExpiryDays = useMemo(() => {
@@ -228,38 +245,50 @@ export function CustomerDashboardClient() {
     return Math.max(0, Math.ceil((expiryMs - currentTime) / (1000 * 60 * 60 * 24)));
   }, [currentTime, eventRequest]);
 
-  function resetCancellation() {
-    setCancelBooking(null);
-    setCancelStep(1);
-    setCancelReason("Change of plans");
-    setCancelNotes("");
-  }
+  function handleCancelRequest(booking: Booking) {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this booking?\n\nYour refund will be processed based on the cancellation policy."
+    );
+    if (!confirmed) return;
 
-  function confirmCancellation() {
-    if (!cancelBooking) return;
+    const cancelledAt = new Date().toISOString();
+    const refund = calculateRefund(booking);
+    const updatedBookings = allBookings.map((entry) =>
+      entry.id === booking.id ? { ...entry, status: "cancellation_requested" as const } : entry
+    );
 
-    const refund = calculateRefund(cancelBooking);
-    setBookings((prev) => prev.map((booking) => (booking.id === cancelBooking.id ? { ...booking, status: "cancelled" } : booking)));
-    setCancellations(() => [
+    setBookings(updatedBookings);
+    setCancellations((prev) => [
       {
-        bookingId: cancelBooking.id,
-        customerId: "customer-niranjala-kajan",
-        vendorName: cancelBooking.items[0]?.vendorName ?? "Vendor",
-        reason: cancelReason,
-        cancelledAt: new Date().toISOString(),
+        bookingId: booking.id,
+        customerId: `customer-${customerProfile.email.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        vendorName: booking.items[0]?.vendorName ?? "Vendor",
+        reason: "Customer requested cancellation",
+        cancelledAt,
         refundAmount: refund.amount,
         refundStatus: "pending",
-        daysBeforeEvent: Math.max(
-          0,
-          Math.ceil((new Date(cancelBooking.eventDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-        ),
+        daysBeforeEvent: getDaysUntil(booking.eventDate),
       },
-      ...cancellations,
+      ...prev,
     ]);
-    showToast("Booking cancelled. Refund tracking is now available.", "success");
-    const bookingId = cancelBooking.id;
-    resetCancellation();
-    router.push(`/dashboard/customer/cancellation/${bookingId}`);
+
+    safeSet(
+      "tv-bookings",
+      safeGet<Booking[]>("tv-bookings", []).map((entry) =>
+        entry.id === booking.id
+          ? { ...entry, status: "cancellation_requested", cancelledAt }
+          : entry
+      )
+    );
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "cancellation_request",
+      message: `Cancellation requested for booking ${booking.id}`,
+      time: cancelledAt,
+      icon: "❌",
+      urgent: true,
+    });
+    showToast("Cancellation request submitted. Admin will process within 24 hours.", "success");
   }
 
   function handleReviewSubmitted() {
@@ -313,7 +342,7 @@ export function CustomerDashboardClient() {
             defaultTab="bookings"
             tabs={[
               { id: "bookings", label: "My Bookings", count: allBookings.length },
-              { id: "responses", label: "Vendor Responses", count: mergedResponses.length },
+              { id: "responses", label: "My Requests", count: eventRequests.length || mergedResponses.length },
               { id: "refunds", label: "Refunds", count: cancellations.length },
               { id: "profile", label: "Profile" },
             ]}
@@ -359,11 +388,6 @@ export function CustomerDashboardClient() {
                               <Button href={`/booking/track/${booking.id}`} variant="tertiary" size="sm">
                                 Track booking
                               </Button>
-                              {booking.status !== "cancelled" && booking.status !== "completed" && (
-                                <Button size="sm" variant="secondary" onClick={() => setCancelBooking(booking)}>
-                                  Cancel Booking
-                                </Button>
-                              )}
                               {booking.status === "completed" && booking.items.map((item) => {
                                 const reviewKey = `${booking.id}-${item.vendorId}`;
                                 if (reviewedKeys.includes(reviewKey)) {
@@ -390,6 +414,38 @@ export function CustomerDashboardClient() {
                               {refund.label} ({formatLKR(refund.amount)})
                             </div>
                           )}
+                          {booking.status !== "completed" && booking.status !== "cancelled" && (
+                            <details className="mt-4 rounded-[8px] border border-amber-200 bg-amber-50 p-4">
+                              <summary className="flex cursor-pointer items-center gap-1 text-xs text-slate-soft">
+                                ↕ Cancellation policy
+                              </summary>
+                              <div className="mt-3 text-xs text-amber-900">
+                                <p className="mb-2 font-semibold">Refund policy for this booking:</p>
+                                <div className="space-y-1">
+                                  <p>✓ Cancel 31+ days before: 50% refund</p>
+                                  <p>⚠ Cancel 7-30 days before: 25% refund</p>
+                                  <p>✕ Cancel within 7 days: No refund</p>
+                                </div>
+                                {booking.status === "cancellation_requested" ? (
+                                  <p className="mt-3 font-semibold text-red-600">
+                                    Cancellation request submitted. Admin review is pending.
+                                  </p>
+                                ) : getDaysUntil(booking.eventDate) > 7 ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCancelRequest(booking)}
+                                    className="mt-3 min-h-10 rounded-[4px] bg-danger px-4 py-2 text-xs font-semibold text-white"
+                                  >
+                                    Request cancellation
+                                  </button>
+                                ) : (
+                                  <p className="mt-3 font-semibold text-red-600">
+                                    Cancellation window closed. Contact support.
+                                  </p>
+                                )}
+                              </div>
+                            </details>
+                          )}
                         </div>
                       );
                     })}
@@ -404,6 +460,23 @@ export function CustomerDashboardClient() {
                 />
               ) : (
                 <div className="space-y-5" id="responses">
+                  {eventRequests.length > 1 && (
+                    <div className="rounded-[8px] border border-slate/8 bg-white p-5 shadow-soft">
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-soft">
+                        My event requests
+                      </p>
+                      <div className="space-y-3">
+                        {eventRequests.map((request) => (
+                          <div key={request.id} className="rounded-[8px] bg-ivory px-4 py-3 text-sm text-slate-soft">
+                            <p className="font-semibold text-slate">{request.id}</p>
+                            <p className="mt-1">
+                              {request.location} · {request.guestCount} guests · {formatDate(request.eventDate)}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="rounded-[8px] border border-slate/8 bg-white p-5 shadow-soft">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
@@ -544,7 +617,7 @@ export function CustomerDashboardClient() {
               ),
               profile: (
                 <div className="max-w-lg rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-4">
                     <Input
                       label="Full name"
                       value={profileDraft.name}
@@ -560,14 +633,21 @@ export function CustomerDashboardClient() {
                       value={profileDraft.phone}
                       onChange={(event) => setProfileDraft((prev) => ({ ...prev, phone: event.target.value }))}
                     />
-                    <Input
-                      label="Email"
-                      value={customerProfile.email}
-                      type="email"
-                      disabled
-                      hint="Email cannot be changed."
-                      className="cursor-not-allowed bg-slate/5 text-slate-soft"
-                    />
+                    <div className="flex items-center gap-3 rounded-[8px] border-b border-slate/10 px-1 py-3 opacity-75">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-slate-100">
+                        <Mail size={15} color="#9CA3AF" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-[10.5px] uppercase tracking-[0.1em] text-slate-soft">Email address</p>
+                          <span className="rounded-[3px] bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold tracking-[0.08em] text-slate-soft">
+                            FIXED
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-slate-soft">{customerProfile.email}</p>
+                        <p className="mt-1 text-[10px] text-slate-soft">Contact support to change email address.</p>
+                      </div>
+                    </div>
                   </div>
                   <Button className="mt-5" onClick={handleProfileSave}>Save changes</Button>
                 </div>
@@ -576,83 +656,6 @@ export function CustomerDashboardClient() {
           />
         </div>
       </Container>
-
-      <Modal
-        title={cancelStep === 1 ? "Are you sure?" : cancelStep === 2 ? "Cancellation Reason" : "Confirm Cancellation"}
-        description="Review your refund eligibility before confirming."
-        open={!!cancelBooking}
-        onOpenChange={(open) => {
-          if (!open) resetCancellation();
-        }}
-      >
-        {cancelBooking && (
-          <div className="space-y-5">
-            {cancelStep === 1 && (
-              <div className="space-y-4">
-                <div className="rounded-[8px] bg-ivory p-4 text-sm text-slate-soft">
-                  <p>{cancelBooking.items[0]?.vendorName}</p>
-                  <p>{formatDate(cancelBooking.eventDate)}</p>
-                  <p>{formatLKR(cancelBooking.payableNow)} paid</p>
-                </div>
-                <div className="rounded-[8px] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                  {calculateRefund(cancelBooking).label} ({formatLKR(calculateRefund(cancelBooking).amount)})
-                </div>
-                <Button onClick={() => setCancelStep(2)} variant="gold" fullWidth>
-                  Continue
-                </Button>
-              </div>
-            )}
-
-            {cancelStep === 2 && (
-              <div className="space-y-4">
-                <Select label="Reason" value={cancelReason} onChange={(event) => setCancelReason(event.target.value)}>
-                  {[
-                    "Change of plans",
-                    "Found another vendor",
-                    "Event postponed",
-                    "Financial reasons",
-                    "Vendor performance concern",
-                    "Other",
-                  ].map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
-                <Textarea label="Additional details" rows={4} value={cancelNotes} onChange={(event) => setCancelNotes(event.target.value)} />
-                <div className="flex gap-3">
-                  <Button variant="secondary" onClick={() => setCancelStep(1)} fullWidth>
-                    Back
-                  </Button>
-                  <Button variant="gold" onClick={() => setCancelStep(3)} fullWidth>
-                    Continue
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {cancelStep === 3 && (
-              <div className="space-y-4">
-                <div className="rounded-[8px] bg-ivory p-4 text-sm text-slate-soft">
-                  Refund amount: <span className="font-semibold text-slate">{formatLKR(calculateRefund(cancelBooking).amount)}</span>
-                </div>
-                <div className="flex gap-3">
-                  <Button variant="secondary" onClick={resetCancellation} fullWidth>
-                    Keep my booking
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={confirmCancellation}
-                    className="inline-flex w-full items-center justify-center rounded-[4px] bg-danger px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-danger/90"
-                  >
-                    Confirm Cancellation
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </Modal>
 
       <SubmitReviewSheet
         bookingId={reviewTarget?.bookingId ?? ""}

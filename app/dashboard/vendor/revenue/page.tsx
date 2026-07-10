@@ -41,7 +41,7 @@ export default function VendorRevenuePage() {
   const progress = Math.min(100, Math.round((completedRevenue / monthlyTarget) * 100));
 
   return (
-    <div className="bg-ivory">
+    <div className="bg-ivory" data-portal="true">
       <section className="border-b border-slate/8 bg-white py-8">
         <Container>
           <h1 className="font-display text-2xl text-burgundy-deep">Revenue</h1>
@@ -119,8 +119,8 @@ export default function VendorRevenuePage() {
           {allItems.length === 0 ? (
             <p className="py-8 text-center text-sm text-slate-soft">No transactions yet.</p>
           ) : (
-            <div className="overflow-hidden rounded-[8px] border border-slate/8 bg-white shadow-soft">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto rounded-[8px] border border-slate/8 bg-white shadow-soft">
+              <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-slate/8 bg-ivory text-left text-xs font-semibold uppercase tracking-wide text-slate-soft">
                     <th className="px-4 py-3">Customer</th>

@@ -5,6 +5,7 @@ const MAP: Record<BookingStatus, { label: string; tone: "success" | "warning" | 
   pending: { label: "Pending", tone: "warning" },
   confirmed: { label: "Confirmed", tone: "burgundy" },
   advance_paid: { label: "Advance Paid", tone: "success" },
+  cancellation_requested: { label: "Cancellation Requested", tone: "warning" },
   completed: { label: "Completed", tone: "slate" },
   cancelled: { label: "Cancelled", tone: "danger" },
 };

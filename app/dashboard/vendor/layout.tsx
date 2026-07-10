@@ -8,7 +8,6 @@ import {
   Calendar, HelpCircle, LayoutDashboard, LogOut, Menu,
   Package, User, Wallet,
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_ITEMS = [
@@ -72,6 +71,14 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
   const pathname = usePathname();
   const router = useRouter();
   const [checked, setChecked] = useState(false);
+  const [mobileMenuPath, setMobileMenuPath] = useState<string | null>(null);
+  const [vendorName] = useState(() => {
+    try {
+      return sessionStorage.getItem("vendor-name") ?? "Vendor account";
+    } catch {
+      return "Vendor account";
+    }
+  });
 
   useEffect(() => {
     try {
@@ -96,32 +103,87 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="flex min-h-screen bg-[#FAF7F2]">
+    <div className="dashboard-page flex min-h-screen bg-[#FAF7F2]" data-portal="true">
       {/* Desktop sidebar */}
       <aside className="hidden w-56 shrink-0 border-r border-slate/10 bg-white md:flex md:flex-col">
         <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
       </aside>
 
       {/* Main area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Mobile top bar */}
-        <div className="flex h-14 items-center justify-between border-b border-slate/10 bg-white px-4 md:hidden">
-          <Link href="/" className="flex items-center gap-2">
+        <div className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-slate/10 bg-white px-4 md:hidden">
+          <div className="flex items-center gap-2">
             <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={28} height={28} className="rounded-md" />
-            <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLEERA</span>
-          </Link>
-          <Sheet>
-            <SheetTrigger aria-label="Open sidebar">
-              <Menu size={22} className="text-slate" />
-            </SheetTrigger>
-            <SheetContent className="w-56 p-0">
-              <SheetTitle className="sr-only">Navigation</SheetTitle>
-              <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
-            </SheetContent>
-          </Sheet>
+            <span className="text-[13px] font-bold tracking-[0.06em] text-[#5C0427]">Vendor Portal</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMobileMenuPath(pathname)}
+            aria-label="Open navigation menu"
+            className="flex h-11 w-11 items-center justify-center rounded-lg"
+          >
+            <Menu size={20} className="text-slate" />
+          </button>
         </div>
 
-        <main className="flex-1 overflow-auto">{children}</main>
+        {mobileMenuPath === pathname && (
+          <>
+            <div className="fixed inset-0 z-50 bg-black/45 md:hidden" onClick={() => setMobileMenuPath(null)} />
+            <div className="fixed inset-y-0 left-0 z-[51] flex w-[260px] max-w-[80vw] flex-col bg-white shadow-[4px_0_20px_rgba(0,0,0,0.15)] md:hidden">
+              <div className="flex items-center justify-between border-b border-slate/10 px-4 py-3">
+                <span className="text-[13px] font-bold text-[#5C0427]">Menu</span>
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuPath(null)}
+                  aria-label="Close menu"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-slate"
+                >
+                  <span className="text-xl leading-none">×</span>
+                </button>
+              </div>
+              <div className="border-b border-slate/10 px-4 py-3.5">
+                <p className="text-xs text-slate-soft">Signed in as</p>
+                <p className="mt-0.5 text-[13px] font-semibold text-slate">{vendorName}</p>
+              </div>
+              <nav className="flex-1 px-3 py-2">
+                {NAV_ITEMS.map((item) => {
+                  const active = item.href === "/dashboard/vendor" ? pathname === item.href : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuPath(null)}
+                      className={cn(
+                        "mb-1 flex min-h-11 items-center gap-2.5 rounded-lg px-3 py-3 text-sm",
+                        active ? "bg-[#F5EDE3] font-semibold text-[#5C0427]" : "text-[#4B5563]"
+                      )}
+                    >
+                      <item.icon size={18} aria-hidden="true" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+                <Link href="/contact" onClick={() => setMobileMenuPath(null)} className="mb-1 flex min-h-11 items-center gap-2.5 rounded-lg px-3 py-3 text-sm text-[#4B5563]">
+                  <HelpCircle size={18} aria-hidden="true" />
+                  Support
+                </Link>
+              </nav>
+              <div className="border-t border-slate/10 p-3">
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-3 text-left text-sm text-[#4B5563]"
+                >
+                  <LogOut size={18} aria-hidden="true" />
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
       </div>
     </div>
   );
