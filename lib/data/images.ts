@@ -45,8 +45,8 @@ export const heroImage = "/images/portal/home-hero.jpg";
 // Golden-hour couple under the veil — warm, soft feature image for the
 // homepage Wedding Stories band.
 export const trustSectionImage = "/images/portal/testimonials.jpg";
-// Champagne close-up — groom's hand holding the bride's over a sequinned
-// dress, ring and watch in focus. The refined, detail-oriented mood suits
+// B&W close-up — bride and groom holding hands, silk saree and temple
+// jewellery against a bright ground. The timeless monochrome mood suits
 // the admin portal's authority feel.
 export const adminLoginImage = "/images/portal/admin-hero.jpg";
 // Bride and groom linking pinky fingers amid pink saree drapes and garlands —

@@ -73,15 +73,16 @@ export default function AdminLoginPage() {
           animate={{ scale: [1, 1.06] }}
           transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
         >
-          {/* Champagne hands close-up: the ring-and-watch moment sits centred,
-              so anchor centre and let the vignette carry the text column. */}
+          {/* B&W handhold: the clasped hands sit just above centre frame, so
+              anchor there; the image is bright, so pull brightness down for
+              the gold text to read. */}
           <Image
             src={adminLoginImage}
             alt="TRIBLEERA — professional wedding management"
             fill
             sizes="60vw"
             priority
-            className="object-cover object-center brightness-[0.85] contrast-105"
+            className="object-cover object-[center_35%] brightness-[0.8] contrast-105"
           />
         </motion.div>
 
@@ -208,19 +209,22 @@ export default function AdminLoginPage() {
 
       {/* Right — login form. min-w-0 so this flex child can shrink below its
           content's intrinsic width instead of overflowing on narrower windows. */}
-      <div className="relative flex min-w-0 flex-1 items-start justify-center bg-[#FAF7F2] px-0 py-0 lg:items-center lg:bg-ink lg:px-5 lg:py-12">
+      {/* overflow-hidden: the 500px arch watermark below is wider than phone
+          viewports — without clipping it creates horizontal scroll and shoves
+          the whole column off-centre. */}
+      <div className="relative flex min-w-0 flex-1 flex-col items-center justify-start overflow-hidden bg-[#FAF7F2] px-0 py-0 lg:justify-center lg:bg-ink lg:px-5 lg:py-12">
         {/* Mobile-only backdrop — the hero photo, blurred and darkened so the
             form stays readable while the brand image still shows through. */}
         <div className="fixed inset-0 lg:hidden" aria-hidden="true">
-          {/* Heavy blur turns the champagne close-up into a soft golden wash;
-              the gradient scrim stays calm behind the form while the gold halo
-              gives the logo zone a quiet glow. */}
+          {/* Heavy blur turns the B&W handhold into a soft tonal wash; the
+              warm gradient scrim tints it toward the brand palette and stays
+              calm behind the form, while the gold halo lights the logo zone. */}
           <Image
             src={adminLoginImage}
             alt=""
             fill
             sizes="100vw"
-            className="scale-110 object-cover object-center blur-[10px] brightness-[0.68]"
+            className="scale-110 object-cover object-[center_35%] blur-[10px] brightness-[0.68]"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.7)_0%,rgba(21,4,12,0.48)_30%,rgba(33,7,20,0.6)_62%,rgba(21,4,12,0.85)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_36%_at_50%_10%,rgba(212,175,106,0.14),transparent_70%)]" />
@@ -228,7 +232,7 @@ export default function AdminLoginPage() {
 
         {/* Arch watermark */}
         <svg
-          className="pointer-events-none absolute inset-0 m-auto h-[500px] w-[500px] text-gold/[0.06] lg:hidden"
+          className="pointer-events-none absolute inset-0 m-auto h-[500px] w-[500px] max-w-full text-gold/[0.06] lg:hidden"
           viewBox="0 0 200 200"
           fill="none"
         >
