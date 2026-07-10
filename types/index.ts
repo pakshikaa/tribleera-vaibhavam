@@ -168,6 +168,8 @@ export interface CustomerProfile {
   email: string;
   city: string;
   phone: string;
+  partnerName?: string;
+  weddingDate?: string;
 }
 
 export interface VendorApplication {
