@@ -45,13 +45,13 @@ export const heroImage = "/images/portal/home-hero.jpg";
 // Golden-hour couple under the veil — warm, soft feature image for the
 // homepage Wedding Stories band.
 export const trustSectionImage = "/images/portal/testimonials.jpg";
-// B&W studio couple portrait — the naturally dark ground lets the gold
-// text read without heavy overlays, and the dramatic mood suits the
-// admin portal's authority feel.
+// Champagne close-up — groom's hand holding the bride's over a sequinned
+// dress, ring and watch in focus. The refined, detail-oriented mood suits
+// the admin portal's authority feel.
 export const adminLoginImage = "/images/portal/admin-hero.jpg";
-// South Asian couple silhouetted against a sunset — the warm golds match
-// the brand palette exactly, and the aspirational mood ("these are the
-// moments you help create") fits the vendor pitch.
+// Bride and groom linking pinky fingers amid pink saree drapes and garlands —
+// vivid, celebratory colour that matches the aspirational vendor pitch
+// ("these are the moments you help create").
 export const vendorLoginImage = "/images/portal/vendor-hero.jpg";
 
 export const galleryImages = [

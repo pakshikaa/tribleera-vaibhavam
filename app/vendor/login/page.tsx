@@ -110,8 +110,9 @@ export default function VendorLoginPage() {
           animate={{ scale: [1, 1.06] }}
           transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
         >
-          {/* Sunset silhouette: couple is centred in the upper half of the
-              frame, so anchor there; slight saturate lifts the golds. */}
+          {/* Pinky-hold amid pink drapes: the linked hands sit in the upper
+              half of the frame, so anchor there; slight saturate lifts the
+              pinks and golds. */}
           <Image
             src={vendorLoginImage}
             alt="TRIBLEERA — beautiful Tamil wedding celebration"
@@ -290,7 +291,7 @@ export default function VendorLoginPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_36%_at_50%_10%,rgba(212,175,106,0.16),transparent_70%)]" />
         </div>
 
-        <div className="relative z-10 w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
+        <div className="relative z-10 mx-auto w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
           <div
             className="lg:hidden"
             style={{
@@ -400,7 +401,7 @@ export default function VendorLoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 rounded border border-slate/10 bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:shadow-none">
+          <div className="mt-6 rounded-2xl border border-slate/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:rounded lg:p-3 lg:shadow-none">
             <p className="text-[13px] leading-relaxed text-[#4B5563]">
               <strong>Demo credentials:</strong><br />
               Phone: +94771000001<br />

@@ -73,15 +73,15 @@ export default function AdminLoginPage() {
           animate={{ scale: [1, 1.06] }}
           transition={{ duration: 14, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
         >
-          {/* B&W portrait: bride's face sits right-of-centre, so anchor right
-              and let the dark left half carry the text column. */}
+          {/* Champagne hands close-up: the ring-and-watch moment sits centred,
+              so anchor centre and let the vignette carry the text column. */}
           <Image
             src={adminLoginImage}
             alt="TRIBLEERA — professional wedding management"
             fill
             sizes="60vw"
             priority
-            className="object-cover object-right brightness-[0.92] contrast-105"
+            className="object-cover object-center brightness-[0.85] contrast-105"
           />
         </motion.div>
 
@@ -212,15 +212,15 @@ export default function AdminLoginPage() {
         {/* Mobile-only backdrop — the hero photo, blurred and darkened so the
             form stays readable while the brand image still shows through. */}
         <div className="fixed inset-0 lg:hidden" aria-hidden="true">
-          {/* Heavy blur turns the B&W portrait into a soft tonal wash; the
-              gradient scrim stays calm behind the form while the gold halo
+          {/* Heavy blur turns the champagne close-up into a soft golden wash;
+              the gradient scrim stays calm behind the form while the gold halo
               gives the logo zone a quiet glow. */}
           <Image
             src={adminLoginImage}
             alt=""
             fill
             sizes="100vw"
-            className="scale-110 object-cover object-right blur-[10px] brightness-[0.68]"
+            className="scale-110 object-cover object-center blur-[10px] brightness-[0.68]"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.7)_0%,rgba(21,4,12,0.48)_30%,rgba(33,7,20,0.6)_62%,rgba(21,4,12,0.85)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_36%_at_50%_10%,rgba(212,175,106,0.14),transparent_70%)]" />
@@ -236,7 +236,7 @@ export default function AdminLoginPage() {
           <path d="M62 180 V104 C62 68 78 38 100 38 C122 38 138 68 138 104 V180" stroke="currentColor" strokeWidth="5" />
         </svg>
 
-        <div className="relative z-10 w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
+        <div className="relative z-10 mx-auto w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
           {/* Mobile logo */}
           <div
             className="mb-7 text-center lg:hidden"
@@ -325,7 +325,7 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Demo credentials */}
-          <div className="mt-5 rounded-[8px] border border-slate/10 bg-white p-3 text-[13px] leading-relaxed text-slate-soft shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:border-gold/15 lg:bg-cream/[0.05] lg:text-cream-faint lg:shadow-none">
+          <div className="mt-5 rounded-[14px] border border-slate/10 bg-white p-5 text-[13px] leading-relaxed text-slate-soft shadow-[0_10px_30px_rgba(0,0,0,0.25)] lg:rounded-[8px] lg:border-gold/15 lg:bg-cream/[0.05] lg:p-3 lg:text-cream-faint lg:shadow-none">
             <strong className="text-slate lg:text-cream-dim">Demo credentials:</strong>
             <br />
             Username: <code className="text-burgundy-deep lg:text-gold-light">admin</code>
