@@ -113,11 +113,11 @@ export default function LoginPage() {
         <p className="mt-5 text-center text-xs text-slate-soft">
           Are you a vendor?{" "}
           <Link href="/vendor/register" className="font-medium text-burgundy hover:underline">
-            Register your studio
+            Register your studio →
           </Link>
         </p>
 
-        <p className="mt-2 text-center text-xs text-slate/30">
+        <p className="mt-2 text-center text-[11px] text-[#C9BCAF]">
           <Link href="/admin/login" className="hover:text-slate/60">
             Admin access
           </Link>

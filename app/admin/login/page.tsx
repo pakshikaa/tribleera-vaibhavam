@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen font-[Arial,sans-serif]" data-portal="true">
       {/* Left — cinematic image panel */}
       <div className="relative hidden w-[60%] shrink-0 overflow-hidden lg:block">
         {/* Slow Ken Burns zoom — same technique as components/home/Hero.tsx,
@@ -208,7 +208,7 @@ export default function AdminLoginPage() {
 
       {/* Right — login form. min-w-0 so this flex child can shrink below its
           content's intrinsic width instead of overflowing on narrower windows. */}
-      <div className="flex min-w-0 flex-1 items-center justify-center bg-ink px-5 py-12">
+      <div className="relative flex min-w-0 flex-1 items-start justify-center bg-[#FAF7F2] px-0 py-0 lg:items-center lg:bg-ink lg:px-5 lg:py-12">
         {/* Arch watermark */}
         <svg
           className="pointer-events-none absolute inset-0 m-auto h-[500px] w-[500px] text-gold/[0.06] lg:hidden"
@@ -219,30 +219,42 @@ export default function AdminLoginPage() {
           <path d="M62 180 V104 C62 68 78 38 100 38 C122 38 138 68 138 104 V180" stroke="currentColor" strokeWidth="5" />
         </svg>
 
-        <div className="relative z-10 w-full max-w-sm">
+        <div className="relative z-10 w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
           {/* Mobile logo */}
-          <div className="mb-8 text-center lg:hidden">
+          <div
+            className="mb-7 text-center lg:hidden"
+            style={{
+              padding: "28px 0 24px",
+              borderBottom: "0.5px solid #E5E7EB",
+              marginBottom: 28,
+            }}
+          >
             <Image
               src="/logo/tribleera-mark-192.png"
               alt="TRIBLEERA"
-              width={56}
-              height={56}
-              className="mx-auto mb-3 rounded-[12px] shadow-[0_0_30px_rgba(212,175,106,0.3)]"
+              width={48}
+              height={48}
+              className="mx-auto mb-2.5 rounded-[10px]"
             />
-            <p className="font-display text-xl tracking-widest text-cream">TRIBLEERA</p>
-            <p className="mt-0.5 font-display text-[10px] tracking-[0.35em] text-gold/60">VAIBHAVAM</p>
+            <p className="text-[15px] font-bold tracking-[0.18em] text-[#D4AF6A]">TRIBLEERA</p>
+            <p className="mt-0.5 text-[9px] uppercase tracking-[0.22em] text-[#6B7280]">
+              VAIBHAVAM · ADMIN PORTAL
+            </p>
           </div>
 
           <div className="mb-7 hidden text-left lg:block">
             <h2 className="font-display text-2xl font-bold text-cream">Admin sign in</h2>
             <p className="mt-1 text-sm text-cream-faint">Authorized personnel only</p>
           </div>
-          <p className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-cream-faint lg:hidden">
+          <p className="mb-6 text-center text-xs uppercase tracking-[0.2em] text-[#6B7280] lg:hidden">
             Admin Portal
           </p>
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="glass rounded-[14px] p-7 space-y-5">
+          <form
+            onSubmit={handleLogin}
+            className="space-y-5 rounded-[14px] border border-slate/10 bg-white p-5 shadow-soft lg:border-[rgba(212,175,106,0.28)] lg:bg-[rgb(247_238_226_/_0.06)] lg:p-7 lg:shadow-none lg:backdrop-blur-[20px]"
+          >
             <div>
               <label
                 htmlFor="username"
@@ -257,7 +269,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                className="w-full rounded-[6px] border border-cream/15 bg-white/10 px-4 py-3 text-sm text-cream placeholder:text-cream-faint focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/30"
+                className="min-h-12 w-full rounded-[6px] border border-slate/15 bg-white px-[14px] py-3 text-base text-slate placeholder:text-slate-soft/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/30 lg:border-cream/15 lg:bg-white/10 lg:text-cream lg:placeholder:text-cream-faint"
                 placeholder="admin"
               />
             </div>
@@ -275,7 +287,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="w-full rounded-[6px] border border-cream/15 bg-white/10 px-4 py-3 text-sm text-cream placeholder:text-cream-faint focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/30"
+                className="min-h-12 w-full rounded-[6px] border border-slate/15 bg-white px-[14px] py-3 text-base text-slate placeholder:text-slate-soft/60 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/30 lg:border-cream/15 lg:bg-white/10 lg:text-cream lg:placeholder:text-cream-faint"
                 placeholder="••••••••"
               />
             </div>
@@ -289,28 +301,28 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-[6px] bg-gradient-to-br from-gold-light via-gold to-gold-deep py-3 text-sm font-bold text-burgundy-deep shadow-glow transition-all hover:-translate-y-0.5 disabled:opacity-60"
+              className="min-h-12 w-full rounded-[6px] bg-gradient-to-br from-gold-light via-gold to-gold-deep px-4 py-3 text-[15px] font-bold text-burgundy-deep shadow-glow transition-all hover:-translate-y-0.5 disabled:opacity-60"
             >
-              {loading ? "Signing in..." : "Sign In to Admin"}
+              {loading ? "Signing in…" : "Sign in to admin portal"}
             </button>
           </form>
 
           {/* Demo credentials */}
-          <div className="mt-5 rounded-[8px] border border-gold/15 bg-cream/[0.05] p-3.5 text-[11px] leading-relaxed text-cream-faint">
-            <strong className="text-cream-dim">Demo credentials:</strong>
+          <div className="mt-5 rounded-[8px] border border-slate/10 bg-white p-3 text-[13px] leading-relaxed text-slate-soft lg:border-gold/15 lg:bg-cream/[0.05] lg:text-cream-faint">
+            <strong className="text-slate lg:text-cream-dim">Demo credentials:</strong>
             <br />
-            Username: <code className="text-gold-light">admin</code>
+            Username: <code className="text-burgundy-deep lg:text-gold-light">admin</code>
             <br />
-            Password: <code className="text-gold-light">tribleera2026</code>
+            Password: <code className="text-burgundy-deep lg:text-gold-light">tribleera2026</code>
           </div>
 
           <p className="mt-5 text-center">
-            <Link href="/" className="text-[11px] text-cream-faint hover:text-cream-dim">
+            <Link href="/" className="inline-block py-3 text-[13px] text-slate-soft hover:text-slate lg:text-[11px] lg:text-cream-faint lg:hover:text-cream-dim">
               ← Back to TRIBLEERA VAIBHAVAM
             </Link>
           </p>
 
-          <p className="mt-3 text-center text-[11px] text-cream-faint">
+          <p className="mt-3 text-center text-[13px] text-slate-soft lg:text-[11px] lg:text-cream-faint">
             Admin access only. All sessions are monitored and logged.
           </p>
         </div>

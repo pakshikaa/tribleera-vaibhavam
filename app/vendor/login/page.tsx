@@ -101,7 +101,7 @@ export default function VendorLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen font-[Arial,sans-serif]" data-portal="true">
       {/* Left panel — cinematic image */}
       <div className="relative hidden w-[52%] shrink-0 overflow-hidden lg:block">
         {/* Slow Ken Burns zoom — same technique as components/home/Hero.tsx */}
@@ -270,23 +270,57 @@ export default function VendorLoginPage() {
       {/* Right panel — min-w-0 so this flex child can actually shrink below
           its content's intrinsic width instead of overflowing the viewport
           on narrower windows (flexbox default is min-width:auto). */}
-      <div className="flex min-w-0 flex-1 items-center justify-center px-6 py-12 lg:px-16">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 flex justify-center lg:hidden">
+      <div className="flex min-w-0 flex-1 flex-col items-center justify-start overflow-y-auto bg-[#FAF7F2] px-0 py-0 lg:justify-center lg:px-16 lg:py-12">
+        <div className="w-full max-w-[400px] px-5 pb-10 lg:max-w-sm lg:px-0">
+          <div
+            className="lg:hidden"
+            style={{
+              textAlign: "center",
+              padding: "32px 24px 28px",
+              borderBottom: "0.5px solid #E8D5BF",
+              marginBottom: 28,
+            }}
+          >
             <Image
               src="/logo/tribleera-mark-192.png"
-              alt="TRIBLEERA"
-              width={48}
-              height={48}
-              className="rounded-[10px]"
+              alt="TRIBLEERA VAIBHAVAM"
+              width={52}
+              height={52}
+              style={{
+                borderRadius: 11,
+                margin: "0 auto 12px",
+                display: "block",
+              }}
             />
+            <p
+              style={{
+                color: "#D4AF6A",
+                fontWeight: 700,
+                fontSize: 16,
+                letterSpacing: "0.18em",
+                lineHeight: 1,
+                marginBottom: 3,
+              }}
+            >
+              TRIBLEERA
+            </p>
+            <p
+              style={{
+                color: "#9CA3AF",
+                fontSize: 9,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+              }}
+            >
+              VAIBHAVAM
+            </p>
           </div>
 
           <h2 className="mb-1 font-display text-2xl font-semibold text-[#1F2937]">Vendor sign in</h2>
           <p className="mb-8 text-sm text-[#4B5563]">
             New vendor?{" "}
-            <Link href="/vendor/register" className="font-semibold text-[#7A1F3D] hover:underline">
-              Register your business →
+            <Link href="/vendor/register" className="mt-1 block py-1 font-semibold text-[#7A1F3D] hover:underline">
+              Register your studio →
             </Link>
           </p>
 
@@ -303,7 +337,7 @@ export default function VendorLoginPage() {
                 placeholder="+94 77 XXX XXXX"
                 required
                 autoComplete="tel"
-                className="w-full rounded border border-slate/20 bg-white px-4 py-3 text-sm text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
+                className="min-h-12 w-full rounded border border-slate/20 bg-white px-[14px] py-3 text-base text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
               />
             </div>
 
@@ -324,7 +358,7 @@ export default function VendorLoginPage() {
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
-                className="w-full rounded border border-slate/20 bg-white px-4 py-3 text-sm text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
+                className="min-h-12 w-full rounded border border-slate/20 bg-white px-[14px] py-3 text-base text-[#1F2937] placeholder:text-slate/40 focus:border-[#7A1F3D] focus:outline-none focus:ring-1 focus:ring-[#7A1F3D]/20"
               />
             </div>
 
@@ -338,14 +372,14 @@ export default function VendorLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded bg-[#7A1F3D] py-3 text-sm font-semibold text-white shadow-[0_3px_16px_rgba(92,4,39,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#5C0427] hover:shadow-[0_6px_22px_rgba(92,4,39,0.36)] disabled:opacity-60"
+              className="min-h-[52px] w-full rounded bg-[#7A1F3D] px-4 py-3 text-[15px] font-semibold text-white shadow-[0_3px_16px_rgba(92,4,39,0.28)] transition-all hover:-translate-y-0.5 hover:bg-[#5C0427] hover:shadow-[0_6px_22px_rgba(92,4,39,0.36)] disabled:opacity-60"
             >
               {loading ? "Signing in…" : "Sign in to vendor portal"}
             </button>
           </form>
 
-          <div className="mt-6 rounded border border-slate/10 bg-[#FAF7F2] p-3">
-            <p className="text-[11px] text-[#4B5563]">
+          <div className="mt-6 rounded border border-slate/10 bg-white p-3">
+            <p className="text-[13px] leading-relaxed text-[#4B5563]">
               <strong>Demo credentials:</strong><br />
               Phone: +94771000001<br />
               Password: vendor2026
@@ -353,7 +387,7 @@ export default function VendorLoginPage() {
           </div>
 
           <p className="mt-6 text-center text-xs text-[#4B5563]">
-            <Link href="/" className="hover:text-[#7A1F3D]">← Back to TRIBLEERA</Link>
+            <Link href="/" className="inline-block py-3 hover:text-[#7A1F3D]">← Back to TRIBLEERA VAIBHAVAM</Link>
           </p>
         </div>
       </div>
