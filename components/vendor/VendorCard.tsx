@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { ArrowUpRight, MapPin, ShieldCheck, Star } from "lucide-react";
+import { ArrowUpRight, MapPin, ShieldCheck, Star, Zap } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Vendor } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { AvailabilityBadge } from "@/components/vendor/AvailabilityBadge";
 import { ShortlistButton } from "@/components/vendor/ShortlistButton";
 import { formatLKR } from "@/lib/utils/format";
 
@@ -107,6 +108,13 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
                 {tag}
               </Badge>
             ))}
+          </div>
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+              <Zap size={10} aria-hidden="true" />
+              Responds {vendor.responseTime.replace(/^Usually responds\s*/i, "")}
+            </span>
+            <AvailabilityBadge vendorSlug={vendor.slug} />
           </div>
           <div className="mt-4 flex items-center justify-between border-t border-slate/8 pt-3 dark:border-white/8">
             <div>

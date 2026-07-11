@@ -7,6 +7,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { vendors } from "@/lib/data/vendors";
 import { getCategoryBySlug, categories } from "@/lib/data/categories";
+import { RecentlyViewedVendors } from "@/components/vendor/RecentlyViewed";
+import { SearchMemory } from "@/components/vendor/SearchMemory";
 import { ShieldCheck, SearchX } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -124,6 +126,11 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
       </div>
 
       <Container className="py-8 md:py-12">
+        {/* Remembers active filters so vendor profiles can offer "back to results" */}
+        <Suspense fallback={null}>
+          <SearchMemory />
+        </Suspense>
+        <RecentlyViewedVendors />
         <VendorFilters />
         <div className="mt-8">
           <Suspense

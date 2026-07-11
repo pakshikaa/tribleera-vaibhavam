@@ -1,10 +1,11 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart, Scale } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { VendorCard, VendorCardSkeleton } from "@/components/vendor/VendorCard";
+import { CompareTable } from "@/components/vendor/CompareTable";
 import { BackButton } from "@/components/ui/BackButton";
 import { useShortlist } from "@/context/ShortlistContext";
 import { vendors } from "@/lib/data/vendors";
@@ -47,9 +48,20 @@ export function ShortlistPageClient() {
             action={<Button href="/vendors">Browse vendors</Button>}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {saved.map((v) => <VendorCard key={v.id} vendor={v} />)}
-          </div>
+          <>
+            {saved.length >= 2 && (
+              <section aria-label="Compare shortlisted vendors" className="mb-10">
+                <p className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-soft">
+                  <Scale size={12} aria-hidden="true" /> Side-by-side comparison
+                  {saved.length > 4 && <span className="normal-case tracking-normal">(first 4 shown)</span>}
+                </p>
+                <CompareTable vendors={saved} />
+              </section>
+            )}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {saved.map((v) => <VendorCard key={v.id} vendor={v} />)}
+            </div>
+          </>
         )}
       </Container>
     </div>

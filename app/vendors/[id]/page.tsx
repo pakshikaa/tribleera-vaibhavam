@@ -19,6 +19,9 @@ import { PriceCalculator } from "@/components/vendor/PriceCalculator";
 import { SimilarVendors } from "@/components/vendor/SimilarVendors";
 import { ShareButton } from "@/components/vendor/ShareButton";
 import { VendorContactClient } from "@/components/vendor/VendorContactClient";
+import { AvailabilityBadge } from "@/components/vendor/AvailabilityBadge";
+import { BackToResults } from "@/components/vendor/BackToResults";
+import { RecentlyViewedTracker } from "@/components/vendor/RecentlyViewed";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { getVendorBySlug, vendors } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
@@ -76,11 +79,12 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
   return (
     <div className="bg-ivory pb-24 md:pb-0">
+      <RecentlyViewedTracker vendorSlug={vendor.slug} />
       <BackButton href="/vendors" label="Vendors" variant="floating" />
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="overflow-x-auto scrollbar-hide whitespace-nowrap bg-ivory border-b border-slate/8">
-        <Container className="py-2.5">
+        <Container className="flex items-center justify-between gap-3 py-2.5">
           <ol className="flex items-center gap-2 text-xs text-slate-soft">
             <li><BackButton href="/vendors" label="Vendors" /></li>
             <li className="text-slate/25">/</li>
@@ -96,6 +100,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
             )}
             <li className="max-w-[180px] truncate font-medium text-slate">{vendor.name}</li>
           </ol>
+          <BackToResults className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-burgundy transition-colors hover:text-burgundy-deep" />
         </Container>
       </nav>
 
@@ -123,6 +128,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
                 {category.name}
               </Badge>
             )}
+            <AvailabilityBadge vendorSlug={vendor.slug} />
           </div>
           <div className="mt-2 flex items-end justify-between gap-4">
             <div>
@@ -296,7 +302,7 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gold-deep">
                 Quick cost estimate
               </p>
-              <PriceCalculator startingPrice={vendor.startingPrice} />
+              <PriceCalculator startingPrice={vendor.startingPrice} packages={vendor.packages} />
             </div>
             <div className="rounded-[8px] border border-burgundy/15 bg-burgundy/5 p-4">
               <p className="text-xs font-semibold text-burgundy-deep">🔒 TRIBLEERA Escrow Protection</p>

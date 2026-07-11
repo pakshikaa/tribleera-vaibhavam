@@ -122,6 +122,9 @@ export default function BookingCartPage() {
                     Your advance and platform fee are held safely by TRIBLEERA and released to each vendor only as
                     milestones are completed — full mediation support included.
                   </p>
+                  <Link href="/faq#booking-payments" className="mt-1.5 inline-block text-xs font-semibold text-burgundy hover:underline">
+                    How does escrow work? →
+                  </Link>
                 </div>
               </div>
 

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { ChangeEvent, useId, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -422,6 +423,9 @@ export default function PaymentSummaryPage() {
                     Your advance is held in a secure escrow account and released to vendors only as milestones are completed.
                     Your remaining balance is settled directly with each vendor afterwards.
                   </p>
+                  <Link href="/faq#booking-payments" className="mt-1.5 inline-block text-xs font-semibold text-burgundy hover:underline">
+                    How does escrow work? →
+                  </Link>
                 </div>
               </div>
               <Button

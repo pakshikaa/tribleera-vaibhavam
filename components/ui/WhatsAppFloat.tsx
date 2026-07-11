@@ -4,17 +4,27 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { getVendorBySlug } from "@/lib/data/vendors";
+import { getCategoryBySlug } from "@/lib/data/categories";
 
 export function WhatsAppFloat() {
   const pathname = usePathname();
   const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
 
+  // On a vendor profile, pre-fill the inquiry with that vendor's name and
+  // service so the customer doesn't start from a generic message.
+  const vendorSlug = pathname.startsWith("/vendors/") ? pathname.split("/")[2] : "";
+  const vendor = vendorSlug ? getVendorBySlug(vendorSlug) : undefined;
+  const message = vendor
+    ? `Hi TRIBLEERA VAIBHAVAM, I'm interested in ${vendor.name} (${getCategoryBySlug(vendor.categorySlug)?.name ?? "wedding services"}) for my wedding. Can you help me with details?`
+    : "Hello TRIBLEERA VAIBHAVAM, I need help planning my wedding.";
+
   return (
     <motion.a
-      href="https://wa.me/94771234567?text=Hello%20TRIBLEERA%20VAIBHAVAM%2C%20I%20need%20help%20planning%20my%20wedding."
+      href={`https://wa.me/94771234567?text=${encodeURIComponent(message)}`}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with TRIBLEERA on WhatsApp"
+      aria-label={vendor ? `Ask about ${vendor.name} on WhatsApp` : "Chat with TRIBLEERA on WhatsApp"}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 2, type: "spring", stiffness: 200 }}

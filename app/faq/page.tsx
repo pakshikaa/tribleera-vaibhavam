@@ -158,7 +158,11 @@ export default function FaqPage() {
         <Container className="max-w-3xl">
           <div className="space-y-12">
             {FAQ_CATEGORIES.map((cat) => (
-              <div key={cat.title}>
+              <div
+                key={cat.title}
+                id={cat.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}
+                className="scroll-mt-24"
+              >
                 <h2 className="mb-5 font-display text-xl font-semibold text-burgundy-deep">
                   {cat.title}
                 </h2>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarX2, Plus, Trash2, CheckCircle2, PauseCircle } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -8,16 +8,50 @@ import { Input } from "@/components/ui/Field";
 import { bookings } from "@/lib/data/bookings";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { formatDate } from "@/lib/utils/format";
+import { readVendorAvailability, writeVendorAvailability } from "@/lib/utils/availability";
 
-const VENDOR_SLUG = "jaffna-frames-studio";
-const vendorId = getVendorBySlug(VENDOR_SLUG)?.id ?? "";
+const FALLBACK_SLUG = "jaffna-frames-studio";
 
-const INITIAL_BLOCKED = ["Dec 4, 2026", "Dec 12, 2026", "Jan 18, 2027", "Feb 2, 2027"];
+// Demo seed, stored the first time a vendor opens this page (ISO form so the
+// customer-facing availability badge can match against event dates).
+const INITIAL_BLOCKED = ["2026-12-04", "2026-12-12", "2027-01-18", "2027-02-02"];
+
+function formatBlockedDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-LK", { day: "numeric", month: "short", year: "numeric" });
+}
 
 export function VendorAvailabilityClient() {
+  const [vendorSlug, setVendorSlug] = useState(FALLBACK_SLUG);
   const [accepting, setAccepting] = useState(true);
-  const [blocked, setBlocked] = useState(INITIAL_BLOCKED);
+  const [blocked, setBlocked] = useState<string[]>([]);
   const [newDate, setNewDate] = useState("");
+  const [hydrated, setHydrated] = useState(false);
+
+  // Load the signed-in vendor's persisted availability; what's saved here is
+  // what customers see on vendor cards and profiles.
+  useEffect(() => {
+    let slug = FALLBACK_SLUG;
+    try {
+      slug = sessionStorage.getItem("vendor-slug") || FALLBACK_SLUG;
+    } catch {}
+    const stored = readVendorAvailability(slug);
+    const blockedDates = stored.blockedDates.length > 0 ? stored.blockedDates : INITIAL_BLOCKED;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setVendorSlug(slug);
+    setAccepting(stored.accepting);
+    setBlocked(blockedDates);
+    setHydrated(true);
+    if (stored.blockedDates.length === 0) {
+      writeVendorAvailability(slug, { accepting: stored.accepting, blockedDates });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeVendorAvailability(vendorSlug, { accepting, blockedDates: blocked });
+  }, [hydrated, vendorSlug, accepting, blocked]);
+
+  const vendorId = getVendorBySlug(vendorSlug)?.id ?? "";
 
   const confirmedBookings = useMemo(() => {
     return bookings
@@ -37,13 +71,12 @@ export function VendorAvailabilityClient() {
         }),
         status: b.status,
       }));
-  }, []);
+  }, [vendorId]);
 
   function addDate(e: React.FormEvent) {
     e.preventDefault();
-    if (!newDate) return;
-    const formatted = new Date(newDate).toLocaleDateString("en-LK", { day: "numeric", month: "short", year: "numeric" });
-    setBlocked((prev) => [...prev, formatted]);
+    if (!newDate || blocked.includes(newDate)) return;
+    setBlocked((prev) => [...prev, newDate].sort());
     setNewDate("");
   }
 
@@ -99,11 +132,11 @@ export function VendorAvailabilityClient() {
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             {blocked.map((d) => (
               <div key={d} className="flex items-center justify-between rounded-lg border border-slate/10 px-3.5 py-2.5 text-sm">
-                {d}
+                {formatBlockedDate(d)}
                 <div className="flex items-center gap-2">
                   <Badge tone="danger">Blocked</Badge>
                   <button
-                    aria-label={`Remove ${d}`}
+                    aria-label={`Remove ${formatBlockedDate(d)}`}
                     onClick={() => setBlocked((prev) => prev.filter((x) => x !== d))}
                     className="text-slate-soft hover:text-danger"
                   >

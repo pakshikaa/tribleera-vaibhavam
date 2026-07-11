@@ -229,6 +229,7 @@ export function Header() {
                       { label: "My dashboard", href: "/dashboard/customer" },
                       { label: "My profile", href: "/dashboard/customer/profile" },
                       { label: "My shortlist", href: "/shortlist" },
+                      { label: "Wedding checklist", href: "/checklist" },
                       { label: "My bookings", href: "/dashboard/customer" },
                     ].map((item) => (
                       <Link
@@ -326,6 +327,7 @@ export function Header() {
                       { href: "/dashboard/customer", label: "My dashboard" },
                       { href: "/dashboard/customer/profile", label: "My profile" },
                       { href: "/shortlist", label: "My shortlist" },
+                      { href: "/checklist", label: "Wedding checklist" },
                     ].map((link) => (
                       <SheetClose key={link.href} asChild>
                         <Link
