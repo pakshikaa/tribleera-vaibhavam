@@ -11,6 +11,16 @@ async function fillStep1(page: Page) {
 }
 
 test.describe("Event Request Form", () => {
+  // The whole public site is gated behind customer sign-in (SiteShell
+  // redirects anonymous visitors to /login), so seed the mock session
+  // before any page script runs.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("customer-auth", "playwright@tribleera.test");
+      window.sessionStorage.setItem("customer-name", "Playwright Tester");
+    });
+  });
+
   test("loads step 1", async ({ page }) => {
     await page.goto("/event-request");
     // StepProgress renders a same-named hidden label too — target the
@@ -47,7 +57,7 @@ test.describe("Event Request Form", () => {
     // Step 2 — select one category card (renders as a labelled button per category)
     await page.locator("button", { hasText: "Photography" }).first().click();
     await page.locator("button", { hasText: /continue/i }).click();
-    await expect(page.getByRole("heading", { name: "Your Priorities" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Choose Vendors" })).toBeVisible();
 
     await expect(page.locator("input[type='file'][accept*='image']")).toBeAttached();
     await expect(page.locator("button[aria-label='Start voice recording']")).toBeVisible();
