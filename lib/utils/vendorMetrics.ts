@@ -61,7 +61,7 @@ function readVendorRequests(slug: string) {
     categorySlug: String(entry.categorySlug),
     packageName: "Custom request",
     price: 0,
-    status: entry.status === "accepted" ? "accepted" as const : entry.status === "rejected" ? "declined" as const : "new" as const,
+    status: entry.status === "accepted" || entry.status === "countered" ? "accepted" as const : entry.status === "rejected" ? "declined" as const : "new" as const,
     rejectionReason: entry.rejectionReason ? String(entry.rejectionReason) : undefined,
     receivedAt: String(entry.submittedAt ?? new Date().toISOString()),
     message: entry.requirements ? String(entry.requirements) : "No additional requirements provided.",

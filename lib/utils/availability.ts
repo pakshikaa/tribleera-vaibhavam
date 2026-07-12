@@ -47,3 +47,63 @@ export function readCustomerEventDate(): string | null {
     return null;
   }
 }
+
+interface VendorBookingRules {
+  serviceAreas?: string[];
+  minNoticeDays?: string | number;
+}
+
+/** The vendor's saved booking rules (service areas + notice), if any. */
+export function readVendorBookingRules(vendorSlug: string): { serviceAreas: string[]; minNoticeDays: number } {
+  const profile = readLocalStorage<VendorBookingRules | null>(`TRIBLEERA-vendor-profile-${vendorSlug}`, null);
+  return {
+    serviceAreas: Array.isArray(profile?.serviceAreas) ? profile.serviceAreas : [],
+    minNoticeDays: Math.max(0, Number(profile?.minNoticeDays ?? 30) || 30),
+  };
+}
+
+export interface BookingDateCheck {
+  ok: boolean;
+  reason?: "paused" | "booked" | "notice" | "area";
+  message?: string;
+}
+
+/**
+ * Full pre-booking validation for one vendor (V-21, V-22, V-23): the vendor
+ * must be accepting, free on the date, given enough notice, and — when a
+ * city is provided — serving that area.
+ */
+export function checkVendorBookable(
+  vendorSlug: string,
+  vendorName: string,
+  isoDate: string,
+  city?: string
+): BookingDateCheck {
+  const status = vendorAvailabilityOn(vendorSlug, isoDate);
+  if (status === "paused") {
+    return { ok: false, reason: "paused", message: `${vendorName} is not taking new bookings right now.` };
+  }
+  if (status === "booked") {
+    return { ok: false, reason: "booked", message: `${vendorName} is already booked on ${isoDate}. Pick another date or vendor.` };
+  }
+
+  const rules = readVendorBookingRules(vendorSlug);
+  const daysAhead = Math.floor((new Date(isoDate).getTime() - Date.now()) / 86400000);
+  if (daysAhead < rules.minNoticeDays) {
+    return {
+      ok: false,
+      reason: "notice",
+      message: `${vendorName} needs at least ${rules.minNoticeDays} days' notice — your date is only ${Math.max(daysAhead, 0)} days away.`,
+    };
+  }
+
+  if (city && rules.serviceAreas.length > 0 && !rules.serviceAreas.includes(city)) {
+    return {
+      ok: false,
+      reason: "area",
+      message: `${vendorName} serves ${rules.serviceAreas.join(", ")} only — ${city} is outside their service area.`,
+    };
+  }
+
+  return { ok: true };
+}

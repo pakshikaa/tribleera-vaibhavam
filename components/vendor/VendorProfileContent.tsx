@@ -24,6 +24,7 @@ import { AvailabilityBadge } from "@/components/vendor/AvailabilityBadge";
 import { BackToResults } from "@/components/vendor/BackToResults";
 import { RecentlyViewedTracker } from "@/components/vendor/RecentlyViewed";
 import { VerifiedReviewForm } from "@/components/vendor/VerifiedReviewForm";
+import { VendorBookingRulesCard } from "@/components/vendor/VendorBookingRulesCard";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { galleryImages } from "@/lib/data/images";
@@ -276,6 +277,7 @@ export function VendorProfileContent({ vendor }: { vendor: Vendor }) {
 
         <aside className="hidden md:block">
           <div className="sticky top-28 space-y-5">
+            <VendorBookingRulesCard vendorSlug={vendor.slug} fallbackCity={vendor.city} />
             <div className="rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
               <p className="text-xs uppercase tracking-wide text-slate-soft">Starting at</p>
               <p className="mt-1 font-display text-2xl text-burgundy-deep">{formatLKR(vendor.startingPrice)}</p>

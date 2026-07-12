@@ -21,6 +21,7 @@ import { useCart } from "@/context/CartContext";
 import { customerDetailsSchema, type CustomerDetailsValues } from "@/lib/schemas";
 import { BackButton } from "@/components/ui/BackButton";
 import { generateId, safePush } from "@/lib/utils/store";
+import { checkVendorBookable } from "@/lib/utils/availability";
 
 interface VendorResponseSelection {
   requestId?: string;
@@ -130,6 +131,16 @@ export default function PaymentSummaryPage() {
   }
 
   function onSubmit(values: CustomerDetailsValues) {
+    // Enforce each vendor's live availability, notice period and service
+    // area before taking money (V-21, V-22, V-23).
+    for (const item of items) {
+      const check = checkVendorBookable(item.vendorId, item.vendorName, values.eventDate);
+      if (!check.ok) {
+        showToast(check.message ?? `${item.vendorName} cannot take this date.`, "error");
+        return;
+      }
+    }
+
     const bookingId = generateBookingId();
     const submittedAt = new Date().toISOString();
     const record = {

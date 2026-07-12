@@ -5,6 +5,7 @@ import { CheckCircle2, ImageIcon, XCircle } from "lucide-react";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 import { generateId, safePush } from "@/lib/utils/store";
 import { formatDateShort } from "@/lib/utils/format";
+import { appendVendorGalleryPhoto, writeVendorPhoto } from "@/lib/utils/vendorPortal";
 
 interface PortfolioSubmission {
   id: string;
@@ -12,6 +13,8 @@ interface PortfolioSubmission {
   vendorName: string;
   photo: string;
   submittedAt: string;
+  /** "photo" = profile photo (default for older entries); "gallery" = portfolio image. */
+  kind?: "photo" | "gallery";
 }
 
 const QUEUE_KEY = "tv-moderation-queue";
@@ -34,16 +37,31 @@ export function AdminPortfolioQueueClient() {
     writeLocalStorage(QUEUE_KEY, remaining);
 
     if (approved) {
-      // Publish: the vendor dashboard reads this key for the live photo.
-      writeLocalStorage("TRIBLEERA-vendor-photo", submission.photo);
+      // Publish to the per-vendor stores that liveVendors merges into the
+      // public profile (imageUrl / galleryUrls).
+      if (submission.kind === "gallery") {
+        appendVendorGalleryPhoto(submission.vendorSlug, submission.photo);
+      } else {
+        writeVendorPhoto(submission.vendorSlug, submission.photo);
+      }
     }
 
     safePush("tv-admin-notifications", {
       id: generateId("AN"),
       type: "moderation",
-      message: `${submission.vendorName}'s photo ${approved ? "approved and published" : "rejected"}`,
+      message: `${submission.vendorName}'s ${submission.kind === "gallery" ? "gallery photo" : "profile photo"} ${approved ? "approved and published" : "rejected"}`,
       time: new Date().toISOString(),
       icon: approved ? "✅" : "🚫",
+    });
+
+    safePush(`tv-vendor-notifications-${submission.vendorSlug}`, {
+      id: generateId("VN"),
+      type: "moderation",
+      message: approved
+        ? `Your ${submission.kind === "gallery" ? "gallery photo" : "profile photo"} was approved and is now live.`
+        : `Your ${submission.kind === "gallery" ? "gallery photo" : "profile photo"} was rejected. Contact support for details.`,
+      time: new Date().toISOString(),
+      read: false,
     });
   }
 

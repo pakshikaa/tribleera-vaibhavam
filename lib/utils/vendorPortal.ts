@@ -183,6 +183,30 @@ export function writeVendorPhoto(slug: string, photo: string) {
   emitVendorPortalChanged();
 }
 
+export function getVendorGalleryStorageKey(slug: string) {
+  return `TRIBLEERA-vendor-gallery-${slug}`;
+}
+
+export function readVendorGallery(slug: string) {
+  return readLocalStorage<string[]>(getVendorGalleryStorageKey(slug), []);
+}
+
+/** Publish an approved gallery photo — liveVendors merges this into galleryUrls. */
+export function appendVendorGalleryPhoto(slug: string, photo: string) {
+  const gallery = readVendorGallery(slug);
+  writeLocalStorage(getVendorGalleryStorageKey(slug), [...gallery, photo]);
+  emitVendorPortalChanged();
+}
+
+export function removeVendorGalleryPhoto(slug: string, index: number) {
+  const gallery = readVendorGallery(slug);
+  writeLocalStorage(
+    getVendorGalleryStorageKey(slug),
+    gallery.filter((_, i) => i !== index)
+  );
+  emitVendorPortalChanged();
+}
+
 export function readVendorPackages(slug: string, fallback: VendorPackage[] = []) {
   return readLocalStorage<VendorPackage[]>(getVendorPackagesStorageKey(slug), fallback);
 }

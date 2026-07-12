@@ -105,6 +105,7 @@ export default function EventRequestPage() {
   const [inspirationFiles, setInspirationFiles] = useState<File[]>([]);
   const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
   const [voiceUrl, setVoiceUrl] = useState<string | null>(null);
+  const [voiceDataUrl, setVoiceDataUrl] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [serviceVendorPriorities, setServiceVendorPriorities] = useState<Record<string, string[]>>({});
@@ -294,6 +295,11 @@ export default function EventRequestPage() {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         setVoiceBlob(blob);
         setVoiceUrl(URL.createObjectURL(blob));
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") setVoiceDataUrl(reader.result);
+        };
+        reader.readAsDataURL(blob);
         stream.getTracks().forEach((t) => t.stop());
         setRecordingSeconds(0);
       };
@@ -317,6 +323,7 @@ export default function EventRequestPage() {
     if (voiceUrl) URL.revokeObjectURL(voiceUrl);
     setVoiceBlob(null);
     setVoiceUrl(null);
+    setVoiceDataUrl(null);
   }
 
   const onSubmit = handleSubmit((formValues) => {
@@ -355,6 +362,7 @@ export default function EventRequestPage() {
       serviceSelections,
       priorities: formValues.priorities ?? [],
       hasVoiceNote: Boolean(voiceBlob),
+      voiceNoteDataUrl: voiceDataUrl,
     };
 
     safePush("tv-requests", bridgeRequest);

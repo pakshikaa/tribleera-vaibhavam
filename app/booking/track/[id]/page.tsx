@@ -11,6 +11,7 @@ import { getBookingById, bookings } from "@/lib/data/bookings";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { BackButton } from "@/components/ui/BackButton";
+import { BookingMessageThread } from "@/components/booking/BookingMessageThread";
 
 export function generateStaticParams() {
   return bookings.map((b) => ({ id: b.id }));
@@ -49,6 +50,9 @@ export default async function BookingTrackingPage({ params }: { params: Promise<
             <div className="rounded-[8px] border border-slate/8 bg-white p-6 shadow-soft">
               <LifecycleTracker status={booking.status} />
             </div>
+
+            {/* On-platform conversation record (V-25) */}
+            <BookingMessageThread bookingId={booking.id} />
 
             <div>
               <h2 className="font-display text-xl">Booked services</h2>

@@ -9,6 +9,7 @@ import {
   Package, User, Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { VendorNotificationBell } from "@/components/dashboard/VendorNotificationBell";
 
 const NAV_ITEMS = [
   { href: "/dashboard/vendor",           label: "Overview",  icon: LayoutDashboard },
@@ -42,10 +43,13 @@ function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: 
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-slate/10 p-5">
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
-          <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLEERA</span>
-        </Link>
+        <div className="flex items-start justify-between gap-2">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
+            <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLEERA</span>
+          </Link>
+          <VendorNotificationBell />
+        </div>
         <p className="mt-3 text-xs text-[#4B5563]">Vendor Portal</p>
       </div>
       <nav className="flex-1 py-3">
@@ -53,7 +57,7 @@ function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: 
           <NavItem key={item.href} {...item} active={isActive(item.href)} />
         ))}
         <div className="my-3 mx-4 h-px bg-slate/10" />
-        <NavItem href="/contact" label="Support" icon={HelpCircle} active={false} />
+        <NavItem href="/dashboard/vendor/support" label="Support" icon={HelpCircle} active={pathname.startsWith("/dashboard/vendor/support")} />
         <button
           type="button"
           onClick={onSignOut}
@@ -117,14 +121,17 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
             <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={28} height={28} className="rounded-md" />
             <span className="text-[13px] font-bold tracking-[0.06em] text-[#5C0427]">Vendor Portal</span>
           </div>
-          <button
-            type="button"
-            onClick={() => setMobileMenuPath(pathname)}
-            aria-label="Open navigation menu"
-            className="flex h-11 w-11 items-center justify-center rounded-lg"
-          >
-            <Menu size={20} className="text-slate" />
-          </button>
+          <div className="flex items-center gap-1">
+            <VendorNotificationBell />
+            <button
+              type="button"
+              onClick={() => setMobileMenuPath(pathname)}
+              aria-label="Open navigation menu"
+              className="flex h-11 w-11 items-center justify-center rounded-lg"
+            >
+              <Menu size={20} className="text-slate" />
+            </button>
+          </div>
         </div>
 
         {mobileMenuPath === pathname && (
@@ -164,7 +171,7 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
                     </Link>
                   );
                 })}
-                <Link href="/contact" onClick={() => setMobileMenuPath(null)} className="mb-1 flex min-h-11 items-center gap-2.5 rounded-lg px-3 py-3 text-sm text-[#4B5563]">
+                <Link href="/dashboard/vendor/support" onClick={() => setMobileMenuPath(null)} className="mb-1 flex min-h-11 items-center gap-2.5 rounded-lg px-3 py-3 text-sm text-[#4B5563]">
                   <HelpCircle size={18} aria-hidden="true" />
                   Support
                 </Link>

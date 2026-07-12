@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Download, Eye, Plus, X } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
+import { PackageCard } from "@/components/vendor/PackageCard";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Field";
@@ -53,6 +55,7 @@ export default function VendorPackagesPage() {
   });
   const [createOpen, setCreateOpen] = useState(false);
   const [templateChoice, setTemplateChoice] = useState("0");
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const [galleryImages, setGalleryImages] = useState<string[]>(() =>
     typeof window === "undefined" ? [] : readLocalStorage<string[]>(galleryStorageKey, [])
   );
@@ -104,6 +107,21 @@ export default function VendorPackagesPage() {
     );
   }
 
+  // Packages live in this browser's storage until backend sync exists —
+  // give vendors a portable backup so cleared storage can't wipe their work
+  // (V-19).
+  function exportPackages() {
+    const payload = { vendor: vendor.slug, exportedAt: new Date().toISOString(), packages };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `tribleera-packages-${vendor.slug}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    showToast("Backup downloaded — keep it safe until cloud sync arrives.", "success");
+  }
+
   function createPackage() {
     const template = templates[Number(templateChoice)] ?? templates[0];
     if (!template) return;
@@ -118,9 +136,14 @@ export default function VendorPackagesPage() {
         <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
         <div className="mb-6 flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
           <h1 className="font-display text-3xl text-burgundy-deep">Package Management</h1>
-          <Button variant="gold" fullWidth onClick={() => setCreateOpen(true)} className="sm:w-auto">
-            Add New Package
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button variant="secondary" fullWidth icon={<Download size={15} />} onClick={exportPackages} className="sm:w-auto">
+              Download backup
+            </Button>
+            <Button variant="gold" fullWidth onClick={() => setCreateOpen(true)} className="sm:w-auto">
+              Add New Package
+            </Button>
+          </div>
         </div>
 
         <div className="mb-6 rounded-[8px] border border-[#E8D5BF] bg-[#F5EDE3] px-4 py-3 text-[13px] text-burgundy">
@@ -259,6 +282,9 @@ export default function VendorPackagesPage() {
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
+                  <Button size="sm" variant="secondary" fullWidth icon={<Eye size={14} />} onClick={() => setPreviewId(pkg.id)}>
+                    Preview
+                  </Button>
                   <Button
                     size="sm"
                     variant="secondary"
@@ -303,6 +329,32 @@ export default function VendorPackagesPage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Public-profile preview before anything goes live (V-20) */}
+      <Modal
+        open={Boolean(previewId)}
+        onOpenChange={(open) => {
+          if (!open) setPreviewId(null);
+        }}
+        title="Public profile preview"
+        description="Exactly how customers see this package on your profile."
+      >
+        {(() => {
+          const previewPkg = packages.find((pkg) => pkg.id === previewId);
+          if (!previewPkg) return null;
+          return (
+            <div className="mx-auto max-w-[360px]">
+              <PackageCard
+                pkg={previewPkg}
+                motif={vendor.motif}
+                tone={vendor.tone}
+                seed={vendor.id.length}
+                quoteVendorName={vendor.name}
+              />
+            </div>
+          );
+        })()}
+      </Modal>
     </div>
   );
 }
