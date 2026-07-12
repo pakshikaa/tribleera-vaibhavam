@@ -7,41 +7,48 @@ import { Button } from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
-import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { readLocalStorage } from "@/lib/utils/browser-storage";
 import { generateId, safePush } from "@/lib/utils/store";
 import { BackButton } from "@/components/ui/BackButton";
-
-const STORAGE_KEY = "TRIBLEERA-vendor-profile";
-const PHOTO_KEY = "TRIBLEERA-vendor-photo";
+import {
+  getCurrentVendorSlug,
+  getVendorPhotoStorageKey,
+  markVendorProfileComplete,
+  readVendorProfile,
+  writeVendorPhoto,
+  writeVendorProfile,
+} from "@/lib/utils/vendorPortal";
 const DEFAULT_VENDOR = getVendorBySlug("pushpa-florals-and-decor")!;
-
-const DEFAULT_FORM = {
-  businessName: DEFAULT_VENDOR.name,
-  tagline: DEFAULT_VENDOR.tagline,
-  description: DEFAULT_VENDOR.description,
-  phone: DEFAULT_VENDOR.phone,
-  email: "pushpa@example.com",
-  whatsapp: DEFAULT_VENDOR.whatsapp,
-  city: DEFAULT_VENDOR.city,
-  location: DEFAULT_VENDOR.location,
-  experienceYears: String(DEFAULT_VENDOR.experienceYears),
-  eventsCompleted: String(DEFAULT_VENDOR.eventsCompleted),
-};
 
 export default function VendorProfilePage() {
   const { showToast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const vendorSlug =
+    typeof window === "undefined" ? DEFAULT_VENDOR.slug : getCurrentVendorSlug() ?? DEFAULT_VENDOR.slug;
+  const liveVendor = getVendorBySlug(vendorSlug) ?? DEFAULT_VENDOR;
+  const defaultForm = {
+    businessName: liveVendor.name,
+    tagline: liveVendor.tagline,
+    description: liveVendor.description,
+    phone: liveVendor.phone,
+    email: "vendor@example.com",
+    whatsapp: liveVendor.whatsapp,
+    city: liveVendor.city,
+    location: liveVendor.location,
+    experienceYears: String(liveVendor.experienceYears),
+    eventsCompleted: String(liveVendor.eventsCompleted),
+  };
   const storedProfile =
     typeof window === "undefined"
       ? null
-      : readLocalStorage<(typeof DEFAULT_FORM & { tags: string[] }) | null>(STORAGE_KEY, null);
+      : (readVendorProfile(vendorSlug) as ((typeof defaultForm & { tags: string[] }) | null));
   const [photo, setPhoto] = useState<string | null>(
-    typeof window === "undefined" ? null : readLocalStorage<string | null>(PHOTO_KEY, null)
+    typeof window === "undefined" ? null : readLocalStorage<string | null>(getVendorPhotoStorageKey(vendorSlug), null)
   );
   const [photoPending, setPhotoPending] = useState(false);
-  const [tags, setTags] = useState<string[]>(storedProfile?.tags ?? DEFAULT_VENDOR.tags);
+  const [tags, setTags] = useState<string[]>(storedProfile?.tags ?? liveVendor.tags);
   const [tagInput, setTagInput] = useState("");
-  const [form, setForm] = useState(storedProfile ? { ...DEFAULT_FORM, ...storedProfile } : DEFAULT_FORM);
+  const [form, setForm] = useState(storedProfile ? { ...defaultForm, ...storedProfile } : defaultForm);
 
   // New photos are NOT published directly — they enter the admin moderation
   // queue first, so stolen/fake portfolio images never go live unreviewed.
@@ -53,13 +60,13 @@ export default function VendorProfilePage() {
       const dataUrl = reader.result as string;
       setPhoto(dataUrl);
       setPhotoPending(true);
-      let vendorSlug = "pushpa-florals-and-decor";
+      let activeVendorSlug = vendorSlug;
       try {
-        vendorSlug = sessionStorage.getItem("vendor-slug") || vendorSlug;
+        activeVendorSlug = sessionStorage.getItem("vendor-slug") || activeVendorSlug;
       } catch {}
       safePush("tv-moderation-queue", {
         id: generateId("MOD"),
-        vendorSlug,
+        vendorSlug: activeVendorSlug,
         vendorName: form.businessName,
         photo: dataUrl,
         submittedAt: new Date().toISOString(),
@@ -78,7 +85,9 @@ export default function VendorProfilePage() {
   }
 
   function saveProfile() {
-    writeLocalStorage(STORAGE_KEY, { ...form, tags });
+    writeVendorProfile(vendorSlug, { ...form, tags });
+    if (photo) writeVendorPhoto(vendorSlug, photo);
+    markVendorProfileComplete(vendorSlug);
     safePush("tv-admin-notifications", {
       id: generateId("AN"),
       type: "vendor_update",

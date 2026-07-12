@@ -8,6 +8,7 @@ import { Input, Textarea } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 import { generateId, safePush } from "@/lib/utils/store";
+import { markVendorProfileComplete, writeVendorPhoto, writeVendorProfile } from "@/lib/utils/vendorPortal";
 
 type ApprovedVendor = {
   slug: string;
@@ -20,7 +21,7 @@ type ApprovedVendor = {
   [key: string]: unknown;
 };
 
-const STEPS = ["Profile photo", "Service details", "First package"];
+const STEPS = ["Add your photo", "Complete profile", "Set packages", "Go live"];
 
 export default function VendorSetupPage() {
   const router = useRouter();
@@ -106,31 +107,34 @@ export default function VendorSetupPage() {
 
   function goNext() {
     if (step === 1 && !validateStep2()) return;
-    if (step === 2) { handleComplete(); return; }
+    if (step === 2 && !validateStep3()) return;
+    if (step === 3) { handleComplete(); return; }
     setStep((s) => s + 1);
   }
 
   function handleComplete() {
-    if (!validateStep3()) return;
     if (!vendor) return;
     const slug = vendor.slug;
 
     // Save photo
     if (photo) {
-      localStorage.setItem(`TRIBLEERA-vendor-photo-${slug}`, photo);
+      writeVendorPhoto(slug, photo);
     }
 
     // Save profile data
-    localStorage.setItem(
-      `TRIBLEERA-vendor-profiles`,
-      JSON.stringify({
-        slug,
-        tagline,
-        about,
-        experienceYears: Number(experienceYears),
-        startingPrice: Number(startingPrice),
-      })
-    );
+    writeVendorProfile(slug, {
+      businessName: vendor.businessName,
+      tagline,
+      description: about,
+      phone: String(vendor.phone ?? ""),
+      email: String(vendor.email ?? ""),
+      whatsapp: String(vendor.whatsapp ?? vendor.phone ?? ""),
+      city: String(vendor.city ?? ""),
+      location: String(vendor.location ?? vendor.city ?? ""),
+      experienceYears,
+      eventsCompleted: String(vendor.eventsCompleted ?? "0"),
+      tags: Array.isArray(vendor.tags) ? vendor.tags : [],
+    });
 
     // Save first package
     const firstPackage = {
@@ -156,11 +160,12 @@ export default function VendorSetupPage() {
       );
       localStorage.setItem("TRIBLEERA-approved-vendors", JSON.stringify(updated));
     } catch {}
+    markVendorProfileComplete(slug);
 
     safePush("tv-admin-notifications", {
       id: generateId("AN"),
       type: "vendor_update",
-      message: `${vendor.name} updated their profile`,
+      message: `${vendor.businessName} completed vendor onboarding`,
       time: new Date().toISOString(),
       icon: "✏️",
     });
@@ -175,7 +180,7 @@ export default function VendorSetupPage() {
       <div className="mx-auto max-w-2xl px-5 py-12">
         {/* Header */}
         <div className="mb-8 flex items-center gap-3">
-          <Image src="/logo/TRIBLEERA-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
+          <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-gold-deep">Vendor Portal</p>
             <p className="font-display text-lg font-semibold text-burgundy-deep">
@@ -412,6 +417,24 @@ export default function VendorSetupPage() {
                 {step3Errors.inclusions && (
                   <p className="mt-1 text-xs text-danger">{step3Errors.inclusions}</p>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4 — Go live */}
+          {step === 3 && (
+            <div className="space-y-4">
+              <p className="text-sm text-slate-soft">
+                Final review. You have completed the 4-step vendor onboarding flow:
+                add your photo, complete your profile, set packages, and go live.
+              </p>
+              <div className="rounded-[10px] border border-success/20 bg-success-pale p-4">
+                <ul className="space-y-2 text-sm text-slate">
+                  <li>1. Photo ready {photo ? "for your profile" : "to be added later from profile settings"}.</li>
+                  <li>2. Profile details prepared with your service summary and pricing.</li>
+                  <li>3. First package configured with inclusions.</li>
+                  <li>4. Go live will publish this setup to your vendor dashboard.</li>
+                </ul>
               </div>
             </div>
           )}

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
 import {
   MapPin, ShieldCheck,
   Clock, Award, Users, ArrowRight, Star,
@@ -27,8 +30,13 @@ import { galleryImages } from "@/lib/data/images";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { BackButton } from "@/components/ui/BackButton";
 import { Vendor } from "@/types";
+import { recordVendorProfileView } from "@/lib/utils/vendorMetrics";
 
 export function VendorProfileContent({ vendor }: { vendor: Vendor }) {
+  useEffect(() => {
+    recordVendorProfileView(vendor.slug);
+  }, [vendor.slug]);
+
   const category = getCategoryBySlug(vendor.categorySlug);
   const imgs = Array.from({ length: vendor.gallerySeeds }, (_, i) => ({
     src: vendor.galleryUrls?.[i % (vendor.galleryUrls?.length || 1)] ?? galleryImages[i % galleryImages.length],

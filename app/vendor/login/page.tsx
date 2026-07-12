@@ -14,10 +14,6 @@ const STATIC_FALLBACK = [
   { slug: "jaffna-frames-studio",     phone: "+94771000002", businessName: "Jaffna Frames Studio" },
 ];
 
-function normalisePhone(raw: string) {
-  return raw.replace(/[\s\-()]/g, "");
-}
-
 export default function VendorLoginPage() {
   const router = useRouter();
   const [phone, setPhone] = useState("");
@@ -41,7 +37,7 @@ export default function VendorLoginPage() {
 
         if (result.reason === "suspended") {
           setError(
-            `This vendor account is suspended. Reason: ${result.vendor.suspensionReason ?? "Contact admin for details"}. A notification was sent to ${result.vendor.email ?? "your registered email"}.`
+            `This vendor account is suspended. Reason: ${result.vendor?.suspensionReason ?? "Contact admin for details"}. A notification was sent to ${result.vendor?.email ?? "your registered email"}.`
           );
           setLoading(false);
           return;
@@ -49,7 +45,7 @@ export default function VendorLoginPage() {
 
         if (result.reason === "email_unverified") {
           setError(
-            `This email is not verified yet. Please open the verification link sent to ${result.vendor.email ?? "your registered email"} before signing in.`
+            `This email is not verified yet. Please open the verification link sent to ${result.vendor?.email ?? "your registered email"} before signing in.`
           );
           setLoading(false);
           return;
@@ -58,7 +54,7 @@ export default function VendorLoginPage() {
         // Static fallback: any known phone + "vendor2026"
         if (password === "vendor2026") {
           const fallback = STATIC_FALLBACK.find(
-            (v) => normalisePhone(v.phone) === normInput
+            (v) => normalisePhone(v.phone) === normalisePhone(phone)
           );
           if (fallback) {
             sessionStorage.setItem("vendor-auth", "true");

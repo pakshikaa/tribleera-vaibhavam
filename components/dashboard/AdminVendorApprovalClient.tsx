@@ -121,6 +121,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
       status: "approved",
       approvedAt: new Date().toISOString(),
       profileComplete: false,
+      emailVerified: app.emailVerified ?? false,
       additionalCategoryRequests: app.requestedAdditionalCategories ?? [],
     } satisfies ApprovedVendorRecord;
 

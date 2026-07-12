@@ -90,6 +90,8 @@ export interface BookingLineItem {
   packageId: string;
   packageName: string;
   price: number;
+  /** Some live-booking records store the slug explicitly alongside vendorId. */
+  vendorSlug?: string;
   /** ISO timestamp when the item entered the cart — reservations hold for 24h. */
   reservedAt?: string;
 }

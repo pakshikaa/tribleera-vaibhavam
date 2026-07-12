@@ -1,6 +1,11 @@
 import { categories, getCategoryBySlug } from "@/lib/data/categories";
 import { vendors as staticVendors } from "@/lib/data/vendors";
 import { Vendor } from "@/types";
+import {
+  getVendorPackagesStorageKey,
+  getVendorPhotoStorageKey,
+  readVendorProfile,
+} from "@/lib/utils/vendorPortal";
 
 const APPROVED_VENDORS_KEY = "TRIBLEERA-approved-vendors";
 const TRUST_BADGES = ["Background checked", "Contract signed", "Insured"];
@@ -138,7 +143,35 @@ export function readDynamicApprovedVendors(): Vendor[] {
 export function mergeVendors(base: Vendor[], dynamic: Vendor[]) {
   const merged = new Map(base.map((vendor) => [vendor.slug, vendor]));
   dynamic.forEach((vendor) => merged.set(vendor.slug, vendor));
-  return Array.from(merged.values());
+  return Array.from(merged.values()).map((vendor) => {
+    if (typeof window === "undefined") return vendor;
+
+    try {
+      const profile = readVendorProfile(vendor.slug);
+      const photo = window.localStorage.getItem(getVendorPhotoStorageKey(vendor.slug)) ?? vendor.imageUrl;
+      const gallery = JSON.parse(window.localStorage.getItem(`TRIBLEERA-vendor-gallery-${vendor.slug}`) ?? "[]") as string[];
+      const packages = JSON.parse(window.localStorage.getItem(getVendorPackagesStorageKey(vendor.slug)) ?? "null") as Vendor["packages"] | null;
+
+      return {
+        ...vendor,
+        name: profile?.businessName?.trim() || vendor.name,
+        tagline: profile?.tagline?.trim() || vendor.tagline,
+        description: profile?.description?.trim() || vendor.description,
+        phone: profile?.phone?.trim() || vendor.phone,
+        whatsapp: profile?.whatsapp?.trim() || vendor.whatsapp,
+        city: profile?.city?.trim() || vendor.city,
+        location: profile?.location?.trim() || vendor.location,
+        experienceYears: Number(profile?.experienceYears ?? vendor.experienceYears),
+        eventsCompleted: Number(profile?.eventsCompleted ?? vendor.eventsCompleted),
+        tags: profile?.tags?.length ? profile.tags : vendor.tags,
+        imageUrl: photo ?? vendor.imageUrl,
+        galleryUrls: gallery.length > 0 ? gallery : vendor.galleryUrls,
+        packages: Array.isArray(packages) && packages.length > 0 ? packages.filter((item) => !item.archived) : vendor.packages,
+      };
+    } catch {
+      return vendor;
+    }
+  });
 }
 
 export function getLiveVendors() {
@@ -151,10 +184,12 @@ export function subscribeLiveVendors(onStoreChange: () => void) {
   const handler = () => onStoreChange();
   window.addEventListener("storage", handler);
   window.addEventListener("tribleera-live-vendors", handler);
+  window.addEventListener("tribleera-vendor-portal", handler);
 
   return () => {
     window.removeEventListener("storage", handler);
     window.removeEventListener("tribleera-live-vendors", handler);
+    window.removeEventListener("tribleera-vendor-portal", handler);
   };
 }
 

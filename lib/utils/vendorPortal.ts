@@ -1,5 +1,3 @@
-"use client";
-
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { emitAdminDataChanged } from "@/lib/utils/adminLiveData";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
@@ -83,6 +81,11 @@ function setJson(key: string, value: unknown) {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
+function emitVendorPortalChanged() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("tribleera-vendor-portal"));
+}
+
 function token(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
 }
@@ -107,6 +110,7 @@ export function readApprovedVendors() {
 export function writeApprovedVendors(records: ApprovedVendorRecord[]) {
   setJson(APPROVED_VENDORS_KEY, records);
   emitAdminDataChanged();
+  emitVendorPortalChanged();
 }
 
 export function readVendorApplications() {
@@ -116,6 +120,7 @@ export function readVendorApplications() {
 export function writeVendorApplications(records: VendorApplication[]) {
   setJson(APPLICATIONS_KEY, records);
   emitAdminDataChanged();
+  emitVendorPortalChanged();
 }
 
 export function queueVendorEmail(params: {
@@ -164,6 +169,7 @@ export function writeVendorProfile(slug: string, profile: VendorProfileDraft) {
   const records = safeJson<Record<string, VendorProfileDraft>>(VENDOR_PROFILES_KEY, {});
   records[slug] = profile;
   setJson(VENDOR_PROFILES_KEY, records);
+  emitVendorPortalChanged();
 }
 
 export function readVendorPhoto(slug: string) {
@@ -174,6 +180,7 @@ export function readVendorPhoto(slug: string) {
 
 export function writeVendorPhoto(slug: string, photo: string) {
   writeLocalStorage(getVendorPhotoStorageKey(slug), photo);
+  emitVendorPortalChanged();
 }
 
 export function readVendorPackages(slug: string, fallback: VendorPackage[] = []) {

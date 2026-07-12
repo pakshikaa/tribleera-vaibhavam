@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { PACKAGE_TEMPLATES, type PackageTemplate } from "@/lib/data/packageTemplates";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { markVendorProfileComplete } from "@/lib/utils/vendorPortal";
 import type { VendorPackage } from "@/types";
 import { BackButton } from "@/components/ui/BackButton";
 
@@ -58,7 +59,8 @@ export default function VendorPackagesPage() {
 
   useEffect(() => {
     writeLocalStorage(packageStorageKey, packages);
-  }, [packageStorageKey, packages]);
+    markVendorProfileComplete(vendor.slug);
+  }, [packageStorageKey, packages, vendor.slug]);
 
   const availableTemplateOptions = templates.map((template, index) => ({
     value: String(index),
