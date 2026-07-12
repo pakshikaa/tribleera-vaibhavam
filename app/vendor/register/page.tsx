@@ -234,6 +234,13 @@ export default function VendorRegisterPage() {
                   </li>
                 ))}
               </ol>
+              <p className="mt-3 text-xs text-slate-soft">
+                Demo tip: approval emails land in your{" "}
+                <Link href="/vendor/mailbox" className="font-semibold text-burgundy hover:underline">
+                  TRIBLEERA mailbox
+                </Link>{" "}
+                — open it with the email you registered.
+              </p>
             </div>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">

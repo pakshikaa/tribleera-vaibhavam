@@ -315,10 +315,16 @@ export default function VendorLoginPage() {
           >
             Vendor sign in
           </h1>
-          <p className="s3" style={{ color: "#6B7280", fontSize: 13, marginBottom: 24 }}>
+          <p className="s3" style={{ color: "#6B7280", fontSize: 13, marginBottom: 6 }}>
             New vendor?{" "}
             <Link href="/vendor/register" style={{ color: "#7A1F3D", fontWeight: 600, textDecoration: "none" }}>
               Register your studio →
+            </Link>
+          </p>
+          <p className="s3" style={{ color: "#9CA3AF", fontSize: 12, marginBottom: 24 }}>
+            Approved already?{" "}
+            <Link href="/vendor/mailbox" style={{ color: "#7A1F3D", fontWeight: 500, textDecoration: "none" }}>
+              Check your mailbox for credentials →
             </Link>
           </p>
 

@@ -32,6 +32,31 @@ const REJECT_REASONS = [
   "Other",
 ];
 
+function generateTempPassword() {
+  return `TRB-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
+// Mock email delivery: writes to the shared demo outbox (viewable at
+// /vendor/mailbox) and the per-vendor notice feed.
+function sendVendorNotice(record: ApprovedVendorRecord, subject: string, message: string) {
+  try {
+    const outbox = JSON.parse(localStorage.getItem("tv-vendor-email-outbox") ?? "[]");
+    outbox.unshift({
+      id: `EMAIL-${Date.now()}`,
+      to: record.email ?? "vendor@example.com",
+      vendorSlug: record.slug,
+      subject,
+      message,
+      sentAt: new Date().toISOString(),
+    });
+    localStorage.setItem("tv-vendor-email-outbox", JSON.stringify(outbox.slice(0, 100)));
+    const notices = JSON.parse(localStorage.getItem(`tv-vendor-notices-${record.slug}`) ?? "[]");
+    notices.unshift({ subject, message, sentAt: new Date().toISOString() });
+    localStorage.setItem(`tv-vendor-notices-${record.slug}`, JSON.stringify(notices.slice(0, 20)));
+    emitAdminDataChanged();
+  } catch {}
+}
+
 function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -85,26 +110,11 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
     } catch {}
   }
 
-  function sendVendorNotice(record: ApprovedVendorRecord, subject: string, message: string) {
-    try {
-      const outbox = JSON.parse(localStorage.getItem("tv-vendor-email-outbox") ?? "[]");
-      outbox.unshift({
-        id: `EMAIL-${Date.now()}`,
-        to: record.email ?? "vendor@example.com",
-        vendorSlug: record.slug,
-        subject,
-        message,
-        sentAt: new Date().toISOString(),
-      });
-      localStorage.setItem("tv-vendor-email-outbox", JSON.stringify(outbox.slice(0, 100)));
-      const notices = JSON.parse(localStorage.getItem(`tv-vendor-notices-${record.slug}`) ?? "[]");
-      notices.unshift({ subject, message, sentAt: new Date().toISOString() });
-      localStorage.setItem(`tv-vendor-notices-${record.slug}`, JSON.stringify(notices.slice(0, 20)));
-      emitAdminDataChanged();
-    } catch {}
-  }
-
   function approveOne(app: VendorApplication) {
+    // Credentials exist only after ADMIN approval — a unique temporary
+    // password is generated here and "emailed" to the vendor, who then
+    // signs in with email + this password.
+    const tempPassword = generateTempPassword();
     const approvedVendor = {
       slug: app.slug ?? slugify(app.businessName),
       businessName: app.businessName,
@@ -120,11 +130,13 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
       about: app.about,
       experienceYears: app.experienceYears,
       startingPrice: app.startingPrice ?? 15000,
-      password: "vendor2026",
+      password: tempPassword,
       status: "approved",
       approvedAt: new Date().toISOString(),
       profileComplete: false,
-      emailVerified: app.emailVerified ?? false,
+      // Admin verification is the gate in this flow — once approved, the
+      // emailed credentials must work immediately.
+      emailVerified: true,
       additionalCategoryRequests: app.requestedAdditionalCategories ?? [],
     } satisfies ApprovedVendorRecord;
 
@@ -134,19 +146,41 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
 
     const updatedApps = apps.map((item) => (item.id === app.id ? { ...item, status: "approved" as const } : item));
     persistApplications(updatedApps);
+    sendVendorNotice(
+      approvedVendor,
+      "Welcome to TRIBLEERA VAIBHAVAM — your vendor account is approved 🎉",
+      [
+        `Vanakkam ${app.ownerName || app.businessName},`,
+        "",
+        `Your application for ${app.businessName} has been verified and approved by the TRIBLEERA team.`,
+        "",
+        "Sign in to your vendor portal with these credentials:",
+        `Username (email): ${app.email}`,
+        `Temporary password: ${tempPassword}`,
+        "",
+        "Sign in at: /vendor/login",
+        "Please change your password after your first sign-in (Forgot password → reset).",
+      ].join("\n")
+    );
+
     appendAuditLog({
       actor: "Admin",
       action: "Approved vendor application",
       entityType: "vendor",
       entityId: app.id,
       entityLabel: app.businessName,
-      details: `${app.businessName} approved for ${getCategoryBySlug(app.categorySlug)?.name ?? app.categorySlug}.`,
+      details: `${app.businessName} approved for ${getCategoryBySlug(app.categorySlug)?.name ?? app.categorySlug}. Credentials emailed to ${app.email}.`,
     });
+
+    return { email: app.email, tempPassword };
   }
 
   function approve(app: VendorApplication) {
-    approveOne(app);
-    showToast(`${app.businessName} approved. Login: ${app.phone} / vendor2026`, "success");
+    const credentials = approveOne(app);
+    showToast(
+      `${app.businessName} approved — credentials emailed to ${credentials.email} (password: ${credentials.tempPassword})`,
+      "success"
+    );
   }
 
   function bulkApprove() {
@@ -154,7 +188,10 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
     if (selectedApps.length === 0) return;
     selectedApps.forEach(approveOne);
     setSelectedIds([]);
-    showToast(`${selectedApps.length} vendor application${selectedApps.length !== 1 ? "s" : ""} approved.`, "success");
+    showToast(
+      `${selectedApps.length} vendor application${selectedApps.length !== 1 ? "s" : ""} approved — credentials emailed to each vendor.`,
+      "success"
+    );
   }
 
   function confirmReject() {
