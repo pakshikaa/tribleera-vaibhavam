@@ -335,10 +335,18 @@ export function clearVendorSession() {
   window.sessionStorage.removeItem("vendor-name");
 }
 
-export function loginVendor(phone: string, password: string) {
+export function loginVendor(identifier: string, password: string) {
   const approved = readApprovedVendors();
-  const normInput = normalisePhone(phone);
-  const match = approved.find((item) => normalisePhone(item.phone) === normInput && item.password === password);
+  // Vendors sign in with the email they registered with, or their phone
+  // number — both identify the same account.
+  const emailInput = identifier.trim().toLowerCase();
+  const normInput = normalisePhone(identifier);
+  const match = approved.find(
+    (item) =>
+      ((item.email && item.email.toLowerCase() === emailInput) ||
+        (normInput.length > 5 && normalisePhone(item.phone) === normInput)) &&
+      item.password === password
+  );
   if (!match) return { ok: false as const, reason: "invalid" };
   if (match.status === "suspended") return { ok: false as const, reason: "suspended", vendor: match };
   if (!match.emailVerified) return { ok: false as const, reason: "email_unverified", vendor: match };

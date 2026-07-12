@@ -190,10 +190,13 @@ export function authenticateAdmin(username: string, password: string) {
     };
   }
 
+  // Case-insensitive on purpose: the demo credentials have been documented
+  // in both "Tribleera2026" and "tribleera2026" forms, and an exact-case
+  // match silently locked admins out (same bug the old login had).
   const user = ADMIN_USERS.find(
     (item) =>
       item.username.toLowerCase() === username.trim().toLowerCase() &&
-      item.password === password.trim()
+      item.password.toLowerCase() === password.trim().toLowerCase()
   );
 
   if (!user) {

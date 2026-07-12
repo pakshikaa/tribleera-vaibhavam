@@ -336,15 +336,15 @@ export default function VendorLoginPage() {
                   marginBottom: 6,
                 }}
               >
-                Phone number
+                Email or phone number
               </label>
               <input
                 id="v-ph"
-                type="tel"
+                type="text"
                 value={phone}
                 required
-                autoComplete="tel"
-                placeholder="+94 77 XXX XXXX"
+                autoComplete="username"
+                placeholder="you@studio.com or +94 77 XXX XXXX"
                 onChange={(e) => setPhone(e.target.value)}
                 className="v-inp"
               />
