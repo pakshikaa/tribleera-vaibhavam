@@ -1253,8 +1253,21 @@ const VENDOR_VISUALS: Record<string, { imageUrl: string; galleryUrls: string[] }
   },
 };
 
+const TAMIL_VENDOR_IMAGES = [
+  "/images/portal/featured-vendors.jpg",
+  "/images/portal/vendor-portal-couple.jpg",
+  "/images/portal/why-section.jpg",
+  "/images/portal/testimonials.jpg",
+  "/images/portal/home-hero.jpg",
+] as const;
+
+function getTamilGallery(index: number) {
+  return Array.from({ length: 4 }, (_, offset) => TAMIL_VENDOR_IMAGES[(index + offset) % TAMIL_VENDOR_IMAGES.length]);
+}
+
 export const vendors: Vendor[] = seeds.map((seed, index) => {
   const visuals = VENDOR_VISUALS[seed.id];
+  const tamilGallery = getTamilGallery(index);
 
   return {
     id: seed.id,
@@ -1275,11 +1288,12 @@ export const vendors: Vendor[] = seeds.map((seed, index) => {
     tags: seed.tags,
     motif: seed.motif,
     tone: seed.tone,
-    gallerySeeds: 6,
-    imageUrl: visuals?.imageUrl ?? seed.imageUrl,
-    galleryUrls: visuals?.galleryUrls ?? seed.galleryUrls,
+    gallerySeeds: tamilGallery.length,
+    imageUrl: TAMIL_VENDOR_IMAGES[index % TAMIL_VENDOR_IMAGES.length],
+    galleryUrls: visuals?.galleryUrls?.length ? tamilGallery : seed.galleryUrls,
     packages: buildPackages(seed.id, seed.categorySlug, seed.packagePrices),
     reviews: buildReviews(seed, index),
+    trustBadges: seed.verified ? ["Background checked", "Contract signed", "Insured"] : [],
     phone: seed.phone,
     whatsapp: seed.whatsapp,
     joinedDate: new Date(2024, index % 12, 5 + (index % 20)).toISOString(),

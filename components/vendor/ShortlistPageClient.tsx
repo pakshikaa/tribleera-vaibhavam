@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { Heart, Scale } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -9,10 +10,12 @@ import { CompareTable } from "@/components/vendor/CompareTable";
 import { BackButton } from "@/components/ui/BackButton";
 import { useShortlist } from "@/context/ShortlistContext";
 import { vendors } from "@/lib/data/vendors";
+import { getLiveVendors, subscribeLiveVendors } from "@/lib/utils/liveVendors";
 
 export function ShortlistPageClient() {
   const { slugs, hydrated } = useShortlist();
-  const saved = vendors.filter((v) => slugs.includes(v.slug));
+  const liveVendors = useSyncExternalStore(subscribeLiveVendors, getLiveVendors, () => vendors);
+  const saved = liveVendors.filter((v) => slugs.includes(v.slug));
 
   return (
     <div className="bg-ivory">

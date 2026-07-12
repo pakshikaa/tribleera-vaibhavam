@@ -38,10 +38,13 @@ export default function VendorProfilePage() {
   const [photo, setPhoto] = useState<string | null>(
     typeof window === "undefined" ? null : readLocalStorage<string | null>(PHOTO_KEY, null)
   );
+  const [photoPending, setPhotoPending] = useState(false);
   const [tags, setTags] = useState<string[]>(storedProfile?.tags ?? DEFAULT_VENDOR.tags);
   const [tagInput, setTagInput] = useState("");
   const [form, setForm] = useState(storedProfile ? { ...DEFAULT_FORM, ...storedProfile } : DEFAULT_FORM);
 
+  // New photos are NOT published directly — they enter the admin moderation
+  // queue first, so stolen/fake portfolio images never go live unreviewed.
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -49,7 +52,27 @@ export default function VendorProfilePage() {
     reader.onload = () => {
       const dataUrl = reader.result as string;
       setPhoto(dataUrl);
-      writeLocalStorage(PHOTO_KEY, dataUrl);
+      setPhotoPending(true);
+      let vendorSlug = "pushpa-florals-and-decor";
+      try {
+        vendorSlug = sessionStorage.getItem("vendor-slug") || vendorSlug;
+      } catch {}
+      safePush("tv-moderation-queue", {
+        id: generateId("MOD"),
+        vendorSlug,
+        vendorName: form.businessName,
+        photo: dataUrl,
+        submittedAt: new Date().toISOString(),
+      });
+      safePush("tv-admin-notifications", {
+        id: generateId("AN"),
+        type: "moderation",
+        message: `${form.businessName} submitted a new profile photo for review`,
+        time: new Date().toISOString(),
+        icon: "🖼️",
+        urgent: false,
+      });
+      showToast("Photo sent for admin review — it goes live once approved.", "success");
     };
     reader.readAsDataURL(file);
   }
@@ -102,8 +125,17 @@ export default function VendorProfilePage() {
               aria-label="Upload profile photo"
             />
             <div>
-              <p className="text-sm font-semibold text-slate">Profile photo</p>
-              <p className="mt-1 text-xs text-slate-soft">JPG or PNG, shown on your public listing</p>
+              <p className="flex items-center gap-2 text-sm font-semibold text-slate">
+                Profile photo
+                {photoPending && (
+                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+                    Pending admin review
+                  </span>
+                )}
+              </p>
+              <p className="mt-1 text-xs text-slate-soft">
+                JPG or PNG — new photos go live after TRIBLEERA reviews them
+              </p>
               <button
                 type="button"
                 onClick={() => photoInputRef.current?.click()}

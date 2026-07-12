@@ -11,6 +11,8 @@ import {
   MessageCircle,
   ArrowRight,
   Circle,
+  Printer,
+  Share2,
   ShieldCheck,
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -39,18 +41,42 @@ interface LastBooking {
 function ShareBookingSection({ bookingId }: { bookingId: string }) {
   const [copied, setCopied] = useState(false);
 
-  function copyId() {
-    navigator.clipboard.writeText(bookingId).then(() => {
+  // Family members (amma, mamiyar…) can follow progress through the public
+  // tracking page — share the link itself, not just the reference number.
+  const trackUrl =
+    typeof window !== "undefined" ? `${window.location.origin}/booking/track/${bookingId}` : `/booking/track/${bookingId}`;
+
+  function copyLink() {
+    navigator.clipboard.writeText(trackUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
   }
 
-  const waText = encodeURIComponent(`I just booked my Jaffna wedding vendors on TRIBLEERA VAIBHAVAM! 🎊 Booking ref: ${bookingId}`);
+  function nativeShare() {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Our TRIBLEERA VAIBHAVAM wedding booking",
+          text: `Track our wedding booking (${bookingId}) here:`,
+          url: trackUrl,
+        })
+        .catch(() => {});
+    } else {
+      copyLink();
+    }
+  }
+
+  const waText = encodeURIComponent(
+    `We booked our Jaffna wedding vendors on TRIBLEERA VAIBHAVAM! 🎊 Track the booking progress here: ${trackUrl}`
+  );
 
   return (
-    <div className="rounded-[8px] border border-rose/30 bg-rose-pale/40 p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-burgundy-deep">Share &amp; save</p>
+    <div className="rounded-[8px] border border-rose/30 bg-rose-pale/40 p-5 print:hidden">
+      <p className="text-xs font-semibold uppercase tracking-wide text-burgundy-deep">Share with family</p>
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-soft">
+        Anyone with this link can follow the booking status — no sign-in needed.
+      </p>
       <div className="mt-3 flex flex-col gap-2.5 sm:flex-row">
         <a
           href={`https://wa.me/?text=${waText}`}
@@ -61,12 +87,69 @@ function ShareBookingSection({ bookingId }: { bookingId: string }) {
           <MessageCircle size={15} /> Share on WhatsApp
         </a>
         <button
-          onClick={copyId}
+          onClick={nativeShare}
           className="flex flex-1 items-center justify-center gap-2 rounded-[4px] border border-slate/15 bg-white py-2.5 text-sm font-semibold text-slate hover:border-burgundy hover:text-burgundy"
         >
-          {copied ? "✓ Copied!" : `Copy ref: ${bookingId}`}
+          <Share2 size={15} /> Share link
+        </button>
+        <button
+          onClick={copyLink}
+          className="flex flex-1 items-center justify-center gap-2 rounded-[4px] border border-slate/15 bg-white py-2.5 text-sm font-semibold text-slate hover:border-burgundy hover:text-burgundy"
+        >
+          {copied ? "✓ Link copied!" : "Copy tracking link"}
         </button>
       </div>
+    </div>
+  );
+}
+
+/** Clean A4-friendly receipt, visible only when printing. */
+function PrintableReceipt({ booking, status }: { booking: LastBooking; status: "pending" | "confirmed" }) {
+  return (
+    <div className="hidden print:block" style={{ padding: 24, fontFamily: "Georgia, serif", color: "#1F2937" }}>
+      <div style={{ textAlign: "center", borderBottom: "2px solid #5C0427", paddingBottom: 16, marginBottom: 20 }}>
+        <p style={{ fontSize: 22, fontWeight: 700, letterSpacing: "0.15em", color: "#5C0427" }}>TRIBLEERA</p>
+        <p style={{ fontSize: 10, letterSpacing: "0.3em", color: "#6B7280" }}>VAIBHAVAM · BOOKING RECEIPT</p>
+      </div>
+      <table style={{ width: "100%", fontSize: 13, marginBottom: 18 }}>
+        <tbody>
+          <tr><td style={{ padding: "3px 0", color: "#6B7280" }}>Booking ID</td><td style={{ textAlign: "right", fontWeight: 700 }}>{booking.id}</td></tr>
+          <tr><td style={{ padding: "3px 0", color: "#6B7280" }}>Customer</td><td style={{ textAlign: "right" }}>{booking.customer.name}</td></tr>
+          <tr><td style={{ padding: "3px 0", color: "#6B7280" }}>Event date</td><td style={{ textAlign: "right" }}>{booking.customer.eventDate ? formatDate(booking.customer.eventDate) : "To be confirmed"}</td></tr>
+          <tr><td style={{ padding: "3px 0", color: "#6B7280" }}>Payment method</td><td style={{ textAlign: "right", textTransform: "capitalize" }}>{booking.paymentMethod}</td></tr>
+          <tr><td style={{ padding: "3px 0", color: "#6B7280" }}>Status</td><td style={{ textAlign: "right", fontWeight: 700 }}>{status === "confirmed" ? "CONFIRMED" : "AWAITING VERIFICATION"}</td></tr>
+          <tr><td style={{ padding: "3px 0", color: "#6B7280" }}>Issued</td><td style={{ textAlign: "right" }}>{formatDate(booking.createdAt)}</td></tr>
+        </tbody>
+      </table>
+      <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+        <thead>
+          <tr style={{ borderBottom: "1px solid #9CA3AF", textAlign: "left" }}>
+            <th style={{ padding: "6px 0" }}>Vendor</th>
+            <th style={{ padding: "6px 0" }}>Package</th>
+            <th style={{ padding: "6px 0", textAlign: "right" }}>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {booking.items.map((item) => (
+            <tr key={item.categorySlug} style={{ borderBottom: "1px solid #E5E7EB" }}>
+              <td style={{ padding: "6px 0" }}>{item.vendorName}</td>
+              <td style={{ padding: "6px 0" }}>{item.packageName}</td>
+              <td style={{ padding: "6px 0", textAlign: "right" }}>{formatLKR(item.price)}</td>
+            </tr>
+          ))}
+          <tr>
+            <td colSpan={2} style={{ padding: "8px 0", fontWeight: 700 }}>Paid now (advance + platform fee)</td>
+            <td style={{ padding: "8px 0", textAlign: "right", fontWeight: 700, color: "#5C0427" }}>{formatLKR(booking.totals.payableNow)}</td>
+          </tr>
+          <tr>
+            <td colSpan={2} style={{ padding: "3px 0", color: "#6B7280" }}>Remaining balance (due at milestones)</td>
+            <td style={{ padding: "3px 0", textAlign: "right", color: "#6B7280" }}>{formatLKR(booking.totals.remainingBalance)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style={{ marginTop: 24, fontSize: 11, color: "#6B7280", textAlign: "center" }}>
+        Advance held in TRIBLEERA escrow · tribleera-vaibhavam.vercel.app · This receipt is generated for your records.
+      </p>
     </div>
   );
 }
@@ -134,13 +217,14 @@ export default function BookingConfirmationPage() {
 
   return (
     <div className="bg-ivory">
-      <section className="border-b border-slate/8 bg-white py-8 md:py-10">
+      <PrintableReceipt booking={booking} status={orderStatus} />
+      <section className="border-b border-slate/8 bg-white py-8 print:hidden md:py-10">
         <Container>
           <BookingSteps current={4} />
         </Container>
       </section>
 
-      <section className="bg-gradient-to-b from-rose-pale/60 to-transparent py-12 md:py-16">
+      <section className="bg-gradient-to-b from-rose-pale/60 to-transparent py-12 print:hidden md:py-16">
         <Container>
           <div className="mx-auto max-w-xl text-center">
             <Image
@@ -165,7 +249,7 @@ export default function BookingConfirmationPage() {
         </Container>
       </section>
 
-      <Container className="py-4 pb-16 md:pb-20">
+      <Container className="py-4 pb-16 print:hidden md:pb-20">
         <div className="mx-auto max-w-2xl space-y-6">
           {orderStatus === "pending" ? (
             <div className="rounded-[10px] border border-amber-200 bg-amber-50 p-6 text-center">
@@ -281,6 +365,13 @@ export default function BookingConfirmationPage() {
           </div>
 
           <ShareBookingSection bookingId={booking.id} />
+
+          <button
+            onClick={() => window.print()}
+            className="mx-auto flex items-center justify-center gap-2 rounded-[4px] border border-slate/15 bg-white px-5 py-2.5 text-sm font-semibold text-slate transition-colors hover:border-burgundy hover:text-burgundy"
+          >
+            <Printer size={15} aria-hidden="true" /> Print receipt
+          </button>
 
           <div className="flex justify-center">
             <Badge tone="success" icon={<ShieldCheck size={13} />} className="px-3.5 py-1.5">

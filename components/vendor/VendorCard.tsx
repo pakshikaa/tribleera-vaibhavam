@@ -67,8 +67,11 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
 
           <div className="absolute left-3 top-3 flex gap-1.5">
             {vendor.verified && (
-              <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[10.5px] font-semibold text-burgundy shadow-sm backdrop-blur-sm">
-                <ShieldCheck size={11} /> Verified
+              <span
+                title={vendor.trustBadges.join(" • ")}
+                className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[10.5px] font-semibold text-burgundy shadow-sm backdrop-blur-sm"
+              >
+                <ShieldCheck size={11} /> Verified by TRIBLEERA
               </span>
             )}
             {isTopRated && (
@@ -109,6 +112,18 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
               </Badge>
             ))}
           </div>
+          {vendor.trustBadges.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {vendor.trustBadges.slice(0, 3).map((badge) => (
+                <span
+                  key={badge}
+                  className="rounded-full border border-burgundy/15 bg-burgundy/5 px-2.5 py-1 text-[10px] font-semibold text-burgundy-dark"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          )}
           <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
               <Zap size={10} aria-hidden="true" />

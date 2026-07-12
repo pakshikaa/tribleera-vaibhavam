@@ -69,6 +69,7 @@ export interface Vendor {
   galleryUrls?: string[];
   packages: VendorPackage[];
   reviews: Review[];
+  trustBadges: string[];
   phone: string;
   whatsapp: string;
   joinedDate: string;
@@ -89,6 +90,8 @@ export interface BookingLineItem {
   packageId: string;
   packageName: string;
   price: number;
+  /** ISO timestamp when the item entered the cart — reservations hold for 24h. */
+  reservedAt?: string;
 }
 
 export interface Booking {
@@ -190,9 +193,19 @@ export interface VendorApplication {
   status: VendorStatus;
   phone: string;
   email: string;
+  emailVerified?: boolean;
+  emailVerificationSentAt?: string;
   experienceYears: number;
   startingPrice?: number;
   portfolioCount?: number;
   about: string;
   adminNotes?: string;
+  documents?: Array<{
+    id: string;
+    kind: "business_registration" | "nic_copy" | "portfolio_sample";
+    label: string;
+    fileName: string;
+    uploadedAt: string;
+  }>;
+  requestedAdditionalCategories?: string[];
 }

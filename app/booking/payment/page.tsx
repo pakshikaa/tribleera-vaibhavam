@@ -57,7 +57,10 @@ export default function PaymentSummaryPage() {
   const [method, setMethod] = useState<(typeof PAYMENT_METHODS)[number]["id"]>("card");
   const [slipUploaded, setSlipUploaded] = useState(false);
   const [slipPreview, setSlipPreview] = useState<string | null>(null);
+  const [slipDataUrl, setSlipDataUrl] = useState<string | null>(null);
+  const [slipMimeType, setSlipMimeType] = useState<string | null>(null);
   const [slipName, setSlipName] = useState("");
+  const [bankTransferReference, setBankTransferReference] = useState("");
   const fileInputId = useId();
   const selectedCategory = items[0]?.categorySlug;
   const acceptedSelection = (() => {
@@ -96,6 +99,8 @@ export default function PaymentSummaryPage() {
     if (!file) {
       setSlipUploaded(false);
       setSlipPreview(null);
+      setSlipDataUrl(null);
+      setSlipMimeType(null);
       setSlipName("");
       return;
     }
@@ -105,21 +110,21 @@ export default function PaymentSummaryPage() {
       showToast("Upload a JPG, PNG, or PDF under 5MB.", "error");
       setSlipUploaded(false);
       setSlipPreview(null);
+      setSlipDataUrl(null);
+      setSlipMimeType(null);
       setSlipName("");
       return;
     }
 
     setSlipUploaded(true);
     setSlipName(file.name);
-
-    if (file.type === "application/pdf") {
-      setSlipPreview(null);
-      return;
-    }
+    setSlipMimeType(file.type);
 
     const reader = new FileReader();
     reader.onload = () => {
-      setSlipPreview(typeof reader.result === "string" ? reader.result : null);
+      const dataUrl = typeof reader.result === "string" ? reader.result : null;
+      setSlipDataUrl(dataUrl);
+      setSlipPreview(file.type === "application/pdf" ? null : dataUrl);
     };
     reader.readAsDataURL(file);
   }
@@ -137,7 +142,10 @@ export default function PaymentSummaryPage() {
       customerCity: "Jaffna",
       eventDate: values.eventDate,
       paymentMethod: method,
+      bankTransferReference: bankTransferReference || bankReference,
       depositSlipName: slipName || null,
+      depositSlipDataUrl: slipDataUrl,
+      depositSlipMimeType: slipMimeType,
       createdAt: submittedAt,
       submittedAt,
       status: "pending" as const,
@@ -224,6 +232,7 @@ export default function PaymentSummaryPage() {
   const bankReference = items[0]?.vendorId ? `${items[0].vendorId.slice(0, 3).toUpperCase()}-${items.length}` : "TRB-REF";
   const submitLabel =
     method === "bank" ? "Submit Booking & Deposit Slip" : `Pay ${formatLKR(totals.payableNow)} securely`;
+  const bankSubmissionBlocked = method === "bank" && (!slipUploaded || !bankTransferReference.trim());
 
   return (
     <div className="bg-ivory">
@@ -374,6 +383,15 @@ export default function PaymentSummaryPage() {
                   </p>
                 </div>
 
+                <Input
+                  label="Bank transfer reference"
+                  required
+                  value={bankTransferReference}
+                  onChange={(e) => setBankTransferReference(e.target.value)}
+                  placeholder={bankReference}
+                  hint="Enter the exact bank / transfer reference visible on your deposit proof."
+                />
+
                 <label
                   htmlFor={fileInputId}
                   className="flex cursor-pointer flex-col items-center justify-center rounded-[8px] border border-dashed border-burgundy/30 bg-burgundy/[0.03] px-5 py-8 text-center transition-colors hover:bg-burgundy/[0.06]"
@@ -401,8 +419,8 @@ export default function PaymentSummaryPage() {
               size="lg"
               fullWidth
               icon={<Lock size={16} />}
-              disabled={isSubmitting || (method === "bank" && !slipUploaded)}
-              title={method === "bank" && !slipUploaded ? "Please upload your deposit slip to continue" : undefined}
+              disabled={isSubmitting || bankSubmissionBlocked}
+              title={bankSubmissionBlocked ? "Please add your bank reference and upload the deposit slip to continue" : undefined}
               className="md:hidden"
             >
               {isSubmitting ? "Processing payment..." : submitLabel}
@@ -434,8 +452,8 @@ export default function PaymentSummaryPage() {
                 size="lg"
                 fullWidth
                 icon={<Lock size={16} />}
-                disabled={isSubmitting || (method === "bank" && !slipUploaded)}
-                title={method === "bank" && !slipUploaded ? "Please upload your deposit slip to continue" : undefined}
+                disabled={isSubmitting || bankSubmissionBlocked}
+                title={bankSubmissionBlocked ? "Please add your bank reference and upload the deposit slip to continue" : undefined}
                 className="hidden md:flex"
               >
                 {isSubmitting ? "Processing payment..." : submitLabel}

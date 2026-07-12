@@ -6,14 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { vendorLoginImage } from "@/lib/data/images";
-
-type ApprovedVendor = {
-  slug: string;
-  businessName: string;
-  phone: string;
-  password: string;
-  profileComplete: boolean;
-};
+import { getVendorCompletion, loginVendor, normalisePhone } from "@/lib/utils/vendorPortal";
 
 // Static fallback credentials for demo
 const STATIC_FALLBACK = [
@@ -39,22 +32,26 @@ export default function VendorLoginPage() {
 
     setTimeout(() => {
       try {
-        const stored: ApprovedVendor[] = JSON.parse(
-          localStorage.getItem("TRIBLEERA-approved-vendors") ?? "[]"
-        );
-        const normInput = normalisePhone(phone);
+        const result = loginVendor(phone, password);
+        if (result.ok) {
+          const completion = getVendorCompletion(result.vendor.slug);
+          router.push(completion.readyToGoLive || result.vendor.profileComplete ? "/dashboard/vendor" : "/dashboard/vendor/setup");
+          return;
+        }
 
-        // Check localStorage approved vendors first
-        const match = stored.find(
-          (v) =>
-            normalisePhone(v.phone) === normInput && v.password === password
-        );
+        if (result.reason === "suspended") {
+          setError(
+            `This vendor account is suspended. Reason: ${result.vendor.suspensionReason ?? "Contact admin for details"}. A notification was sent to ${result.vendor.email ?? "your registered email"}.`
+          );
+          setLoading(false);
+          return;
+        }
 
-        if (match) {
-          sessionStorage.setItem("vendor-auth", "true");
-          sessionStorage.setItem("vendor-slug", match.slug);
-          sessionStorage.setItem("vendor-name", match.businessName);
-          router.push(match.profileComplete ? "/dashboard/vendor" : "/dashboard/vendor/setup");
+        if (result.reason === "email_unverified") {
+          setError(
+            `This email is not verified yet. Please open the verification link sent to ${result.vendor.email ?? "your registered email"} before signing in.`
+          );
+          setLoading(false);
           return;
         }
 
@@ -373,7 +370,7 @@ export default function VendorLoginPage() {
                 >
                   Password
                 </label>
-                <Link href="/contact" style={{ fontSize: 11, color: "#7A1F3D", textDecoration: "none" }}>
+                <Link href="/vendor/forgot-password" style={{ fontSize: 11, color: "#7A1F3D", textDecoration: "none" }}>
                   Forgot password?
                 </Link>
               </div>

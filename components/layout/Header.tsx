@@ -14,6 +14,7 @@ import { useCart } from "@/context/CartContext";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils/cn";
+import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
 import { readActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 const NAV_LINKS = [
@@ -34,7 +35,7 @@ export function Header() {
     "/vendor/register",
     "/dashboard/vendor",
     "/dashboard/admin",
-    "/admin/login",
+    ADMIN_LOGIN_PATH,
   ].some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   const [mounted, setMounted] = useState(false);

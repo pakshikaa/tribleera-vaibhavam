@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { PackageCard } from "@/components/vendor/PackageCard";
+import { getVendorBySlug } from "@/lib/data/vendors";
 import { getVendorPackages } from "@/lib/utils/vendorData";
 import type { MotifTone, MotifVariant, VendorPackage } from "@/types";
 
@@ -42,6 +43,7 @@ export function VendorPackagesSection({
           motif={motif}
           tone={tone}
           seed={seed}
+          quoteVendorName={getVendorBySlug(vendorSlug)?.name}
         />
       ))}
     </div>

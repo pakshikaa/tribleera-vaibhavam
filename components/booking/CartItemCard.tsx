@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { Timer, Trash2 } from "lucide-react";
 import { BookingLineItem } from "@/types";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { Badge } from "@/components/ui/Badge";
@@ -9,6 +10,41 @@ import { formatLKR } from "@/lib/utils/format";
 import { lineItemBreakdown } from "@/lib/utils/booking";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { getVendorBySlug } from "@/lib/data/vendors";
+
+const RESERVATION_MS = 24 * 60 * 60 * 1000;
+
+/** "Reserved · 22h 15m left" chip; releases the item when the hold lapses. */
+function ReservationCountdown({ reservedAt, onExpire }: { reservedAt: string; onExpire: () => void }) {
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    function tick() {
+      const left = new Date(reservedAt).getTime() + RESERVATION_MS - Date.now();
+      setRemaining(left);
+      if (left <= 0) onExpire();
+    }
+    tick();
+    const interval = setInterval(tick, 60_000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reservedAt]);
+
+  if (remaining === null || remaining <= 0) return null;
+
+  const hours = Math.floor(remaining / 3_600_000);
+  const minutes = Math.floor((remaining % 3_600_000) / 60_000);
+  const urgent = remaining < 3 * 3_600_000;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-semibold ${
+        urgent ? "bg-red-50 text-red-700" : "bg-amber-50 text-amber-800"
+      }`}
+    >
+      <Timer size={10} aria-hidden="true" /> Reserved · {hours}h {minutes}m left
+    </span>
+  );
+}
 
 export function CartItemCard({ item, onRemove }: { item: BookingLineItem; onRemove: () => void }) {
   const category = getCategoryBySlug(item.categorySlug);
@@ -43,9 +79,10 @@ export function CartItemCard({ item, onRemove }: { item: BookingLineItem; onRemo
                 <Trash2 size={18} />
               </button>
             </div>
-            <Badge tone="slate" className="mt-1.5">
-              {item.packageName} package
-            </Badge>
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <Badge tone="slate">{item.packageName} package</Badge>
+              {item.reservedAt && <ReservationCountdown reservedAt={item.reservedAt} onExpire={onRemove} />}
+            </div>
           </div>
           <p className="font-display text-lg text-burgundy-deep">{formatLKR(item.price)}</p>
         </div>

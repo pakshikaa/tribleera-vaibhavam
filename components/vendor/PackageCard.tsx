@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check, Sparkles } from "lucide-react";
+import { Check, MessageCircle, Sparkles } from "lucide-react";
 import { MotifTone, MotifVariant, VendorPackage } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -16,9 +16,11 @@ interface PackageCardProps {
   seed?: number;
   selected?: boolean;
   onSelect?: () => void;
+  /** When set, shows a "Request custom quote" WhatsApp CTA — many Tamil vendors negotiate. */
+  quoteVendorName?: string;
 }
 
-export function PackageCard({ pkg, motif = "arch", tone = "gold", seed = 0, selected, onSelect }: PackageCardProps) {
+export function PackageCard({ pkg, motif = "arch", tone = "gold", seed = 0, selected, onSelect, quoteVendorName }: PackageCardProps) {
   return (
     <div
       className={cn(
@@ -68,6 +70,18 @@ export function PackageCard({ pkg, motif = "arch", tone = "gold", seed = 0, sele
         <Button variant={selected ? "primary" : pkg.recommended ? "primary" : "secondary"} className="mt-6" fullWidth onClick={onSelect}>
           {selected ? "Added to cart" : "Select this package"}
         </Button>
+        {quoteVendorName && (
+          <a
+            href={`https://wa.me/94771234567?text=${encodeURIComponent(
+              `Hi TRIBLEERA VAIBHAVAM, I'd like a custom quote for the "${pkg.name}" package (${formatLKR(pkg.price)}) from ${quoteVendorName}. My requirements are a little different.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2.5 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold text-burgundy transition-colors hover:text-burgundy-deep"
+          >
+            <MessageCircle size={13} aria-hidden="true" /> Request custom quote — prices are negotiable
+          </a>
+        )}
       </div>
     </div>
   );

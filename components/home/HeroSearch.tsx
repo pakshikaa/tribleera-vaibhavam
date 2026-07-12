@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, Search, Wallet } from "lucide-react";
 import { categories } from "@/lib/data/categories";
 import { vendors } from "@/lib/data/vendors";
-
-const CITIES = Array.from(new Set(vendors.filter((v) => v.status === "approved").map((v) => v.city))).sort();
+import { getLiveVendors, getVendorCities, subscribeLiveVendors } from "@/lib/utils/liveVendors";
 
 // Budget presets map straight onto the /vendors minPrice/maxPrice filters.
 const BUDGETS = [
@@ -21,6 +20,8 @@ export function HeroSearch() {
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
   const [budget, setBudget] = useState("");
+  const liveVendors = useSyncExternalStore(subscribeLiveVendors, getLiveVendors, () => vendors);
+  const cities = getVendorCities(liveVendors);
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -76,7 +77,7 @@ export function HeroSearch() {
               className="w-full appearance-none bg-transparent text-[13px] font-medium text-cream outline-none"
             >
               <option value="">All cities</option>
-              {CITIES.map((c) => (
+              {cities.map((c) => (
                 <option key={c} value={c} className="bg-white text-slate">
                   {c}
                 </option>

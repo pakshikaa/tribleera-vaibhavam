@@ -3,6 +3,7 @@ import Image from "next/image";
 import { MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { categories } from "@/lib/data/categories";
+import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
 
 const COLUMNS = [
   {
@@ -102,7 +103,7 @@ export function Footer() {
           <div className="flex items-center gap-4">
             <p className="font-display text-sm text-cream-dim">தேர்வின் செம்மை, வைபவத்தின் பெருமை</p>
             <Link
-              href="/admin/login"
+              href={ADMIN_LOGIN_PATH}
               aria-label="Admin login"
               className="text-[11px] text-cream-faint opacity-20 transition-opacity hover:opacity-60"
             >

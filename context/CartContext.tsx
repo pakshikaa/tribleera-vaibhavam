@@ -14,6 +14,7 @@ import { useToast } from "@/components/ui/Toast";
 import { cartBreakdown } from "@/lib/utils/booking";
 
 const STORAGE_KEY = "TRIBLEERA-cart-v1";
+const RESERVATION_MS = 24 * 60 * 60 * 1000;
 
 interface CartContextValue {
   items: BookingLineItem[];
@@ -38,13 +39,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // exception to "don't setState in an effect".
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (raw) setItems(JSON.parse(raw));
+      if (raw) {
+        const stored: BookingLineItem[] = JSON.parse(raw);
+        // Reservations hold a vendor for 24 hours — expired items are
+        // released so someone else can book that date.
+        const fresh = stored.filter(
+          (item) => !item.reservedAt || Date.now() - new Date(item.reservedAt).getTime() < RESERVATION_MS
+        );
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setItems(fresh);
+        if (fresh.length < stored.length) {
+          showToast("Some cart reservations expired after 24 hours and were released.", "error");
+        }
+      }
     } catch {
       // ignore corrupted storage
     } finally {
       setHydrated(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -72,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
 
       showToast(`${item.vendorName} (${item.packageName}) added to cart ✓`, "success");
-      return [...prev, item];
+      return [...prev, { ...item, reservedAt: item.reservedAt ?? new Date().toISOString() }];
     });
   }, [showToast]);
 

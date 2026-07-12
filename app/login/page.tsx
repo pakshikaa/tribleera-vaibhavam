@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { trustSectionImage } from "@/lib/data/images";
+import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
 import { readCustomerProfile, writeActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 export default function LoginPage() {
@@ -320,7 +321,7 @@ export default function LoginPage() {
             </Link>
           </p>
           <p style={{ marginTop: 8, textAlign: "center", fontSize: 11 }}>
-            <Link href="/admin/login" style={{ color: "#C9BCAF", textDecoration: "none" }}>
+            <Link href={ADMIN_LOGIN_PATH} style={{ color: "#C9BCAF", textDecoration: "none" }}>
               Admin access
             </Link>
           </p>

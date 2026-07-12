@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { PackageSelectionClient } from "@/components/vendor/PackageSelectionClient";
 import { getVendorBySlug, vendors } from "@/lib/data/vendors";
-import { BackButton } from "@/components/ui/BackButton";
+import { ResolvedPackageSelectionClient } from "@/components/vendor/ResolvedPackageSelectionClient";
 
 export function generateStaticParams() {
-  return vendors.map((v) => ({ id: v.slug }));
+  return vendors.map((vendor) => ({ id: vendor.slug }));
 }
-
-// See app/vendors/[id]/page.tsx for why this matters for a correct 404 status.
-export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -22,29 +15,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PackageSelectionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const vendor = getVendorBySlug(id);
-  if (!vendor) notFound();
-
-  return (
-    <div className="bg-ivory">
-      <div className="border-b border-slate/8 bg-ivory">
-        <Container className="py-3">
-          <BackButton href={`/vendors/${vendor.slug}`} label={vendor.name} />
-        </Container>
-      </div>
-      <section className="border-b border-slate/8 bg-white py-10 md:py-14">
-        <Container>
-          <SectionHeading
-            eyebrow={vendor.name}
-            title="Choose your package."
-            description="Every tier includes transparent pricing — add one to your booking cart and continue planning your other categories."
-          />
-        </Container>
-      </section>
-
-      <Container className="py-10 md:py-14">
-        <PackageSelectionClient vendor={vendor} />
-      </Container>
-    </div>
-  );
+  const vendor = getVendorBySlug(id) ?? null;
+  return <ResolvedPackageSelectionClient slug={id} initialVendor={vendor} />;
 }

@@ -17,10 +17,10 @@ const PARTICLES = [
 ];
 
 const STATS = [
-  { value: "25+", label: "Verified studios" },
-  { value: "4.8★", label: "Average trust score" },
-  { value: "20%", label: "Advance — 80% after service" },
-  { value: "5", label: "Cities across Sri Lanka" },
+  { value: "Live", label: "Vendor directory updates without redeploys" },
+  { value: "4.8+", label: "Average trust score" },
+  { value: "20%", label: "Advance, with 80% after service" },
+  { value: "5+", label: "Cities across Sri Lanka" },
 ];
 
 const fadeUp = {

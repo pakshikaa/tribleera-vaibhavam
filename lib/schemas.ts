@@ -40,7 +40,10 @@ export const customerDetailsSchema = z.object({
   eventDate: z
     .string()
     .min(1, "Select your event date")
-    .refine((d) => new Date(d).getTime() > Date.now(), "Event date must be in the future"),
+    .refine(
+      (d) => new Date(d).getTime() > Date.now() + 30 * 86400000,
+      "Event date must be at least 30 days ahead — vendors need notice"
+    ),
 });
 
 export type CustomerDetailsValues = z.infer<typeof customerDetailsSchema>;

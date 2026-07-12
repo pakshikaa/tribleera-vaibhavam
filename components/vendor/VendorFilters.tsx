@@ -19,9 +19,9 @@ const TRUST_OPTIONS = [
   { label: "4.5+", min: "4.5" },
 ];
 
-const CITIES = ["Jaffna", "Colombo", "Trincomalee", "Batticaloa", "Kandy", "Vavuniya", "Point Pedro"];
+const DEFAULT_CITIES = ["Jaffna", "Colombo", "Trincomalee", "Batticaloa", "Kandy", "Vavuniya", "Point Pedro"];
 
-export function VendorFilters() {
+export function VendorFilters({ cities = DEFAULT_CITIES }: { cities?: string[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -87,7 +87,7 @@ export function VendorFilters() {
             )}
           >
             <option value="">All cities</option>
-            {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            {cities.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 

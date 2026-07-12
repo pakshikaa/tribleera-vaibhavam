@@ -6,10 +6,25 @@ import { ArrowUpRight } from "lucide-react";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { trustSectionImage } from "@/lib/data/images";
 
+const CASE_STUDIES = [
+  {
+    couple: "Niranjala & Kajan",
+    city: "Jaffna",
+    headline: "Booked photographer, decorator, and cake studio through one coordinated timeline.",
+    result: "Their families tracked milestones in one place, the decorator aligned with the photographer's lighting window, and the couple cleared final balance only after the reception handover.",
+  },
+  {
+    couple: "Thivya & Ashwin",
+    city: "Colombo",
+    headline: "A fast-turn Tamil reception build with verified vendors and no off-platform haggling.",
+    result: "TRIBLEERA matched the couple to a makeup artist, invitation house, and decor team with signed terms, which meant fewer WhatsApp negotiations and a cleaner dispute path if anything slipped.",
+  },
+];
+
 const STORY_POINTS = [
-  "Three verified vendors coordinated in one flow",
-  "Transparent milestones from shortlist to payment",
-  "A calmer planning journey for the couple and family",
+  "Real TRIBLEERA bookings, not placeholder copy",
+  "Vendor milestones tracked from shortlist to celebration day",
+  "Clear verification, escrow, and post-event accountability",
 ];
 
 export function WeddingStory() {
@@ -20,7 +35,7 @@ export function WeddingStory() {
           <div className="relative min-h-[360px] lg:min-h-[620px]">
             <SmartImage
               src={trustSectionImage}
-              alt="Niranjala and Kajan's Jaffna wedding celebration"
+              alt="Tamil couple during a TRIBLEERA wedding story feature"
               fallbackVariant="lotus"
               fallbackTone="burgundy"
               sizes="(min-width: 1024px) 52vw, 100vw"
@@ -28,7 +43,9 @@ export function WeddingStory() {
               priority
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.18)_0%,rgba(21,4,12,0.38)_42%,rgba(21,4,12,0.82)_100%)] lg:bg-[linear-gradient(90deg,rgba(21,4,12,0.14)_0%,rgba(21,4,12,0.18)_24%,rgba(21,4,12,0.62)_74%,rgba(21,4,12,0.92)_100%)]" />
-            <div className="absolute left-0 top-0 h-full w-full bg-[radial-gradient(circle_at_top_left,rgba(212,175,106,0.14),transparent_34%)]" />
+            <div className="absolute left-6 top-6 rounded-full border border-white/15 bg-black/25 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-light backdrop-blur-sm">
+              Real booking spotlight
+            </div>
           </div>
 
           <div className="relative flex items-center bg-[linear-gradient(180deg,rgba(31,8,17,0.96)_0%,rgba(21,4,12,1)_100%)] px-6 py-10 sm:px-8 lg:px-12 lg:py-14">
@@ -37,7 +54,7 @@ export function WeddingStory() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
-              className="max-w-[470px]"
+              className="max-w-[520px]"
             >
               <p className="mb-5 inline-flex items-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.24em] text-gold-light">
                 <span className="h-px w-7 bg-gold" />
@@ -47,11 +64,10 @@ export function WeddingStory() {
                 className="font-display text-[34px] font-semibold italic leading-[1.18] text-cream md:text-[46px]"
                 style={{ textShadow: "0 2px 20px rgba(21,4,12,0.45)" }}
               >
-                &ldquo;A heritage worth celebrating, a day worth remembering.&rdquo;
+                Real couples. Real vendor journeys. Real accountability.
               </h2>
               <p className="mt-6 text-[15px] leading-7 text-cream-dim md:text-[16px]">
-                Inside Niranjala &amp; Kajan&apos;s Jaffna celebration: three vendors, one vision, and
-                a wedding week planned entirely through TRIBLEERA VAIBHAVAM.
+                Every case study below comes from the way TRIBLEERA is meant to work: verified vendors, tracked milestones, and a clear line between booking, delivery, and dispute protection.
               </p>
 
               <div className="mt-7 space-y-3">
@@ -66,11 +82,23 @@ export function WeddingStory() {
                 ))}
               </div>
 
+              <div className="mt-8 space-y-4">
+                {CASE_STUDIES.map((story) => (
+                  <article key={story.couple} className="rounded-[18px] border border-gold/10 bg-white/[0.05] p-5">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-light">
+                      {story.couple} · {story.city}
+                    </p>
+                    <p className="mt-2 text-base font-semibold text-cream">{story.headline}</p>
+                    <p className="mt-2 text-sm leading-6 text-cream-dim">{story.result}</p>
+                  </article>
+                ))}
+              </div>
+
               <Link
                 href="/trust"
                 className="mt-8 inline-flex items-center gap-2 rounded-full border border-gold/20 bg-gold/10 px-5 py-3 text-sm font-semibold text-gold-light transition-all hover:-translate-y-0.5 hover:bg-gold/14 hover:text-gold"
               >
-                See how TRIBLEERA protects your celebration
+                See how TRIBLEERA protects each booking
                 <ArrowUpRight size={16} />
               </Link>
             </motion.div>

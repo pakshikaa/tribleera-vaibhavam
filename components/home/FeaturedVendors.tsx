@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, Star } from "lucide-react";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { vendors } from "@/lib/data/vendors";
 import { formatLKR } from "@/lib/utils/format";
+import { getLiveVendors, subscribeLiveVendors } from "@/lib/utils/liveVendors";
 
 const containerVariants = {
   hidden: {},
@@ -24,7 +26,9 @@ const itemVariants = {
 };
 
 export function FeaturedVendors() {
-  const featured = [...vendors]
+  const liveVendors = useSyncExternalStore(subscribeLiveVendors, getLiveVendors, () => vendors);
+
+  const featured = [...liveVendors]
     .filter((vendor) => vendor.status === "approved")
     .sort((a, b) => b.trustScore - a.trustScore)
     .slice(0, 5);

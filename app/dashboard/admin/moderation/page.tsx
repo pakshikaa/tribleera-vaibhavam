@@ -3,6 +3,7 @@ import { ShieldCheck, AlertTriangle } from "lucide-react";
 import { vendors } from "@/lib/data/vendors";
 import { cn } from "@/lib/utils/cn";
 import { BackButton } from "@/components/ui/BackButton";
+import { AdminPortfolioQueueClient } from "@/components/dashboard/AdminPortfolioQueueClient";
 
 export const metadata: Metadata = { title: "Moderation — Admin" };
 
@@ -40,6 +41,9 @@ export default function AdminModerationPage() {
           </div>
         ))}
       </div>
+
+      {/* Portfolio photo review queue — vendor uploads publish only from here */}
+      <AdminPortfolioQueueClient />
 
       {/* Flag queue */}
       <div className="rounded-[10px] border border-slate/10 bg-white">

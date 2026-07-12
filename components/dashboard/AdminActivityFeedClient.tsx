@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
+import { useAdminAuth } from "@/components/dashboard/AdminAuthContext";
 import { cn } from "@/lib/utils/cn";
+import { getAdminSnapshot, subscribeAdminData } from "@/lib/utils/adminLiveData";
 
 interface ActivityItem {
   time: string;
   type: string;
   message: string;
-  icon: string;
-}
-
-interface StoredNotification {
-  type: string;
-  message: string;
-  time: string;
   icon: string;
 }
 
@@ -39,30 +34,34 @@ function timeAgo(iso: string): string {
   return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
-const ADMIN_NOTIFICATIONS_KEY = "tv-admin-notifications";
-
-function readLiveItems(): ActivityItem[] {
-  try {
-    const notifs: StoredNotification[] = JSON.parse(window.localStorage.getItem(ADMIN_NOTIFICATIONS_KEY) ?? "[]");
-    return notifs.map((n) => ({ ...n, time: timeAgo(n.time) }));
-  } catch {
-    return [];
-  }
-}
-
 export function AdminActivityFeedClient({ staticFeed }: { staticFeed: ActivityItem[] }) {
-  const [liveItems, setLiveItems] = useState<ActivityItem[]>([]);
+  const adminSession = useAdminAuth();
+  const snapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, getAdminSnapshot);
 
-  useEffect(() => {
-    // One-time hydration from a browser-only store; see CartContext for the
-    // same documented exception to the set-state-in-effect rule.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLiveItems(readLiveItems());
-    const interval = setInterval(() => setLiveItems(readLiveItems()), 10000);
-    return () => clearInterval(interval);
-  }, []);
+  const liveItems = useMemo<ActivityItem[]>(
+    () => {
+      const allowedTypes =
+        adminSession?.role === "content_admin"
+          ? ["vendor_update", "vendor_register", "request_submitted", "request_rerouted"]
+          : adminSession?.role === "finance_admin"
+            ? ["payment", "payment_verified", "event_completed", "dispute"]
+            : null;
 
-  const items = [...liveItems, ...staticFeed];
+      return (
+      snapshot.notifications
+        .filter((item) => !allowedTypes || allowedTypes.includes(item.type))
+        .map((item) => ({
+          type: item.type,
+          message: item.message,
+          icon: item.icon ?? "*",
+          time: timeAgo(item.time),
+        }))
+      );
+    },
+    [adminSession?.role, snapshot.notifications]
+  );
+
+  const items = [...liveItems, ...staticFeed].slice(0, 12);
 
   return (
     <div className="space-y-2">

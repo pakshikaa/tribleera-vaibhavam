@@ -1,14 +1,41 @@
 "use client";
 
+import { useMemo, useState, useSyncExternalStore } from "react";
+import { Download, Search } from "lucide-react";
 import { Tabs } from "@/components/ui/Tabs";
 import { Table, THead, Th, Td, Tr } from "@/components/ui/Table";
 import { BookingStatusBadge } from "@/components/dashboard/StatusBadge";
 import { formatLKR, formatDateShort } from "@/lib/utils/format";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import type { Booking, BookingLineItem } from "@/types";
+import { Button } from "@/components/ui/Button";
+import { DateRangeFilter, downloadCsv, getAdminSnapshot, isInDateRange, subscribeAdminData } from "@/lib/utils/adminLiveData";
+import { cn } from "@/lib/utils/cn";
 
 export function AdminBookingTabsClient({ bookings }: { bookings: Booking[] }) {
-  const byService = bookings.reduce<Record<string, { categoryName: string; rows: { booking: Booking; item: BookingLineItem }[] }>>(
+  const liveSnapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, () => ({
+    bookings,
+    vendors: [],
+    applications: [],
+    approvedVendorRecords: [],
+    notifications: [],
+    pendingPayments: [],
+    auditLog: [],
+    disputes: [],
+    refunds: [],
+    users: [],
+  }));
+  const [range, setRange] = useState<DateRangeFilter>("all");
+  const [query, setQuery] = useState("");
+
+  const filteredBookings = useMemo(() => liveSnapshot.bookings.filter((booking) => {
+    if (!isInDateRange(booking.createdAt, range)) return false;
+    if (!query) return true;
+    const haystack = `${booking.id} ${booking.customerName} ${booking.customerCity} ${booking.items.map((item) => item.vendorName).join(" ")}`.toLowerCase();
+    return haystack.includes(query.toLowerCase());
+  }), [liveSnapshot.bookings, range, query]);
+
+  const byService = filteredBookings.reduce<Record<string, { categoryName: string; rows: { booking: Booking; item: BookingLineItem }[] }>>(
     (acc, booking) => {
       booking.items.forEach((item) => {
         if (!acc[item.categorySlug]) {
@@ -37,7 +64,7 @@ export function AdminBookingTabsClient({ bookings }: { bookings: Booking[] }) {
         <Th>Status</Th>
       </THead>
       <tbody>
-        {bookings.map((b) => (
+        {filteredBookings.map((b) => (
           <Tr key={b.id}>
             <Td className="font-medium text-burgundy-deep">{b.id}</Td>
             <Td>
@@ -98,16 +125,72 @@ export function AdminBookingTabsClient({ bookings }: { bookings: Booking[] }) {
   );
 
   return (
-    <Tabs
-      defaultTab="all"
-      tabs={[
-        { id: "all", label: "All Bookings", count: bookings.length },
-        { id: "by-service", label: "By Service", count: Object.keys(byService).length },
-      ]}
-      panels={{
-        all: allPanel,
-        "by-service": byServicePanel,
-      }}
-    />
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-[10px] border border-slate/10 bg-white p-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap gap-2">
+          {([
+            ["all", "All time"],
+            ["7d", "This week"],
+            ["month", "This month"],
+            ["30d", "Last 30 days"],
+          ] as Array<[DateRangeFilter, string]>).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setRange(id)}
+              className={cn(
+                "rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors",
+                range === id ? "border-burgundy bg-burgundy text-white" : "border-slate/15 text-slate-soft hover:text-slate"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex items-center gap-2 rounded-[8px] border border-slate/15 bg-ivory px-3 py-2">
+            <Search size={14} className="text-slate-soft" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search booking, customer, vendor"
+              className="bg-transparent text-sm text-slate outline-none"
+            />
+          </div>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={<Download size={14} />}
+            onClick={() =>
+              downloadCsv("tribleera-bookings.csv", filteredBookings.map((booking) => ({
+                booking_id: booking.id,
+                customer: booking.customerName,
+                city: booking.customerCity,
+                created_at: booking.createdAt,
+                event_date: booking.eventDate,
+                status: booking.status,
+                service_total: booking.serviceTotal,
+                platform_fee: booking.platformFee,
+                payable_now: booking.payableNow,
+              })))
+            }
+          >
+            Export CSV
+          </Button>
+        </div>
+      </div>
+
+      <Tabs
+        defaultTab="all"
+        tabs={[
+          { id: "all", label: "All Bookings", count: filteredBookings.length },
+          { id: "by-service", label: "By Service", count: Object.keys(byService).length },
+        ]}
+        panels={{
+          all: allPanel,
+          "by-service": byServicePanel,
+        }}
+      />
+    </div>
   );
 }

@@ -32,7 +32,14 @@ const BUDGET_OPTIONS = [
 ] as const;
 
 const eventRequestSchema = z.object({
-  eventDate: z.string().min(1).refine((value) => new Date(value).getTime() > Date.now(), "Must be a future date"),
+  // Tamil weddings need vendor lead time — require at least 30 days' notice.
+  eventDate: z
+    .string()
+    .min(1)
+    .refine(
+      (value) => new Date(value).getTime() > Date.now() + 30 * 86400000,
+      "Must be a future date at least 30 days ahead — vendors need notice"
+    ),
   eventLocation: z.enum(LOCATIONS),
   guestCount: z.number().int().min(10, "At least 10 guests").max(5000),
   budgetRange: z.enum(["under-50k", "50k-150k", "150k-350k", "350k-plus"]),

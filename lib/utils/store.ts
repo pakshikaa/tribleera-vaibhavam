@@ -27,6 +27,7 @@ export function safePush(key: string, item: unknown): void {
     const arr = safeGet<unknown[]>(key, []);
     arr.unshift(item); // newest first
     window.localStorage.setItem(key, JSON.stringify(arr.slice(0, 100)));
+    window.dispatchEvent(new Event("tribleera-admin-data"));
   } catch {
     // storage unavailable — caller's UI still updates for this session
   }
@@ -35,6 +36,7 @@ export function safePush(key: string, item: unknown): void {
 export function safeSet(key: string, value: unknown): void {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
+    window.dispatchEvent(new Event("tribleera-admin-data"));
   } catch {
     // storage unavailable — caller's UI still updates for this session
   }
@@ -52,6 +54,7 @@ export function safeUpdate<T extends Record<string, unknown>>(
     if (idx !== -1) {
       arr[idx] = { ...arr[idx], ...updates };
       window.localStorage.setItem(key, JSON.stringify(arr));
+      window.dispatchEvent(new Event("tribleera-admin-data"));
     }
   } catch {
     // storage unavailable — caller's UI still updates for this session

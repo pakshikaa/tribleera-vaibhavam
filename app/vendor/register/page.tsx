@@ -13,6 +13,8 @@ import { categories } from "@/lib/data/categories";
 import { vendorRegisterSchema, type VendorRegisterInput } from "@/lib/schemas";
 import { cn } from "@/lib/utils/cn";
 import { formatLKR } from "@/lib/utils/format";
+import { emitAdminDataChanged } from "@/lib/utils/adminLiveData";
+import { createVendorEmailVerification } from "@/lib/utils/vendorPortal";
 
 const CITIES = ["Jaffna", "Colombo", "Trincomalee", "Batticaloa", "Kandy", "Vavuniya", "Other"] as const;
 
@@ -47,6 +49,11 @@ export default function VendorRegisterPage() {
   const [portfolio, setPortfolio] = useState<File[]>([]);
   const [portfolioError, setPortfolioError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const businessDocInputRef = useRef<HTMLInputElement>(null);
+  const nicDocInputRef = useRef<HTMLInputElement>(null);
+  const [businessDoc, setBusinessDoc] = useState<File | null>(null);
+  const [nicDoc, setNicDoc] = useState<File | null>(null);
+  const [verificationHref, setVerificationHref] = useState<string | null>(null);
 
   const {
     register,
@@ -80,8 +87,8 @@ export default function VendorRegisterPage() {
   async function goNext() {
     const valid = await trigger(STEP_FIELDS[step] as (keyof VendorRegisterInput)[]);
     if (!valid) return;
-    if (step === 2 && portfolio.length < 3) {
-      setPortfolioError("Please upload at least 3 portfolio photos.");
+    if (step === 2 && (portfolio.length < 3 || !businessDoc || !nicDoc)) {
+      setPortfolioError("Upload at least 3 portfolio photos, one business registration file, and one NIC copy.");
       return;
     }
     setPortfolioError("");
@@ -118,6 +125,8 @@ export default function VendorRegisterPage() {
       phone: data.phone,
       whatsapp: data.whatsapp,
       email: data.email,
+      emailVerified: false,
+      emailVerificationSentAt: new Date().toISOString(),
       category: data.category,
       categorySlug: data.category,
       city: data.city,
@@ -127,6 +136,29 @@ export default function VendorRegisterPage() {
       experienceYears: data.experienceYears,
       startingPrice: data.startingPrice,
       portfolioCount: data.portfolioCount,
+      documents: [
+        ...(businessDoc ? [{
+          id: `DOC-BR-${Date.now()}`,
+          kind: "business_registration" as const,
+          label: "Business registration",
+          fileName: businessDoc.name,
+          uploadedAt: new Date().toISOString(),
+        }] : []),
+        ...(nicDoc ? [{
+          id: `DOC-NIC-${Date.now()}`,
+          kind: "nic_copy" as const,
+          label: "NIC copy",
+          fileName: nicDoc.name,
+          uploadedAt: new Date().toISOString(),
+        }] : []),
+        ...portfolio.map((file, index) => ({
+          id: `DOC-PORT-${Date.now()}-${index}`,
+          kind: "portfolio_sample" as const,
+          label: `Portfolio sample ${index + 1}`,
+          fileName: file.name,
+          uploadedAt: new Date().toISOString(),
+        })),
+      ],
     };
 
     try {
@@ -135,6 +167,23 @@ export default function VendorRegisterPage() {
       );
       existing.push(application);
       localStorage.setItem("TRIBLEERA-vendor-applications", JSON.stringify(existing));
+      const verification = createVendorEmailVerification({
+        slug,
+        email: data.email,
+        applicationId: application.id,
+      });
+      setVerificationHref(verification.href);
+      const notifications = JSON.parse(localStorage.getItem("tv-admin-notifications") ?? "[]");
+      notifications.unshift({
+        type: "vendor_register",
+        title: "New vendor application",
+        message: `${application.businessName} submitted a vendor application.`,
+        time: new Date().toISOString(),
+        icon: "🆕",
+        href: "/dashboard/admin/vendors",
+      });
+      localStorage.setItem("tv-admin-notifications", JSON.stringify(notifications.slice(0, 100)));
+      emitAdminDataChanged();
     } catch {}
 
     setSubmitted(true);
@@ -152,9 +201,21 @@ export default function VendorRegisterPage() {
             <h1 className="mt-6 font-display text-3xl text-burgundy-deep">Application received</h1>
             <p className="mt-3 leading-relaxed text-slate-soft">
               Thank you, <strong>{values.businessName || "partner"}</strong>. We&rsquo;ll review your
-              application within 24–48 hours. You&rsquo;ll receive credentials to{" "}
-              <strong>{values.email || "your inbox"}</strong> once approved.
+              application within 24–48 hours. We&apos;ve sent a verification link to{" "}
+              <strong>{values.email || "your inbox"}</strong>. Approval and credentials only move forward after that address is confirmed.
             </p>
+
+            {verificationHref && (
+              <div className="mt-5 rounded-[10px] border border-burgundy/10 bg-burgundy/[0.04] p-4 text-left">
+                <p className="text-sm font-semibold text-slate">Verify email first</p>
+                <p className="mt-1 text-sm text-slate-soft">
+                  This demo queues the email locally. Use the verification link below to complete the flow.
+                </p>
+                <Button href={verificationHref} variant="gold" className="mt-3">
+                  Open verification link
+                </Button>
+              </div>
+            )}
 
             <div className="mt-8 rounded-[10px] border border-gold/20 bg-gold/[0.06] p-5 text-left">
               <p className="text-sm font-semibold text-slate">What happens next?</p>
@@ -392,8 +453,8 @@ export default function VendorRegisterPage() {
             {step === 2 && (
               <div className="space-y-4">
                 <p className="text-sm text-slate-soft">
-                  Upload your 3–12 best wedding photos. These will be reviewed by TRIBLEERA before
-                  your profile goes live.
+                  Upload your 3–12 best wedding photos plus the documents required for verification.
+                  These will be reviewed by TRIBLEERA before your profile goes live.
                 </p>
 
                 <label
@@ -457,6 +518,40 @@ export default function VendorRegisterPage() {
                   At least 3 required · {12 - portfolio.length} more allowed ·
                   Photos are reviewed privately and never shared without approval
                 </p>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-[8px] border border-slate/10 bg-ivory p-4">
+                    <p className="text-sm font-semibold text-slate">Business registration</p>
+                    <p className="mt-1 text-xs text-slate-soft">Trade registration, company registration, or business certificate.</p>
+                    <input
+                      ref={businessDocInputRef}
+                      type="file"
+                      accept=".pdf,image/*"
+                      className="sr-only"
+                      onChange={(e) => setBusinessDoc(e.target.files?.[0] ?? null)}
+                    />
+                    <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={() => businessDocInputRef.current?.click()}>
+                      {businessDoc ? "Replace file" : "Upload file"}
+                    </Button>
+                    <p className="mt-2 text-xs text-slate-soft">{businessDoc?.name ?? "No file uploaded yet"}</p>
+                  </div>
+
+                  <div className="rounded-[8px] border border-slate/10 bg-ivory p-4">
+                    <p className="text-sm font-semibold text-slate">NIC copy</p>
+                    <p className="mt-1 text-xs text-slate-soft">Owner NIC image or PDF for identity verification.</p>
+                    <input
+                      ref={nicDocInputRef}
+                      type="file"
+                      accept=".pdf,image/*"
+                      className="sr-only"
+                      onChange={(e) => setNicDoc(e.target.files?.[0] ?? null)}
+                    />
+                    <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={() => nicDocInputRef.current?.click()}>
+                      {nicDoc ? "Replace file" : "Upload file"}
+                    </Button>
+                    <p className="mt-2 text-xs text-slate-soft">{nicDoc?.name ?? "No file uploaded yet"}</p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -481,6 +576,8 @@ export default function VendorRegisterPage() {
                     ["Experience", values.experienceYears ? `${values.experienceYears} years` : "0"],
                     ["Starting price", values.startingPrice ? formatLKR(Number(values.startingPrice)) : "—"],
                     ["Portfolio", `${portfolio.length} photo${portfolio.length !== 1 ? "s" : ""} uploaded`],
+                    ["Business registration", businessDoc?.name ?? "Missing"],
+                    ["NIC copy", nicDoc?.name ?? "Missing"],
                   ].map(([label, value]) => (
                     <div key={label as string} className="flex flex-wrap justify-between px-4 py-2.5">
                       <dt className="text-slate-soft">{label}</dt>
@@ -488,6 +585,23 @@ export default function VendorRegisterPage() {
                     </div>
                   ))}
                 </dl>
+
+                <div className="rounded-[8px] border border-gold/20 bg-gold/[0.05] p-4">
+                  <p className="text-sm font-semibold text-slate">Before you agree</p>
+                  <ul className="mt-2 space-y-1.5 text-sm text-slate-soft">
+                    <li>Listings stay offline until email verification and document review are complete.</li>
+                    <li>Vendor terms define dispute handling, payout timing, and conduct rules.</li>
+                    <li>The trust policy explains how customer advances are protected and released.</li>
+                  </ul>
+                  <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                    <Link href="/terms" target="_blank" className="font-semibold text-burgundy underline underline-offset-2">
+                      Read vendor terms
+                    </Link>
+                    <Link href="/trust" target="_blank" className="font-semibold text-burgundy underline underline-offset-2">
+                      Review trust policy
+                    </Link>
+                  </div>
+                </div>
 
                 <div className="space-y-3 rounded-[8px] border border-slate/8 bg-ivory p-4">
                   <label className="flex cursor-pointer gap-3">
