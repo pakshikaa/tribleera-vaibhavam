@@ -5,7 +5,6 @@ import { Container } from "@/components/ui/Container";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { BackButton } from "@/components/ui/BackButton";
 import { MotifArt } from "@/components/ui/MotifArt";
-import { Badge } from "@/components/ui/Badge";
 import { categories, comingSoonCategories } from "@/lib/data/categories";
 
 export const metadata: Metadata = {
@@ -108,18 +107,45 @@ export default function ServicesPage() {
           <p className="mt-1.5 max-w-xl text-sm text-slate-soft">
             We&rsquo;re onboarding vetted vendors in these categories next. Register as a vendor to be first in line.
           </p>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {comingSoonCategories.map((cat, i) => (
-              <div key={cat.slug} className="relative flex flex-col overflow-hidden rounded-[8px] border border-slate/8 bg-ivory opacity-80">
-                <div className="relative aspect-[16/10] overflow-hidden grayscale">
-                  <MotifArt variant={cat.motif} tone={cat.tone} seed={i} label={cat.name} />
+              <div
+                key={cat.slug}
+                className="group relative flex flex-col overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-gold/40 hover:shadow-lift"
+              >
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <div className="h-full w-full transition-transform duration-700 group-hover:scale-[1.06]">
+                    {cat.imageUrl ? (
+                      <SmartImage
+                        src={cat.imageUrl}
+                        alt={cat.name}
+                        fallbackVariant={cat.motif}
+                        fallbackTone={cat.tone}
+                        fallbackSeed={i}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                    ) : (
+                      <MotifArt variant={cat.motif} tone={cat.tone} seed={i} label={cat.name} />
+                    )}
+                  </div>
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{ background: "linear-gradient(to top, rgba(21,4,12,0.82) 0%, rgba(21,4,12,0.25) 45%, transparent 75%)" }}
+                  />
+                  <span className="absolute left-3 top-3 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-burgundy-deep shadow-sm">
+                    Coming soon
+                  </span>
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <h3 className="font-display text-base font-semibold text-white" style={{ textShadow: "0 1px 10px rgba(21,4,12,0.9)" }}>
+                      {cat.name}
+                    </h3>
+                    <p className="mt-0.5 font-display text-[11px] text-gold-light/90" style={{ textShadow: "0 1px 8px rgba(21,4,12,0.8)" }}>
+                      {cat.tamilName}
+                    </p>
+                  </div>
                 </div>
                 <div className="p-4">
-                  <div className="mb-1.5">
-                    <Badge tone="slate">Coming soon</Badge>
-                  </div>
-                  <h3 className="font-display text-base text-slate">{cat.name}</h3>
-                  <p className="mt-1 text-xs text-slate-soft">{cat.description}</p>
+                  <p className="text-xs leading-relaxed text-slate-soft">{cat.description}</p>
                 </div>
               </div>
             ))}
