@@ -187,10 +187,32 @@ export function appendAuditLog(entry: Omit<AuditLogEntry, "id" | "at">) {
   emitAdminDataChanged();
 }
 
+// useSyncExternalStore requires getSnapshot to return a REFERENTIALLY STABLE
+// value when nothing changed — building a fresh object every call sends React
+// into an infinite re-render loop that crashes the tab. Cache and only hand
+// out a new snapshot when the underlying data actually differs.
+let cachedAdminSnapshot: AdminSnapshot | null = null;
+let cachedAdminSignature = "";
+
+const SERVER_ADMIN_SNAPSHOT: AdminSnapshot = {
+  bookings: [],
+  vendors: staticVendors,
+  applications: [],
+  approvedVendorRecords: [],
+  notifications: [],
+  pendingPayments: [],
+  auditLog: [],
+  disputes: [],
+  refunds: [],
+  users,
+};
+
 export function getAdminSnapshot(): AdminSnapshot {
-  return {
+  if (typeof window === "undefined") return SERVER_ADMIN_SNAPSHOT;
+
+  const next: AdminSnapshot = {
     bookings: readLiveBookings(),
-    vendors: typeof window === "undefined" ? staticVendors : getLiveVendors(),
+    vendors: getLiveVendors(),
     applications: readVendorApplications(),
     approvedVendorRecords: readApprovedVendorRecords(),
     notifications: readAdminNotifications(),
@@ -200,6 +222,11 @@ export function getAdminSnapshot(): AdminSnapshot {
     refunds: readRefundRecords(),
     users,
   };
+  const signature = JSON.stringify(next);
+  if (cachedAdminSnapshot && signature === cachedAdminSignature) return cachedAdminSnapshot;
+  cachedAdminSignature = signature;
+  cachedAdminSnapshot = next;
+  return next;
 }
 
 export function computeVendorPerformance(snapshot: AdminSnapshot, vendorSlug: string) {

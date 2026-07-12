@@ -38,7 +38,9 @@ function slugify(value: string) {
 
 export function AdminVendorApprovalClient({ initial }: { initial: VendorApplication[] }) {
   const { showToast } = useToast();
-  const snapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, () => ({
+  // getServerSnapshot must also return a stable reference — an inline object
+  // literal here re-triggers hydration renders forever.
+  const [serverSnapshot] = useState(() => ({
     bookings: [],
     vendors: [],
     applications: initial,
@@ -50,6 +52,7 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
     refunds: [],
     users: [],
   }));
+  const snapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, () => serverSnapshot);
 
   const [tab, setTab] = useState<FilterTab>("all");
   const [expanded, setExpanded] = useState<string | null>(null);

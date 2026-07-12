@@ -16,6 +16,16 @@ const TAMIL_VENDOR_IMAGES = [
   "/images/portal/testimonials.jpg",
   "/images/portal/home-hero.jpg",
 ] as const;
+const LIVE_VENDOR_STORAGE_PREFIXES = [
+  "TRIBLEERA-approved-vendors",
+  "TRIBLEERA-vendor-profile-",
+  "TRIBLEERA-vendor-photo-",
+  "TRIBLEERA-vendor-gallery-",
+  "TRIBLEERA-vendor-packages-",
+] as const;
+
+let cachedSnapshot: Vendor[] | null = null;
+let cachedSignature = "";
 
 interface ApprovedVendorRecord {
   slug?: string;
@@ -174,8 +184,35 @@ export function mergeVendors(base: Vendor[], dynamic: Vendor[]) {
   });
 }
 
+function getLiveVendorSignature() {
+  if (typeof window === "undefined") return "server";
+
+  const matchingKeys: string[] = [];
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (!key) continue;
+    if (LIVE_VENDOR_STORAGE_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+      matchingKeys.push(key);
+    }
+  }
+
+  matchingKeys.sort();
+  return matchingKeys
+    .map((key) => `${key}:${window.localStorage.getItem(key) ?? ""}`)
+    .join("|");
+}
+
 export function getLiveVendors() {
-  return mergeVendors(staticVendors, readDynamicApprovedVendors());
+  if (typeof window === "undefined") return staticVendors;
+
+  const nextSignature = getLiveVendorSignature();
+  if (cachedSnapshot && cachedSignature === nextSignature) {
+    return cachedSnapshot;
+  }
+
+  cachedSignature = nextSignature;
+  cachedSnapshot = mergeVendors(staticVendors, readDynamicApprovedVendors());
+  return cachedSnapshot;
 }
 
 export function subscribeLiveVendors(onStoreChange: () => void) {

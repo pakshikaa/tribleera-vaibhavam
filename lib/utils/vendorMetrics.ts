@@ -120,7 +120,23 @@ export function getCurrentVendorMetrics() {
   return getVendorMetricsBySlug(slug);
 }
 
+// useSyncExternalStore requires getSnapshot to return a REFERENTIALLY STABLE
+// value when nothing changed — a fresh object every call sends React into an
+// infinite re-render loop ("Maximum update depth exceeded") that crashes the
+// tab. Cache per slug and only hand out a new object when the computed data
+// actually differs.
+const metricsCache = new Map<string, { signature: string; value: ReturnType<typeof computeVendorMetricsBySlug> }>();
+
 export function getVendorMetricsBySlug(slug: string) {
+  const next = computeVendorMetricsBySlug(slug);
+  const signature = JSON.stringify(next);
+  const cached = metricsCache.get(slug);
+  if (cached && cached.signature === signature) return cached.value;
+  metricsCache.set(slug, { signature, value: next });
+  return next;
+}
+
+function computeVendorMetricsBySlug(slug: string) {
   const vendor = getLiveVendors().find((entry) => entry.slug === slug) as Vendor | undefined;
   const bookings = readLiveBookings().filter((booking) =>
     booking.items.some((item) => item.vendorSlug === slug || item.vendorId === vendor?.id || item.vendorName === vendor?.name)
