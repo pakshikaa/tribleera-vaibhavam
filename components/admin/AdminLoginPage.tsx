@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertCircle, ShieldCheck, TimerReset } from "lucide-react";
+import { AlertCircle, TimerReset } from "lucide-react";
 import { adminLoginImage } from "@/lib/data/images";
 import {
-  ADMIN_LOGIN_PATH,
   authenticateAdmin,
   formatLockoutRemaining,
   getAdminLockout,
@@ -246,28 +245,6 @@ export function AdminLoginPage() {
             Authorized personnel only. Sessions auto-expire after 30 minutes of inactivity.
           </p>
 
-          <div
-            className="s4"
-            style={{
-              display: "grid",
-              gap: 10,
-              marginBottom: 18,
-              padding: "12px 14px",
-              borderRadius: 8,
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(212,175,106,0.12)",
-              color: "rgba(247,238,226,0.72)",
-              fontSize: 12,
-            }}
-          >
-            <p style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <ShieldCheck size={14} aria-hidden="true" /> Roles: super admin, finance admin, content admin
-            </p>
-            <p style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <TimerReset size={14} aria-hidden="true" /> 5 failed attempts trigger a 15-minute browser lockout.
-            </p>
-          </div>
-
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div className="s4">
               <label
@@ -371,9 +348,6 @@ export function AdminLoginPage() {
           <Link href="/" className="a-backlink" style={{ fontSize: 12 }}>
             Back to TRIBLEERA VAIBHAVAM
           </Link>
-          <p style={{ color: "rgba(247,238,226,0.20)", fontSize: 10, marginTop: 8 }}>
-            Entry point: {ADMIN_LOGIN_PATH}
-          </p>
         </div>
       </div>
     </div>
