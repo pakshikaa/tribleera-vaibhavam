@@ -351,18 +351,31 @@ export function clearVendorSession() {
   window.sessionStorage.removeItem("vendor-name");
 }
 
+function matchesIdentifier(record: ApprovedVendorRecord, identifier: string) {
+  const email = identifier.trim().toLowerCase();
+  const phone = normalisePhone(identifier);
+  return (
+    (Boolean(record.email) && record.email!.toLowerCase() === email) ||
+    (phone.length > 5 && Boolean(record.phone) && normalisePhone(record.phone) === phone)
+  );
+}
+
 export function loginVendor(identifier: string, password: string) {
-  const approved = [DEMO_VENDOR, ...readApprovedVendors()];
+  // The demo account is resolved first and skips the verification and
+  // suspension gates on purpose. If the same email was also registered through
+  // the normal flow, that leftover record sits in localStorage as unverified —
+  // and without this short-circuit it wins the lookup and blocks the demo
+  // login with "email not verified".
+  if (matchesIdentifier(DEMO_VENDOR, identifier) && password === DEMO_VENDOR.password) {
+    signInVendorSession({ slug: DEMO_VENDOR.slug, businessName: DEMO_VENDOR.businessName });
+    return { ok: true as const, vendor: DEMO_VENDOR };
+  }
+
   // Vendors sign in with the email they registered with, or their phone
   // number — both identify the same account. Vendors onboarded before email
   // sign-in existed only ever had a phone, so dropping it locks them out.
-  const emailInput = identifier.trim().toLowerCase();
-  const phoneInput = normalisePhone(identifier);
-  const match = approved.find(
-    (item) =>
-      ((item.email && item.email.toLowerCase() === emailInput) ||
-        (phoneInput.length > 5 && item.phone && normalisePhone(item.phone) === phoneInput)) &&
-      item.password === password
+  const match = readApprovedVendors().find(
+    (item) => matchesIdentifier(item, identifier) && item.password === password
   );
   if (!match) return { ok: false as const, reason: "invalid" };
   if (match.status === "suspended") return { ok: false as const, reason: "suspended", vendor: match };

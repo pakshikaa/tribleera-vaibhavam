@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AlertCircle, ArrowRight, BriefcaseBusiness, CircleDot, Eye, EyeOff, MailCheck, ShieldCheck } from "lucide-react";
+import { AlertCircle, ArrowRight, BriefcaseBusiness, CircleDot, Eye, EyeOff, MailCheck } from "lucide-react";
 import { createVendorPasswordReset, getVendorCompletion, loginVendor } from "@/lib/utils/vendorPortal";
 
 const BENEFITS = [
@@ -424,12 +424,6 @@ export default function VendorLoginPage() {
             </button>
           </form>
 
-          <div className="s6" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, padding: "12px 14px", borderRadius: 14, background: "#F8F1E8", border: "1px solid #E9D9C3", color: "#5B6576", fontSize: 12.5 }}>
-            <ShieldCheck size={16} color="#7A1F3D" />
-            <span>
-              Demo login: <strong style={{ color: "#243044" }}>pakshikaa@gmail.com</strong> / <strong style={{ color: "#243044" }}>vendor2026</strong>
-            </span>
-          </div>
         </section>
 
         <div className="s6" style={{ display: "grid", gap: 10, width: "100%", maxWidth: 470, marginTop: 16 }}>
