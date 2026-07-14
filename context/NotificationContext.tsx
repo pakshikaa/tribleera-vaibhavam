@@ -91,15 +91,26 @@ interface NotificationContextValue {
 const NotificationContext = createContext<NotificationContextValue | null>(null);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
-    if (typeof window === "undefined") return defaultNotifications;
-    const stored = readLocalStorage<NotificationItem[] | null>(STORAGE_KEY, null);
-    return pruneExpired(stored && stored.length > 0 ? stored : defaultNotifications);
-  });
+  // Reading localStorage in the initializer made the server render the defaults
+  // and the client's first render the stored feed — the unread badge differed
+  // and React threw the tree away. Start from what the server sent, then load
+  // the stored feed after mount.
+  const [notifications, setNotifications] = useState<NotificationItem[]>(defaultNotifications);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    const stored = readLocalStorage<NotificationItem[] | null>(STORAGE_KEY, null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNotifications(pruneExpired(stored && stored.length > 0 ? stored : defaultNotifications));
+    setHydrated(true);
+  }, []);
+
+  // Only persist once we've read — otherwise the defaults overwrite the feed
+  // before it has been loaded.
+  useEffect(() => {
+    if (!hydrated) return;
     writeLocalStorage(STORAGE_KEY, notifications);
-  }, [notifications]);
+  }, [notifications, hydrated]);
 
   // Pull in notifications pushed by the vendor/admin/payment bridges (a
   // different page or tab writes directly to localStorage), merging any
