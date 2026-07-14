@@ -286,7 +286,7 @@ export default function VendorLoginPage() {
             Vendor sign in
           </h1>
           <p style={{ color: "#5B6576", fontSize: 14, lineHeight: 1.7, marginTop: 10 }}>
-            Sign in with your approved email address to manage your services and bookings.
+            Sign in with your approved email address or phone number to manage your services and bookings.
           </p>
 
           <div className="s4" style={{ marginTop: 16, padding: "14px 16px", borderRadius: 16, background: "rgba(255,255,255,.70)", border: "1px solid rgba(122,31,61,.08)" }}>
@@ -306,16 +306,20 @@ export default function VendorLoginPage() {
           <form onSubmit={handleLogin} style={{ display: "grid", gap: 16, marginTop: 18 }}>
             <div className="s4">
               <label htmlFor="vendor-email" style={{ display: "block", marginBottom: 7, color: "#697386", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
-                Email address
+                Email or phone number
               </label>
+              {/* Not type="email": loginVendor accepts a phone number too, and
+                  the browser's email validation silently blocks the form from
+                  submitting at all when one is typed. */}
               <input
                 id="vendor-email"
-                type="email"
+                type="text"
+                inputMode="email"
                 required
-                autoComplete="email"
+                autoComplete="username"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="pakshikaa@gmail.com"
+                placeholder="you@studio.com or +94 77 123 4567"
                 className="vendor-input"
                 style={{
                   width: "100%",
