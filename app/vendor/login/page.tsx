@@ -16,7 +16,7 @@ const BENEFITS = [
 
 export default function VendorLoginPage() {
   const router = useRouter();
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -32,7 +32,7 @@ export default function VendorLoginPage() {
 
     window.setTimeout(() => {
       try {
-        const result = loginVendor(identifier, password);
+        const result = loginVendor(email, password);
         if (result.ok) {
           const completion = getVendorCompletion(result.vendor.slug);
           router.push(completion.readyToGoLive || result.vendor.profileComplete ? "/dashboard/vendor" : "/dashboard/vendor/setup");
@@ -51,7 +51,7 @@ export default function VendorLoginPage() {
           return;
         }
 
-        setError("Invalid credentials. Check your email or phone number and try again.");
+        setError("Invalid credentials. Check your email and password and try again.");
       } catch {
         setError("Something went wrong. Please try again.");
       }
@@ -129,15 +129,15 @@ export default function VendorLoginPage() {
               <>
                 <h2 style={{ color: "#243044", fontFamily: "var(--font-display)", fontSize: 28 }}>Reset password</h2>
                 <p style={{ color: "#5B6576", fontSize: 13.5, lineHeight: 1.7, marginTop: 10 }}>
-                  Enter your registered email or phone number to receive a secure reset link.
+                  Enter your registered email address to receive a secure reset link.
                 </p>
                 <form onSubmit={handleReset} style={{ display: "grid", gap: 12, marginTop: 18 }}>
                   <input
-                    type="text"
+                    type="email"
                     required
                     value={resetIdentifier}
                     onChange={(event) => setResetIdentifier(event.target.value)}
-                    placeholder="you@service.com or +94 77 123 4567"
+                    placeholder="pakshikaa@gmail.com"
                     className="vendor-input"
                     style={{
                       width: "100%",
@@ -286,7 +286,7 @@ export default function VendorLoginPage() {
             Vendor sign in
           </h1>
           <p style={{ color: "#5B6576", fontSize: 14, lineHeight: 1.7, marginTop: 10 }}>
-            Sign in with your approved email or phone number to manage your services and bookings.
+            Sign in with your approved email address to manage your services and bookings.
           </p>
 
           <div className="s4" style={{ marginTop: 16, padding: "14px 16px", borderRadius: 16, background: "rgba(255,255,255,.70)", border: "1px solid rgba(122,31,61,.08)" }}>
@@ -305,17 +305,17 @@ export default function VendorLoginPage() {
 
           <form onSubmit={handleLogin} style={{ display: "grid", gap: 16, marginTop: 18 }}>
             <div className="s4">
-              <label htmlFor="vendor-identifier" style={{ display: "block", marginBottom: 7, color: "#697386", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
-                Email or phone number
+              <label htmlFor="vendor-email" style={{ display: "block", marginBottom: 7, color: "#697386", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
+                Email address
               </label>
               <input
-                id="vendor-identifier"
-                type="text"
+                id="vendor-email"
+                type="email"
                 required
-                autoComplete="username"
-                value={identifier}
-                onChange={(event) => setIdentifier(event.target.value)}
-                placeholder="you@service.com or +94 77 123 4567"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="pakshikaa@gmail.com"
                 className="vendor-input"
                 style={{
                   width: "100%",
@@ -427,7 +427,7 @@ export default function VendorLoginPage() {
           <div className="s6" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, padding: "12px 14px", borderRadius: 14, background: "#F8F1E8", border: "1px solid #E9D9C3", color: "#5B6576", fontSize: 12.5 }}>
             <ShieldCheck size={16} color="#7A1F3D" />
             <span>
-              Demo login: <strong style={{ color: "#243044" }}>+94771000001</strong> / <strong style={{ color: "#243044" }}>vendor2026</strong>
+              Demo login: <strong style={{ color: "#243044" }}>pakshikaa@gmail.com</strong> / <strong style={{ color: "#243044" }}>vendor2026</strong>
             </span>
           </div>
         </section>

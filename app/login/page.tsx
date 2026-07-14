@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle, Eye, EyeOff, ShieldCheck, Sparkles, TimerReset } from "lucide-react";
-import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
 import { fallbackCustomerProfile, writeActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 type CustomerTab = "signin" | "signup";
@@ -24,7 +23,14 @@ const HIGHLIGHTS = [
 export default function CustomerLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect") || "/dashboard/customer";
+  // Same-origin paths only. A bare `redirect` value lets a crafted link
+  // ("/login?redirect=//evil.com") bounce a customer off-site the moment they
+  // sign in — and it would look like TRIBLEERA sent them there.
+  const requestedRedirect = searchParams.get("redirect") ?? "";
+  const redirectPath =
+    requestedRedirect.startsWith("/") && !requestedRedirect.startsWith("//")
+      ? requestedRedirect
+      : "/dashboard/customer";
   const [tab, setTab] = useState<CustomerTab>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,13 +50,21 @@ export default function CustomerLoginPage() {
         return;
       }
 
+      // The signup tab hands off to /signup, which collects the name and
+      // creates the account. Opening a session here would sign the visitor in
+      // before the account they are asking for actually exists.
+      if (tab === "signup") {
+        router.push(`/signup?redirect=${encodeURIComponent(redirectPath)}&email=${encodeURIComponent(email)}`);
+        return;
+      }
+
       try {
         const profile = fallbackCustomerProfile(email);
         writeActiveCustomerProfile(profile);
         window.sessionStorage.setItem("user-auth", "true");
       } catch {}
 
-      router.push(tab === "signin" ? redirectPath : "/signup");
+      router.push(redirectPath);
     }, 800);
   }
 
@@ -354,7 +368,10 @@ export default function CustomerLoginPage() {
             </div>
 
             <div className="s7" style={{ textAlign: "center", marginTop: 10 }}>
-              <Link href={ADMIN_LOGIN_PATH} style={{ color: "#C2B3A4", fontSize: 11.5, textDecoration: "none" }}>
+              {/* Point at the redirect, not ADMIN_LOGIN_PATH itself — linking the
+                  hardened path here would ship it to every public visitor's
+                  bundle and undo the only thing the obscure URL buys. */}
+              <Link href="/admin/login" style={{ color: "#C2B3A4", fontSize: 11.5, textDecoration: "none" }}>
                 Admin access
               </Link>
             </div>

@@ -65,6 +65,16 @@ const RESET_TOKENS_KEY = "tv-vendor-password-reset-tokens";
 const EMAIL_OUTBOX_KEY = "tv-vendor-email-outbox";
 const VERIFICATION_TTL_MS = 72 * 60 * 60 * 1000;
 const RESET_TTL_MS = 60 * 60 * 1000;
+const DEMO_VENDOR: ApprovedVendorRecord = {
+  slug: "pakshikaa-partner-demo",
+  businessName: "Pakshikaa Wedding Services",
+  phone: "",
+  email: "pakshikaa@gmail.com",
+  password: "vendor2026",
+  profileComplete: true,
+  status: "active",
+  emailVerified: true,
+};
 
 function safeJson<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -267,7 +277,7 @@ export function verifyVendorEmailToken(rawToken: string) {
 }
 
 export function createVendorPasswordReset(identifier: string) {
-  const approved = readApprovedVendors();
+  const approved = [DEMO_VENDOR, ...readApprovedVendors()];
   const value = identifier.trim().toLowerCase();
   const vendor = approved.find(
     (item) =>
@@ -335,17 +345,14 @@ export function clearVendorSession() {
   window.sessionStorage.removeItem("vendor-name");
 }
 
-export function loginVendor(identifier: string, password: string) {
-  const approved = readApprovedVendors();
+export function loginVendor(email: string, password: string) {
+  const approved = [DEMO_VENDOR, ...readApprovedVendors()];
   // Vendors sign in with the email they registered with, or their phone
   // number — both identify the same account.
-  const emailInput = identifier.trim().toLowerCase();
-  const normInput = normalisePhone(identifier);
+  const emailInput = email.trim().toLowerCase();
   const match = approved.find(
     (item) =>
-      ((item.email && item.email.toLowerCase() === emailInput) ||
-        (normInput.length > 5 && normalisePhone(item.phone) === normInput)) &&
-      item.password === password
+      item.email?.toLowerCase() === emailInput && item.password === password
   );
   if (!match) return { ok: false as const, reason: "invalid" };
   if (match.status === "suspended") return { ok: false as const, reason: "suspended", vendor: match };
