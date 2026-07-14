@@ -16,12 +16,20 @@ import { CookieConsent } from "@/components/ui/CookieConsent";
 const PORTAL_PREFIXES = ["/dashboard/admin", "/admin/", "/dashboard/vendor", "/vendor/"];
 const AUTH_ROUTES = ["/login", "/signup"];
 
+// Sign-in is asked for at the point of commitment, not at the door. Browsing
+// the directory, a vendor's profile and their packages stays open: couples
+// compare before they commit, and these are the pages that need to be
+// crawlable. Everything that touches money or a customer's own records is
+// behind the wall.
+const PROTECTED_PREFIXES = ["/dashboard/customer", "/booking"];
+
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [customerAuth, setCustomerAuth] = useState<string | null | undefined>(undefined);
   const isPortal = PORTAL_PREFIXES.some((p) => pathname.startsWith(p));
   const isAuthRoute = AUTH_ROUTES.includes(pathname);
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   useEffect(() => {
     if (isPortal || typeof window === "undefined") {
@@ -44,30 +52,35 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (!customerAuth && !isAuthRoute) {
-        router.replace("/login?redirect=%2F");
-        return;
-      }
+    // Send them back to what they were actually trying to reach — bouncing a
+    // customer to the homepage after they sign in loses the cart they came for.
+    if (!customerAuth && isProtected) {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
 
-      if (customerAuth && isAuthRoute) {
-        router.replace("/");
-      }
-  }, [customerAuth, isAuthRoute, isPortal, pathname, router]);
+    if (customerAuth && isAuthRoute) {
+      router.replace("/");
+    }
+  }, [customerAuth, isAuthRoute, isProtected, isPortal, pathname, router]);
 
   if (isPortal) {
     return <>{children}</>;
   }
 
-  if (customerAuth === undefined && !isAuthRoute) {
+  if (isAuthRoute) {
+    return <>{children}</>;
+  }
+
+  // Only the protected routes wait on the auth check. Public pages render
+  // straight through — holding them behind a spinner meant the server sent a
+  // loading state and nothing else, so crawlers saw an empty site.
+  if (isProtected && !customerAuth) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ivory">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-burgundy border-t-transparent" />
       </div>
     );
-  }
-
-  if (isAuthRoute) {
-    return <>{children}</>;
   }
 
   return (
