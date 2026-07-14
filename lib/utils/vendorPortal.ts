@@ -65,10 +65,16 @@ const RESET_TOKENS_KEY = "tv-vendor-password-reset-tokens";
 const EMAIL_OUTBOX_KEY = "tv-vendor-email-outbox";
 const VERIFICATION_TTL_MS = 72 * 60 * 60 * 1000;
 const RESET_TTL_MS = 60 * 60 * 1000;
+/**
+ * Demo sign-in. The slug MUST match a vendor that exists in the seed data —
+ * the dashboard resolves everything (packages, bookings, requests, analytics)
+ * from the slug, and renders nothing at all when the lookup misses. A made-up
+ * slug logs in successfully and then lands on a blank page.
+ */
 const DEMO_VENDOR: ApprovedVendorRecord = {
-  slug: "pakshikaa-partner-demo",
-  businessName: "Pakshikaa Wedding Services",
-  phone: "",
+  slug: "pushpa-florals-and-decor",
+  businessName: "Pushpa Florals & Decor",
+  phone: "+94771000001",
   email: "pakshikaa@gmail.com",
   password: "vendor2026",
   profileComplete: true,
@@ -345,14 +351,18 @@ export function clearVendorSession() {
   window.sessionStorage.removeItem("vendor-name");
 }
 
-export function loginVendor(email: string, password: string) {
+export function loginVendor(identifier: string, password: string) {
   const approved = [DEMO_VENDOR, ...readApprovedVendors()];
   // Vendors sign in with the email they registered with, or their phone
-  // number — both identify the same account.
-  const emailInput = email.trim().toLowerCase();
+  // number — both identify the same account. Vendors onboarded before email
+  // sign-in existed only ever had a phone, so dropping it locks them out.
+  const emailInput = identifier.trim().toLowerCase();
+  const phoneInput = normalisePhone(identifier);
   const match = approved.find(
     (item) =>
-      item.email?.toLowerCase() === emailInput && item.password === password
+      ((item.email && item.email.toLowerCase() === emailInput) ||
+        (phoneInput.length > 5 && item.phone && normalisePhone(item.phone) === phoneInput)) &&
+      item.password === password
   );
   if (!match) return { ok: false as const, reason: "invalid" };
   if (match.status === "suspended") return { ok: false as const, reason: "suspended", vendor: match };
