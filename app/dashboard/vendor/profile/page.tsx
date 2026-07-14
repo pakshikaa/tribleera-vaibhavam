@@ -8,6 +8,12 @@ import { Input, Textarea } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { readLocalStorage } from "@/lib/utils/browser-storage";
+import {
+  MAX_GALLERY_BYTES,
+  MAX_PHOTO_BYTES,
+  readImageAsDataUrl,
+  validateImageFile,
+} from "@/lib/utils/image-upload";
 import { generateId, safePush } from "@/lib/utils/store";
 import { BackButton } from "@/components/ui/BackButton";
 import { cn } from "@/lib/utils/cn";
@@ -67,68 +73,99 @@ export default function VendorProfilePage() {
 
   // New photos are NOT published directly — they enter the admin moderation
   // queue first, so stolen/fake portfolio images never go live unreviewed.
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      setPhoto(dataUrl);
-      setPhotoPending(true);
-      let activeVendorSlug = vendorSlug;
-      try {
-        activeVendorSlug = sessionStorage.getItem("vendor-slug") || activeVendorSlug;
-      } catch {}
-      safePush("tv-moderation-queue", {
-        id: generateId("MOD"),
-        vendorSlug: activeVendorSlug,
-        vendorName: form.businessName,
-        photo: dataUrl,
-        submittedAt: new Date().toISOString(),
-      });
-      safePush("tv-admin-notifications", {
-        id: generateId("AN"),
-        type: "moderation",
-        message: `${form.businessName} submitted a new profile photo for review`,
-        time: new Date().toISOString(),
-        icon: "🖼️",
-        urgent: false,
-      });
-      showToast("Photo sent for admin review — it goes live once approved.", "success");
-    };
-    reader.readAsDataURL(file);
-  }
 
-  // Gallery photos follow the same moderation path as the profile photo —
-  // they appear on the public profile only after admin approval (V-18).
-  function handleGalleryChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []).slice(0, 6);
-    if (files.length === 0) return;
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        safePush("tv-moderation-queue", {
-          id: generateId("MOD"),
-          vendorSlug,
-          vendorName: form.businessName,
-          photo: reader.result as string,
-          submittedAt: new Date().toISOString(),
-          kind: "gallery",
-        });
-        setGalleryPendingCount((count) => count + 1);
-      };
-      reader.readAsDataURL(file);
+    const invalid = validateImageFile(file, MAX_PHOTO_BYTES);
+    if (invalid) {
+      showToast(invalid, "error");
+      return;
+    }
+
+    const dataUrl = await readImageAsDataUrl(file);
+    let activeVendorSlug = vendorSlug;
+    try {
+      activeVendorSlug = sessionStorage.getItem("vendor-slug") || activeVendorSlug;
+    } catch {}
+
+    const queued = safePush("tv-moderation-queue", {
+      id: generateId("MOD"),
+      vendorSlug: activeVendorSlug,
+      vendorName: form.businessName,
+      photo: dataUrl,
+      submittedAt: new Date().toISOString(),
     });
+
+    // The queue write is what actually submits the photo — reporting success
+    // when it failed is how photos used to vanish between here and the admin.
+    if (!queued) {
+      showToast("Could not submit the photo — browser storage is full. Remove some gallery photos and retry.", "error");
+      return;
+    }
+
+    setPhoto(dataUrl);
+    setPhotoPending(true);
     safePush("tv-admin-notifications", {
       id: generateId("AN"),
       type: "moderation",
-      message: `${form.businessName} submitted ${files.length} gallery photo${files.length !== 1 ? "s" : ""} for review`,
+      message: `${form.businessName} submitted a new profile photo for review`,
       time: new Date().toISOString(),
       icon: "🖼️",
       urgent: false,
     });
-    showToast(`${files.length} photo${files.length !== 1 ? "s" : ""} sent for admin review.`, "success");
+    showToast("Photo sent for admin review — it goes live once approved.", "success");
+  }
+
+  // Gallery photos follow the same moderation path as the profile photo —
+  // they appear on the public profile only after admin approval (V-18).
+  async function handleGalleryChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []).slice(0, 6);
     e.target.value = "";
+    if (files.length === 0) return;
+
+    const rejected: string[] = [];
+    let submitted = 0;
+
+    for (const file of files) {
+      const invalid = validateImageFile(file, MAX_GALLERY_BYTES);
+      if (invalid) {
+        rejected.push(invalid);
+        continue;
+      }
+
+      const dataUrl = await readImageAsDataUrl(file);
+      const queued = safePush("tv-moderation-queue", {
+        id: generateId("MOD"),
+        vendorSlug,
+        vendorName: form.businessName,
+        photo: dataUrl,
+        submittedAt: new Date().toISOString(),
+        kind: "gallery",
+      });
+
+      if (!queued) {
+        rejected.push(`${file.name} could not be saved — browser storage is full.`);
+        continue;
+      }
+      submitted += 1;
+    }
+
+    if (submitted > 0) {
+      setGalleryPendingCount((count) => count + submitted);
+      safePush("tv-admin-notifications", {
+        id: generateId("AN"),
+        type: "moderation",
+        message: `${form.businessName} submitted ${submitted} gallery photo${submitted !== 1 ? "s" : ""} for review`,
+        time: new Date().toISOString(),
+        icon: "🖼️",
+        urgent: false,
+      });
+      showToast(`${submitted} photo${submitted !== 1 ? "s" : ""} sent for admin review.`, "success");
+    }
+
+    rejected.forEach((message) => showToast(message, "error"));
   }
 
   function removeGalleryPhoto(index: number) {

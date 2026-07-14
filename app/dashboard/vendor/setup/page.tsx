@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { Camera, CheckCircle2, Plus, X } from "lucide-react";
 import { Input, Textarea } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import { cn } from "@/lib/utils/cn";
+import { MAX_PHOTO_BYTES, readImageAsDataUrl, validateImageFile } from "@/lib/utils/image-upload";
 import { generateId, safePush } from "@/lib/utils/store";
 import { markVendorProfileComplete, writeVendorPhoto, writeVendorProfile } from "@/lib/utils/vendorPortal";
 
@@ -25,6 +27,7 @@ const STEPS = ["Add your photo", "Complete profile", "Set packages", "Go live"];
 
 export default function VendorSetupPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(0);
   const [vendor, setVendor] = useState<ApprovedVendor | null>(null);
@@ -75,15 +78,14 @@ export default function VendorSetupPage() {
     } catch { router.replace("/vendor/login"); }
   }, [router]);
 
-  function handlePhotoFile(file: File) {
-    const preview = URL.createObjectURL(file);
-    setPhotoPreview(preview);
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      setPhoto(dataUrl);
-    };
-    reader.readAsDataURL(file);
+  async function handlePhotoFile(file: File) {
+    const invalid = validateImageFile(file, MAX_PHOTO_BYTES);
+    if (invalid) {
+      showToast(invalid, "error");
+      return;
+    }
+    setPhotoPreview(URL.createObjectURL(file));
+    setPhoto(await readImageAsDataUrl(file));
   }
 
   function validateStep2() {

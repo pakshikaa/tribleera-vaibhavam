@@ -12,7 +12,8 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { PACKAGE_TEMPLATES, type PackageTemplate } from "@/lib/data/packageTemplates";
-import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { readLocalStorage, tryWriteLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+import { MAX_GALLERY_BYTES, readImageAsDataUrl, validateImageFile } from "@/lib/utils/image-upload";
 import { markVendorProfileComplete } from "@/lib/utils/vendorPortal";
 import type { VendorPackage } from "@/types";
 import { BackButton } from "@/components/ui/BackButton";
@@ -70,22 +71,34 @@ export default function VendorPackagesPage() {
     label: `${template.tier} - ${template.name}`,
   }));
 
-  function handleGalleryAdd(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleGalleryAdd(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const url = event.target?.result as string;
-        if (!url) return;
-        setGalleryImages((prev) => {
-          const next = [...prev, url].slice(0, 12);
-          writeLocalStorage(galleryStorageKey, next);
-          return next;
-        });
-      };
-      reader.readAsDataURL(file);
-    });
     e.target.value = "";
+
+    // Accumulate locally: setGalleryImages won't have applied yet on the next
+    // iteration, so reading state inside the loop would drop every photo but one.
+    let next = galleryImages;
+
+    for (const file of files) {
+      const invalid = validateImageFile(file, MAX_GALLERY_BYTES);
+      if (invalid) {
+        showToast(invalid, "error");
+        continue;
+      }
+
+      const url = await readImageAsDataUrl(file);
+      const candidate = [...next, url].slice(0, 12);
+
+      // Base64 photos are the one thing here big enough to exhaust the quota —
+      // don't leave the image on screen if it never reached storage.
+      if (!tryWriteLocalStorage(galleryStorageKey, candidate)) {
+        showToast("Browser storage is full — remove a photo before adding more.", "error");
+        break;
+      }
+      next = candidate;
+    }
+
+    setGalleryImages(next);
   }
 
   function updatePackage(packageId: string, updates: Partial<VendorPackage>) {
