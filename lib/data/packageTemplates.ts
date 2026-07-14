@@ -7,6 +7,12 @@ export interface PackageField {
   placeholder?: string;
 }
 
+export interface PackageFieldMeta {
+  label: string;
+  unit?: string;
+  icon: string;
+}
+
 export interface PackageTemplate {
   name: string;
   tier: "Essential" | "Signature" | "Heritage";
@@ -217,3 +223,55 @@ export const PACKAGE_TEMPLATES: Record<string, PackageTemplate[]> = {
     },
   ],
 };
+
+/**
+ * Emoji per field, so a package reads as a scannable spec sheet on the public
+ * profile rather than a wall of text. Keyed by category then field id; the ids
+ * are shared across a category's three tiers.
+ */
+const FIELD_ICONS: Record<string, Record<string, string>> = {
+  photography: {
+    hours: "⏱", photos: "📷", shooters: "👥", video: "🎬",
+    drone: "🚁", album: "📖", delivery: "📦",
+  },
+  cakes: {
+    tiers: "🎂", servings: "🍽", flavor: "🍫", icing: "✨",
+    design: "🎨", floral: "🌸", delivery: "🚚",
+  },
+  decoration: {
+    mandap: "🛕", tables: "🪑", entrance: "🌺", flowers: "💐",
+    stage: "🎭", aisle: "🌿", lighting: "💡", concept: "📐", props: "📦",
+  },
+  "bridal-makeup": {
+    trial: "🪞", airbrush: "💄", hair: "💇", saree: "🥻",
+    jewel: "💍", family: "👪", touch: "🪄", duration: "⏰",
+  },
+  invitation: {
+    count: "📩", size: "📐", material: "📄", print: "🖨", finish: "✨",
+    insert: "📎", envelope: "✉️", motif: "🎨", custom: "🖌",
+    box: "🎁", digital: "📱", design: "🔄", delivery: "🚚",
+  },
+};
+
+/**
+ * Resolves a stored customField id back to its human label, unit and icon.
+ * Packages persist only `{ fieldId: value }`, so without this the public
+ * profile can only show the raw id ("shooters: 2") instead of what the vendor
+ * actually configured ("Photographers — 2 persons").
+ */
+export function getPackageFieldMeta(categorySlug: string, fieldId: string): PackageFieldMeta | null {
+  const templates = PACKAGE_TEMPLATES[categorySlug];
+  if (!templates) return null;
+
+  for (const template of templates) {
+    const field = template.fields.find((item) => item.id === fieldId);
+    if (field) {
+      return {
+        label: field.label,
+        unit: field.unit,
+        icon: FIELD_ICONS[categorySlug]?.[fieldId] ?? "•",
+      };
+    }
+  }
+  return null;
+}

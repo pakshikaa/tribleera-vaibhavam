@@ -362,6 +362,7 @@ export default function VendorPackagesPage() {
                 motif={vendor.motif}
                 tone={vendor.tone}
                 seed={vendor.id.length}
+                categorySlug={vendor.categorySlug}
                 quoteVendorName={vendor.name}
               />
             </div>

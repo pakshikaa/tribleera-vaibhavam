@@ -1,4 +1,5 @@
 ﻿import { Review, Vendor, VendorPackage } from "@/types";
+import { PACKAGE_TEMPLATES } from "@/lib/data/packageTemplates";
 
 type ServiceCategory = "photography" | "cakes" | "decoration" | "bridal-makeup" | "invitation";
 
@@ -76,6 +77,26 @@ const REVIEW_NAMES = [
   "Janani & Arun",
 ];
 
+/**
+ * Seeds a package's spec sheet from its category template, so a vendor's public
+ * profile shows real, service-specific detail (a photographer's coverage hours,
+ * a baker's tiers) before they have edited anything in the dashboard. Vendors
+ * overwrite these from /dashboard/vendor/packages.
+ */
+function seedCustomFields(
+  categorySlug: ServiceCategory,
+  tier: VendorPackage["tier"]
+): Record<string, string> {
+  const template = PACKAGE_TEMPLATES[categorySlug]?.find((item) => item.tier === tier);
+  if (!template) return {};
+
+  return Object.fromEntries(
+    template.fields
+      .map((field) => [field.id, field.options?.[0] ?? field.placeholder ?? ""] as const)
+      .filter(([, value]) => value !== "")
+  );
+}
+
 function buildPackages(
   vendorId: string,
   categorySlug: ServiceCategory,
@@ -92,6 +113,7 @@ function buildPackages(
       description: TIER_COPY.essential,
       inclusions: inclusions.essential,
       coverImageUrl: coverImages[0],
+      customFields: seedCustomFields(categorySlug, "Essential"),
     },
     {
       id: `${vendorId}-signature`,
@@ -102,6 +124,7 @@ function buildPackages(
       inclusions: inclusions.signature,
       coverImageUrl: coverImages[1],
       recommended: true,
+      customFields: seedCustomFields(categorySlug, "Signature"),
     },
     {
       id: `${vendorId}-heritage`,
@@ -111,6 +134,7 @@ function buildPackages(
       description: TIER_COPY.heritage,
       inclusions: inclusions.heritage,
       coverImageUrl: coverImages[2],
+      customFields: seedCustomFields(categorySlug, "Heritage"),
     },
   ];
 }

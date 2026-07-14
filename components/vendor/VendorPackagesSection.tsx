@@ -25,6 +25,7 @@ export function VendorPackagesSection({
     () => getVendorPackages(vendorSlug, staticPackages),
     [staticPackages, vendorSlug]
   );
+  const vendor = useMemo(() => getVendorBySlug(vendorSlug), [vendorSlug]);
 
   if (packages.length === 0) {
     return (
@@ -43,7 +44,8 @@ export function VendorPackagesSection({
           motif={motif}
           tone={tone}
           seed={seed}
-          quoteVendorName={getVendorBySlug(vendorSlug)?.name}
+          quoteVendorName={vendor?.name}
+          categorySlug={vendor?.categorySlug}
         />
       ))}
     </div>

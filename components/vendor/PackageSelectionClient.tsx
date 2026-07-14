@@ -66,6 +66,7 @@ export function PackageSelectionClient({ vendor }: { vendor: Vendor }) {
               motif={vendor.motif}
               tone={vendor.tone}
               seed={vendor.id.length}
+              categorySlug={vendor.categorySlug}
               selected={selectedId === pkg.id}
               onSelect={() => handleSelect(pkg.id)}
             />
