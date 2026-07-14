@@ -25,20 +25,22 @@ export function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [lockoutRemainingMs, setLockoutRemainingMs] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    const lockout = getAdminLockout();
-    return lockout.locked ? lockout.remainingMs : 0;
-  });
+  // The lockout lives in localStorage. Reading it in the initializer made the
+  // server render an unlocked form and a locked-out browser render a locked one
+  // — the two renders disagreed and React discarded the tree. Read it after
+  // mount instead, and keep the countdown ticking from the same place.
+  const [lockoutRemainingMs, setLockoutRemainingMs] = useState(0);
 
   useEffect(() => {
-    if (lockoutRemainingMs <= 0) return;
-    const timer = window.setInterval(() => {
+    const sync = () => {
       const lockout = getAdminLockout();
       setLockoutRemainingMs(lockout.locked ? lockout.remainingMs : 0);
-    }, 1000);
+    };
+
+    sync();
+    const timer = window.setInterval(sync, 1000);
     return () => window.clearInterval(timer);
-  }, [lockoutRemainingMs]);
+  }, []);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
