@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, PlusCircle, ShoppingBag, ChevronUp, ChevronDown, AlertCircle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, ShieldCheck, PlusCircle, ChevronUp, ChevronDown, AlertCircle, X } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { CartItemCard } from "@/components/booking/CartItemCard";
 import { PriceSummary } from "@/components/booking/PriceSummary";
 import { BookingSteps } from "@/components/booking/BookingSteps";
@@ -15,9 +15,16 @@ import { useCart } from "@/context/CartContext";
 import { BackButton } from "@/components/ui/BackButton";
 
 export default function BookingCartPage() {
+  const router = useRouter();
   const { items, removeItem, totals, hydrated } = useCart();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [conflictCategory, setConflictCategory] = useState("");
+
+  // Nothing to check out — send the customer back to the directory rather
+  // than parking them on a dead-end cart.
+  useEffect(() => {
+    if (hydrated && items.length === 0) router.replace("/vendors");
+  }, [hydrated, items.length, router]);
 
   useEffect(() => {
     try {
@@ -62,12 +69,10 @@ export default function BookingCartPage() {
             <div className="h-72 animate-pulse rounded-[8px] bg-white shadow-soft" />
           </div>
         ) : items.length === 0 ? (
-          <EmptyState
-            icon={<ShoppingBag size={32} />}
-            title="Your cart is empty"
-            description="Browse services and add a vendor package from each category you need — photography, cakes, decoration, bridal makeup or invitations."
-            action={<Button href="/services">Browse services</Button>}
-          />
+          // Redirecting to /vendors — this only paints for a frame.
+          <div className="flex min-h-[40vh] items-center justify-center" aria-live="polite">
+            <p className="text-sm text-slate-soft">Your cart is empty — taking you to the vendor directory…</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_360px]">
             <div>
@@ -122,8 +127,8 @@ export default function BookingCartPage() {
                     Your advance and platform fee are held safely by TRIBLEERA and released to each vendor only as
                     milestones are completed — full mediation support included.
                   </p>
-                  <Link href="/faq#booking-payments" className="mt-1.5 inline-block text-xs font-semibold text-burgundy hover:underline">
-                    How does escrow work? →
+                  <Link href="/faq#escrow" className="mt-1.5 inline-block text-xs font-semibold text-burgundy hover:underline">
+                    How does TRIBLEERA escrow work? →
                   </Link>
                 </div>
               </div>
@@ -153,6 +158,12 @@ export default function BookingCartPage() {
             <aside className="hidden md:block">
               <div className="sticky top-28 space-y-4">
                 <PriceSummary breakdown={totals} />
+                <Link
+                  href="/faq#advance"
+                  className="block text-center text-xs font-semibold text-burgundy hover:underline"
+                >
+                  Why only 20% now? →
+                </Link>
                 <Button href="/booking/payment" fullWidth size="lg" iconRight={<ArrowRight size={16} />}>
                   Proceed to payment
                 </Button>

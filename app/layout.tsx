@@ -3,6 +3,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 import { CartProvider } from "@/context/CartContext";
+import { CompareProvider } from "@/context/CompareContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
 import { SITE_URL } from "@/lib/constants";
@@ -75,9 +76,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NotificationProvider>
             <CartProvider>
               <ShortlistProvider>
-                <MotionProvider>
-                  <SiteShell>{children}</SiteShell>
-                </MotionProvider>
+                <CompareProvider>
+                  <MotionProvider>
+                    <SiteShell>{children}</SiteShell>
+                  </MotionProvider>
+                </CompareProvider>
               </ShortlistProvider>
             </CartProvider>
           </NotificationProvider>

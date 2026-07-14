@@ -11,12 +11,15 @@ export function Modal({
   children,
   open,
   onOpenChange,
+  className,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Widen or restyle the panel — the compare drawer needs more than max-w-xl. */
+  className?: string;
 }) {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -25,7 +28,8 @@ export function Modal({
         <DialogPrimitive.Content
           className={cn(
             "fixed left-1/2 top-1/2 z-[71] w-[92vw] max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-[10px] bg-white p-6 shadow-lift focus:outline-none",
-            "data-[state=open]:animate-scale-in"
+            "data-[state=open]:animate-scale-in",
+            className
           )}
         >
           <DialogPrimitive.Title className="font-display text-xl text-burgundy-deep">{title}</DialogPrimitive.Title>

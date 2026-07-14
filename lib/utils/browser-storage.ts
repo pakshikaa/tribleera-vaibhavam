@@ -9,12 +9,22 @@ export function readLocalStorage<T>(key: string, fallback: T): T {
   }
 }
 
-export function writeLocalStorage<T>(key: string, value: T) {
+/**
+ * Returns false when the write failed — storage disabled, or (the common case
+ * for base64 image uploads) the origin's ~5MB quota is exhausted. Callers that
+ * report success to the user should check this instead of assuming it landed.
+ */
+export function tryWriteLocalStorage<T>(key: string, value: T): boolean {
   try {
     window.localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
-    // ignore unavailable storage
+    return false;
   }
+}
+
+export function writeLocalStorage<T>(key: string, value: T) {
+  tryWriteLocalStorage(key, value);
 }
 
 export function readSessionStorage<T>(key: string, fallback: T): T {

@@ -22,14 +22,17 @@ export function safeGet<T>(key: string, fallback: T): T {
   }
 }
 
-export function safePush(key: string, item: unknown): void {
+/** Returns false when the write failed (storage disabled, or quota exhausted). */
+export function safePush(key: string, item: unknown): boolean {
   try {
     const arr = safeGet<unknown[]>(key, []);
     arr.unshift(item); // newest first
     window.localStorage.setItem(key, JSON.stringify(arr.slice(0, 100)));
     window.dispatchEvent(new Event("tribleera-admin-data"));
+    return true;
   } catch {
     // storage unavailable — caller's UI still updates for this session
+    return false;
   }
 }
 

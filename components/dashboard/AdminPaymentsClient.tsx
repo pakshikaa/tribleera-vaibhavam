@@ -114,7 +114,10 @@ export function AdminPaymentsClient() {
       {refundable.length > 0 && (
         <div className="rounded-[10px] border border-slate/10 bg-white p-5">
           <h2 className="font-display text-lg text-slate">Refund calculator</h2>
-          <p className="mt-1 text-sm text-slate-soft">Bookings marked for cancellation can be evaluated here against the refund policy.</p>
+          <p className="mt-1 text-sm text-slate-soft">
+            Cancellation requests scored against the refund policy: 50% at 31+ days, 25% at 7–30 days, nothing inside 7 days.
+            Refunds are raised and tracked on the Disputes desk.
+          </p>
           <div className="mt-4 space-y-3">
             {refundable.map((booking) => {
               const refund = calculateRefundFromBooking(booking);
@@ -123,9 +126,23 @@ export function AdminPaymentsClient() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="font-medium text-slate">{booking.id} · {booking.customerName}</p>
-                      <p className="text-xs text-slate-soft">{refund.daysBeforeEvent} days remaining · {refund.refundPercent}% refund</p>
+                      <p className="text-xs text-slate-soft">
+                        Advance paid {formatLKR(booking.payableNow)} · {refund.daysBeforeEvent} days remaining · {refund.refundPercent}% refund
+                      </p>
                     </div>
-                    <p className="font-display text-lg text-burgundy-deep">{formatLKR(refund.refundAmount)}</p>
+                    <div className="flex items-center gap-3">
+                      <p
+                        className={cn(
+                          "font-display text-lg",
+                          refund.refundAmount > 0 ? "text-success" : "text-danger"
+                        )}
+                      >
+                        {formatLKR(refund.refundAmount)}
+                      </p>
+                      <Button href="/dashboard/admin/disputes" size="sm" variant="secondary">
+                        Process refund
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );

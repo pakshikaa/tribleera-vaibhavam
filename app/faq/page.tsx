@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Container } from "@/components/ui/Container";
@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils/cn";
 interface FaqItem {
   q: string;
   a: string;
+  /** Deep-link target (/faq#escrow). Linked questions open and scroll into view. */
+  id?: string;
 }
 
 interface FaqCategory {
@@ -22,10 +24,12 @@ const FAQ_CATEGORIES: FaqCategory[] = [
     title: "Booking & Payments",
     items: [
       {
+        id: "advance",
         q: "How much do I pay upfront?",
         a: "You pay 20% of the service total as an advance, plus a 3% platform fee. The remaining 80% is paid directly to your vendor after the service is delivered.",
       },
       {
+        id: "escrow",
         q: "Is my payment safe?",
         a: "Your advance is held in TRIBLEERA escrow and released only when service milestones are completed. We mediate any disputes.",
       },
@@ -47,8 +51,9 @@ const FAQ_CATEGORIES: FaqCategory[] = [
         a: "Yes. Every vendor is background-checked, document-verified, and portfolio-reviewed before appearing on the platform.",
       },
       {
+        id: "contact",
         q: "How do I contact a vendor?",
-        a: "Every vendor profile has a WhatsApp button for direct chat. You can also send an event request through the platform.",
+        a: "Every vendor profile has a WhatsApp button for direct chat. You can also send an event request through the platform. A vendor's direct phone and email unlock once your advance payment is confirmed.",
       },
       {
         q: "Can I book a vendor outside TRIBLEERA?",
@@ -87,8 +92,9 @@ const FAQ_CATEGORIES: FaqCategory[] = [
 function FaqAccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: boolean; onToggle: () => void }) {
   return (
     <div
+      id={item.id}
       className={cn(
-        "rounded-[8px] border bg-white transition-colors",
+        "scroll-mt-24 rounded-[8px] border bg-white transition-colors",
         isOpen ? "border-gold/40" : "border-slate/10"
       )}
     >
@@ -128,8 +134,29 @@ function FaqAccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: b
   );
 }
 
+/** Accordion key for a question, so a deep link can open the right one. */
+function itemKey(categoryTitle: string, index: number) {
+  return `${categoryTitle}-${index}`;
+}
+
 export default function FaqPage() {
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+
+  // A deep link like /faq#escrow should land on the answer already expanded —
+  // arriving at a collapsed accordion row reads as a broken link.
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+
+    for (const category of FAQ_CATEGORIES) {
+      const index = category.items.findIndex((item) => item.id === hash);
+      if (index === -1) continue;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setOpenMap({ [itemKey(category.title, index)]: true });
+      document.getElementById(hash)?.scrollIntoView({ block: "center" });
+      return;
+    }
+  }, []);
 
   function toggle(key: string) {
     setOpenMap((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -168,7 +195,7 @@ export default function FaqPage() {
                 </h2>
                 <div className="space-y-3">
                   {cat.items.map((item, idx) => {
-                    const key = `${cat.title}-${idx}`;
+                    const key = itemKey(cat.title, idx);
                     return (
                       <FaqAccordionItem
                         key={key}

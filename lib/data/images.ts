@@ -45,14 +45,16 @@ export const heroImage = "/images/portal/home-hero.jpg";
 // Golden-hour couple under the veil — warm, soft feature image for the
 // homepage Wedding Stories band.
 export const trustSectionImage = "/images/portal/testimonials.jpg";
+// Purpose-fit shared login portrait with subtle Christian-romance tone,
+// strong face framing, and clean negative space for auth overlays.
+export const commonLoginImage = "/images/portal/login-common-romance-v2.png";
 // B&W close-up — bride and groom holding hands, silk saree and temple
 // jewellery against a bright ground. The timeless monochrome mood suits
 // the admin portal's authority feel.
 export const adminLoginImage = "/images/portal/admin-hero.jpg";
-// Portrait Tamil couple moment — bride in silk saree and groom in ivory
-// sherwani. The image is tall with a bright sky, so vendor portal consumers
-// should anchor slightly above centre to keep the faces in frame.
-export const vendorLoginImage = "/images/portal/vendor-portal-couple.jpg";
+// Warm full-body portrait with a clean, premium frame and better subject
+// separation for vendor portal overlays than the previous over-bright crop.
+export const vendorLoginImage = "/images/portal/home-hero.jpg";
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),

@@ -8,6 +8,7 @@ import { Vendor } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { AvailabilityBadge } from "@/components/vendor/AvailabilityBadge";
+import { CompareButton } from "@/components/vendor/CompareButton";
 import { ShortlistButton } from "@/components/vendor/ShortlistButton";
 import { formatLKR } from "@/lib/utils/format";
 
@@ -81,12 +82,13 @@ export function VendorCard({ vendor }: { vendor: Vendor }) {
             )}
           </div>
 
-          <div className="absolute right-3 top-3 z-10 pointer-events-auto">
+          <div className="pointer-events-auto absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
             <ShortlistButton
               slug={vendor.slug}
               size={16}
               className="h-11 w-11 md:h-8 md:w-8 bg-black/25 backdrop-blur-sm hover:bg-black/40"
             />
+            <CompareButton slug={vendor.slug} className="backdrop-blur-sm" />
           </div>
 
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">

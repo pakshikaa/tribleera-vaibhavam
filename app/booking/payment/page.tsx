@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ChangeEvent, useId, useState } from "react";
+import { ChangeEvent, useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -84,6 +84,29 @@ export default function PaymentSummaryPage() {
       return null;
     }
   })();
+
+  // A vendor request exists (any status) — the customer arrived from the
+  // event-request flow and is legitimately waiting, even with an empty cart.
+  const hasVendorRequest = (() => {
+    if (typeof window === "undefined") return false;
+    try {
+      if (window.localStorage.getItem("TRIBLEERA-payment-selection")) return true;
+      const responses = JSON.parse(
+        window.localStorage.getItem("tv-responses") ?? "[]"
+      ) as VendorResponseSelection[];
+      return responses.length > 0;
+    } catch {
+      return false;
+    }
+  })();
+
+  // Nothing in the cart and no vendor request behind it — there is nothing to
+  // pay for, so send them back to the cart (which forwards on to /vendors).
+  const nothingToPayFor = hydrated && items.length === 0 && !acceptedSelection && !hasVendorRequest;
+
+  useEffect(() => {
+    if (nothingToPayFor) router.replace("/booking/cart");
+  }, [nothingToPayFor, router]);
 
   const {
     register,
@@ -196,6 +219,17 @@ export default function PaymentSummaryPage() {
         resolve();
       }, 900);
     });
+  }
+
+  if (nothingToPayFor) {
+    // Redirecting to /booking/cart — this only paints for a frame.
+    return (
+      <Container className="px-5 py-20">
+        <p className="text-center text-sm text-slate-soft" aria-live="polite">
+          Nothing to pay for yet — taking you back to your cart…
+        </p>
+      </Container>
+    );
   }
 
   if (hydrated && items.length === 0 && !acceptedSelection) {
@@ -452,8 +486,8 @@ export default function PaymentSummaryPage() {
                     Your advance is held in a secure escrow account and released to vendors only as milestones are completed.
                     Your remaining balance is settled directly with each vendor afterwards.
                   </p>
-                  <Link href="/faq#booking-payments" className="mt-1.5 inline-block text-xs font-semibold text-burgundy hover:underline">
-                    How does escrow work? →
+                  <Link href="/faq#escrow" className="mt-1.5 inline-block text-xs font-semibold text-burgundy hover:underline">
+                    How does TRIBLEERA escrow work? →
                   </Link>
                 </div>
               </div>

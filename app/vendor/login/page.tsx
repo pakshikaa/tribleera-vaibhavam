@@ -4,14 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AlertCircle, ArrowRight, Sparkles, UserPlus } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { vendorLoginImage } from "@/lib/data/images";
-import { getVendorCompletion, loginVendor, normalisePhone } from "@/lib/utils/vendorPortal";
-
-const STATIC_FALLBACK = [
-  { slug: "pushpa-florals-and-decor", phone: "+94771000001", businessName: "Pushpa Florals & Decor" },
-  { slug: "jaffna-frames-studio", phone: "+94771000002", businessName: "Jaffna Frames Studio" },
-];
+import { getVendorCompletion, loginVendor } from "@/lib/utils/vendorPortal";
 
 export default function VendorLoginPage() {
   const router = useRouter();
@@ -50,17 +45,6 @@ export default function VendorLoginPage() {
           return;
         }
 
-        if (password === "vendor2026") {
-          const fallback = STATIC_FALLBACK.find((vendor) => normalisePhone(vendor.phone) === normalisePhone(phone));
-          if (fallback) {
-            sessionStorage.setItem("vendor-auth", "true");
-            sessionStorage.setItem("vendor-slug", fallback.slug);
-            sessionStorage.setItem("vendor-name", fallback.businessName);
-            router.push("/dashboard/vendor");
-            return;
-          }
-        }
-
         setError("Invalid credentials. Contact admin if you have not received yours.");
       } catch {
         setError("Something went wrong. Please try again.");
@@ -74,8 +58,9 @@ export default function VendorLoginPage() {
     <div data-portal="true" className="font-[Arial,sans-serif]">
       <style>{`
         @keyframes kenBurns {
-          from { transform: scale(1); }
-          to { transform: scale(1.08); }
+          0% { transform: scale(1.02) translate3d(0, 0, 0); }
+          50% { transform: scale(1.07) translate3d(-1.2%, -0.8%, 0); }
+          100% { transform: scale(1.10) translate3d(1.2%, 0.8%, 0); }
         }
         @keyframes imgReveal {
           from { opacity: 0; filter: blur(8px); }
@@ -89,15 +74,20 @@ export default function VendorLoginPage() {
           0% { background-position: -300% center; }
           100% { background-position: 300% center; }
         }
-        .kb { animation: kenBurns 18s ease-in-out infinite alternate; }
+        @keyframes auraPulse {
+          0%, 100% { opacity: 0.32; transform: scale(1); }
+          50% { opacity: 0.56; transform: scale(1.08); }
+        }
+        .kb { animation: kenBurns 26s ease-in-out infinite alternate; }
         .ir { animation: imgReveal .9s cubic-bezier(.16,1,.3,1) both; }
         .s1 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .10s both; }
         .s2 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .22s both; }
         .s3 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .34s both; }
         .s4 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .46s both; }
         .s5 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .58s both; }
+        .scene-aura { animation: auraPulse 11s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
-          .kb, .ir, .s1, .s2, .s3, .s4, .s5 { animation: none; }
+          .kb, .ir, .s1, .s2, .s3, .s4, .s5, .scene-aura { animation: none; }
         }
         .goldtext {
           background: linear-gradient(90deg,#D4AF6A,#E9CE9C,#F7EEE2,#E9CE9C,#D4AF6A);
@@ -107,87 +97,20 @@ export default function VendorLoginPage() {
           background-clip: text;
           animation: goldShimmer 4s linear infinite;
         }
+        .scene-photo-vendor {
+          object-position: center 18%;
+          filter: brightness(0.80) saturate(1.02) contrast(1.02);
+        }
         .v-panel {
           width: 100%;
           max-width: 500px;
-          border-radius: 28px;
-          border: 1px solid rgba(212,175,106,0.20);
-          background:
-            linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(250,247,242,0.96) 100%);
+          border-radius: 26px;
+          border: 1px solid rgba(212,175,106,0.18);
+          background: linear-gradient(180deg, rgba(252,248,243,0.92) 0%, rgba(250,247,242,0.88) 100%);
           padding: 34px 30px 30px;
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          box-shadow: 0 28px 70px rgba(21,4,12,0.42);
-        }
-        .v-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 7px 12px;
-          margin-bottom: 16px;
-          border-radius: 999px;
-          background: rgba(122,31,61,0.08);
-          color: #7A1F3D;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-        }
-        .v-helper-grid {
-          display: grid;
-          gap: 10px;
-          margin: 20px 0 22px;
-        }
-        .v-helper-card {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 14px 15px;
-          border-radius: 14px;
-          border: 1px solid rgba(122,31,61,0.12);
-          background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,242,236,0.96) 100%);
-          text-decoration: none;
-          transition: transform .16s, box-shadow .16s, border-color .16s;
-        }
-        .v-helper-card:hover {
-          transform: translateY(-1px);
-          border-color: rgba(122,31,61,0.25);
-          box-shadow: 0 12px 28px rgba(92,4,39,0.08);
-        }
-        .v-helper-icon {
-          display: grid;
-          place-items: center;
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
-          flex: 0 0 auto;
-          background: rgba(122,31,61,0.08);
-          color: #7A1F3D;
-        }
-        .v-helper-copy {
-          flex: 1;
-          min-width: 0;
-        }
-        .v-helper-eyebrow {
-          display: block;
-          margin: 0 0 2px;
-          color: #9CA3AF;
-          font-size: 11px;
-          line-height: 1.35;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-        }
-        .v-helper-title {
-          display: block;
-          margin: 0;
-          color: #5C0427;
-          font-size: 14px;
-          font-weight: 700;
-          line-height: 1.4;
-        }
-        .v-helper-arrow {
-          color: #7A1F3D;
-          flex: 0 0 auto;
+          backdrop-filter: blur(28px);
+          -webkit-backdrop-filter: blur(28px);
+          box-shadow: 0 30px 80px rgba(21,4,12,0.34), 0 0 0 1px rgba(255,255,255,0.32) inset;
         }
         .v-inp {
           width: 100%;
@@ -196,7 +119,7 @@ export default function VendorLoginPage() {
           border-radius: 12px;
           font-size: 16px;
           color: #1F2937;
-          background: #FFFFFF;
+          background: rgba(255,255,255,0.92);
           outline: none;
           box-sizing: border-box;
           font-family: Arial, sans-serif;
@@ -206,7 +129,7 @@ export default function VendorLoginPage() {
         .v-inp:focus {
           border-color: #7A1F3D;
           box-shadow: 0 0 0 4px rgba(122,31,61,0.10);
-          background: #FFFDFC;
+          background: #FFFFFF;
         }
         .v-btn {
           width: 100%;
@@ -219,12 +142,12 @@ export default function VendorLoginPage() {
           font-family: Arial, sans-serif;
           background: linear-gradient(135deg,#7A1F3D 0%,#5C0427 100%);
           color: #FFFFFF;
-          box-shadow: 0 10px 24px rgba(92,4,39,0.26);
+          box-shadow: 0 12px 26px rgba(92,4,39,0.28);
           transition: transform .16s, box-shadow .16s, opacity .16s;
         }
         .v-btn:hover:not(:disabled) {
           transform: translateY(-1px);
-          box-shadow: 0 14px 30px rgba(92,4,39,0.34);
+          box-shadow: 0 16px 34px rgba(92,4,39,0.34);
         }
         .v-btn:disabled {
           opacity: 0.65;
@@ -237,6 +160,39 @@ export default function VendorLoginPage() {
           transition: color .15s;
         }
         .v-backlink:hover { color: rgba(212,175,106,0.90); }
+        .auth-shell {
+          width: 100%;
+          max-width: 1400px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .auth-column {
+          width: 100%;
+          max-width: 500px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        @media (max-width: 767px) {
+          .scene-photo-vendor { object-position: center 14%; }
+        }
+        @media (min-width: 960px) {
+          .auth-shell {
+            align-items: center;
+            padding-right: 0;
+          }
+          .auth-column {
+            max-width: 500px;
+            align-items: center;
+            margin-left: 0;
+            padding: 0;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-left: none;
+          }
+        }
       `}</style>
 
       <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden" }} aria-hidden="true">
@@ -247,27 +203,33 @@ export default function VendorLoginPage() {
           sizes="100vw"
           priority
           quality={90}
-          className="kb ir"
+          className="kb ir scene-photo-vendor"
+          style={{ objectFit: "cover" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.10)" }} />
+        <div
+          className="scene-aura"
           style={{
-            objectFit: "cover",
-            objectPosition: "center 34%",
-            filter: "brightness(0.72) saturate(1.02)",
+            position: "absolute",
+            inset: "-10%",
+            background:
+              "radial-gradient(circle at 52% 26%, rgba(247,238,226,0.28) 0%, rgba(233,206,156,0.14) 24%, rgba(122,31,61,0.10) 48%, transparent 72%)",
           }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.54)" }} />
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(ellipse 85% 85% at 50% 40%, transparent 18%, rgba(21,4,12,0.55) 68%, rgba(21,4,12,0.90) 100%)",
+              "radial-gradient(ellipse 84% 78% at 42% 40%, transparent 28%, rgba(21,4,12,0.24) 68%, rgba(21,4,12,0.72) 100%)",
           }}
         />
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to bottom, rgba(21,4,12,0.48) 0%, transparent 35%, rgba(21,4,12,0.72) 100%)",
+            background:
+              "linear-gradient(90deg, rgba(21,4,12,0.18) 0%, rgba(21,4,12,0.08) 34%, rgba(21,4,12,0.22) 62%, rgba(21,4,12,0.54) 100%)",
           }}
         />
       </div>
@@ -276,7 +238,7 @@ export default function VendorLoginPage() {
         style={{
           position: "relative",
           zIndex: 10,
-          minHeight: "100vh",
+          minHeight: "100svh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -284,72 +246,69 @@ export default function VendorLoginPage() {
           padding: "24px 20px",
         }}
       >
-        <div className="lg:hidden" style={{ textAlign: "center", marginBottom: 24 }}>
-          <Image
-            src="/logo/tribleera-mark-192.png"
-            alt="TRIBLEERA VAIBHAVAM"
-            width={48}
-            height={48}
-            style={{
-              borderRadius: 10,
-              margin: "0 auto 10px",
-              display: "block",
-              boxShadow: "0 0 0 1px rgba(212,175,106,.40), 0 0 26px rgba(212,175,106,.24)",
-            }}
-          />
-          <p style={{ color: "#D4AF6A", fontWeight: 700, fontSize: 15, letterSpacing: "0.20em" }}>
-            TRIBLEERA
-          </p>
-          <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 8, letterSpacing: "0.30em", marginTop: 2 }}>
-            VAIBHAVAM
-          </p>
-        </div>
+        <div className="auth-shell">
+          <div className="auth-column">
+            <div className="lg:hidden s1" style={{ textAlign: "center", marginBottom: 24, width: "100%" }}>
+              <Image
+                src="/logo/tribleera-mark-192.png"
+                alt="TRIBLEERA VAIBHAVAM"
+                width={48}
+                height={48}
+                style={{
+                  borderRadius: 10,
+                  margin: "0 auto 10px",
+                  display: "block",
+                  boxShadow: "0 0 0 1px rgba(212,175,106,.40), 0 0 26px rgba(212,175,106,.24)",
+                }}
+              />
+              <p style={{ color: "#D4AF6A", fontWeight: 700, fontSize: 15, letterSpacing: "0.20em" }}>
+                TRIBLEERA
+              </p>
+              <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 8, letterSpacing: "0.30em", marginTop: 2 }}>
+                VAIBHAVAM
+              </p>
+            </div>
 
-        <div className="s1 hidden lg:block" style={{ textAlign: "center", marginBottom: 28 }}>
-          <Image
-            src="/logo/tribleera-mark-192.png"
-            alt="TRIBLEERA VAIBHAVAM"
-            width={52}
-            height={52}
-            style={{
-              borderRadius: 11,
-              margin: "0 auto 12px",
-              display: "block",
-              boxShadow: "0 0 0 1px rgba(212,175,106,.40), 0 0 26px rgba(212,175,106,.24)",
-            }}
-          />
-          <p className="goldtext" style={{ fontWeight: 700, fontSize: 16, letterSpacing: "0.20em" }}>
-            TRIBLEERA
-          </p>
-          <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 8, letterSpacing: "0.30em", marginTop: 2 }}>
-            VAIBHAVAM
-          </p>
-          <p
-            style={{
-              color: "rgba(247,238,226,0.35)",
-              fontSize: 9,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              marginTop: 8,
-            }}
-          >
-            Vendor Portal
-          </p>
-        </div>
+            <div className="s1 hidden lg:block" style={{ textAlign: "left", marginBottom: 28, width: "100%" }}>
+              <Image
+                src="/logo/tribleera-mark-192.png"
+                alt="TRIBLEERA VAIBHAVAM"
+                width={52}
+                height={52}
+                style={{
+                  borderRadius: 11,
+                  margin: "0 0 12px",
+                  display: "block",
+                  boxShadow: "0 0 0 1px rgba(212,175,106,.40), 0 0 26px rgba(212,175,106,.24)",
+                }}
+              />
+              <p className="goldtext" style={{ fontWeight: 700, fontSize: 16, letterSpacing: "0.20em" }}>
+                TRIBLEERA
+              </p>
+              <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 8, letterSpacing: "0.30em", marginTop: 2 }}>
+                VAIBHAVAM
+              </p>
+              <p
+                style={{
+                  color: "rgba(247,238,226,0.35)",
+                  fontSize: 9,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  marginTop: 8,
+                }}
+              >
+                Vendor Portal
+              </p>
+            </div>
 
-        <div className="s2 v-panel">
-          <div className="s3 v-badge">
-            <Sparkles size={13} aria-hidden="true" />
-            Vendor access
-          </div>
-
+            <div className="s2 v-panel">
           <h1
             className="s3"
             style={{
               color: "#1F2937",
-              fontSize: 30,
+              fontSize: 28,
               fontWeight: 700,
-              marginBottom: 8,
+              marginBottom: 6,
               letterSpacing: "-0.02em",
               lineHeight: 1.08,
             }}
@@ -357,22 +316,9 @@ export default function VendorLoginPage() {
             Vendor sign in
           </h1>
 
-          <p className="s3" style={{ color: "#6B7280", fontSize: 14, marginBottom: 0, lineHeight: 1.6 }}>
-            Sign in with your approved studio email or phone number. If you are new, start with studio registration.
+          <p className="s3" style={{ color: "#6B7280", fontSize: 14, marginBottom: 20, lineHeight: 1.6 }}>
+            Use your approved studio email or phone number to continue.
           </p>
-
-          <div className="s4 v-helper-grid">
-            <Link href="/vendor/register" className="v-helper-card">
-              <span className="v-helper-icon" aria-hidden="true">
-                <UserPlus size={18} />
-              </span>
-              <span className="v-helper-copy">
-                <span className="v-helper-eyebrow">New vendor</span>
-                <span className="v-helper-title">Register your studio</span>
-              </span>
-              <ArrowRight size={16} className="v-helper-arrow" aria-hidden="true" />
-            </Link>
-          </div>
 
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div className="s4">
@@ -457,6 +403,15 @@ export default function VendorLoginPage() {
               {loading ? "Signing in..." : "Sign in to vendor portal"}
             </button>
           </form>
+
+          <p style={{ marginTop: 18, textAlign: "center", fontSize: 12, color: "#6B7280", lineHeight: 1.6 }}>
+            Need a studio account?{" "}
+            <Link href="/vendor/register" style={{ color: "#7A1F3D", fontWeight: 600, textDecoration: "none" }}>
+              Register your studio
+            </Link>
+          </p>
+            </div>
+          </div>
         </div>
 
         <div className="s5" style={{ marginTop: 18, textAlign: "center" }}>

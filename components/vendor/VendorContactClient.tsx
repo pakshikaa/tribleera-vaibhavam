@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Lock, Phone, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -52,6 +53,9 @@ export function VendorContactClient({ vendorId, phone, whatsapp, packagesHref }:
         <Button href={packagesHref} variant="gold" fullWidth size="sm" className="mt-1">
           View packages to book
         </Button>
+        <Link href="/faq#contact" className="text-[11px] font-semibold text-burgundy hover:underline">
+          When is contact revealed? →
+        </Link>
       </div>
     );
   }

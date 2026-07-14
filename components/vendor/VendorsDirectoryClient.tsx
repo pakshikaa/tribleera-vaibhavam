@@ -11,6 +11,7 @@ import { getCategoryBySlug, categories } from "@/lib/data/categories";
 import { Vendor } from "@/types";
 import { getLiveVendors, getVendorCities, getVendorCountByCategory, subscribeLiveVendors } from "@/lib/utils/liveVendors";
 import { RecentlyViewedVendors } from "@/components/vendor/RecentlyViewed";
+import { CompareBar } from "@/components/vendor/CompareBar";
 
 interface SearchParams {
   category?: string;
@@ -131,6 +132,8 @@ export function VendorsDirectoryClient({
           )}
         </div>
       </Container>
+
+      <CompareBar />
     </>
   );
 }

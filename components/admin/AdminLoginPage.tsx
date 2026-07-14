@@ -72,8 +72,9 @@ export function AdminLoginPage() {
     <div data-portal="true" className="font-[Arial,sans-serif]">
       <style>{`
         @keyframes kenBurns {
-          from { transform: scale(1.00); }
-          to   { transform: scale(1.08); }
+          0% { transform: scale(1.02) translate3d(0, 0, 0); }
+          50% { transform: scale(1.07) translate3d(-1.2%, -0.8%, 0); }
+          100% { transform: scale(1.10) translate3d(1.2%, 0.8%, 0); }
         }
         @keyframes imgReveal {
           from { opacity: 0; filter: blur(8px); }
@@ -91,16 +92,21 @@ export function AdminLoginPage() {
           0%, 100% { opacity: 0.40; }
           50%      { opacity: 0.72; }
         }
-        .kb { animation: kenBurns 18s ease-in-out infinite alternate; }
+        @keyframes auraPulse {
+          0%, 100% { opacity: 0.26; transform: scale(1); }
+          50% { opacity: 0.48; transform: scale(1.08); }
+        }
+        .kb { animation: kenBurns 26s ease-in-out infinite alternate; }
         .ir { animation: imgReveal .9s cubic-bezier(.16,1,.3,1) both; }
         .s1 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .10s both; }
         .s2 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .22s both; }
         .s3 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .34s both; }
         .s4 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .46s both; }
         .s5 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .58s both; }
+        .scene-aura { animation: auraPulse 12s ease-in-out infinite; }
         .breathe { animation: breathe 4s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) {
-          .kb, .ir, .s1, .s2, .s3, .s4, .s5, .breathe { animation: none; }
+          .kb, .ir, .s1, .s2, .s3, .s4, .s5, .scene-aura, .breathe { animation: none; }
         }
         .goldtext {
           background: linear-gradient(90deg,#D4AF6A,#E9CE9C,#F7EEE2,#E9CE9C,#D4AF6A);
@@ -142,6 +148,51 @@ export function AdminLoginPage() {
         .a-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .a-backlink { color: rgba(247,238,226,0.40); text-decoration: none; transition: color .15s; }
         .a-backlink:hover { color: rgba(212,175,106,0.75); }
+        .scene-photo-admin {
+          object-position: center 32%;
+          filter: brightness(0.84) contrast(1.06);
+        }
+        .auth-card-admin {
+          background: linear-gradient(180deg, rgba(21,4,12,0.68) 0%, rgba(21,4,12,0.76) 100%);
+          border: 1px solid rgba(212,175,106,0.20);
+          border-radius: 24px;
+          backdrop-filter: blur(28px);
+          -webkit-backdrop-filter: blur(28px);
+          box-shadow: 0 30px 80px rgba(0,0,0,0.46), 0 0 0 1px rgba(255,255,255,0.05) inset;
+        }
+        .auth-shell {
+          width: 100%;
+          max-width: 1400px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .auth-column {
+          width: 100%;
+          max-width: 440px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        @media (max-width: 767px) {
+          .scene-photo-admin { object-position: center 26%; }
+        }
+        @media (min-width: 960px) {
+          .auth-shell {
+            align-items: center;
+            padding-right: 0;
+          }
+          .auth-column {
+            max-width: 440px;
+            align-items: center;
+            margin-left: 0;
+            padding: 0;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-left: none;
+          }
+        }
       `}</style>
 
       <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden" }} aria-hidden="true">
@@ -152,27 +203,32 @@ export function AdminLoginPage() {
           sizes="100vw"
           priority
           quality={90}
-          className="kb ir"
+          className="kb ir scene-photo-admin"
+          style={{ objectFit: "cover" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.10)" }} />
+        <div
+          className="scene-aura"
           style={{
-            objectFit: "cover",
-            objectPosition: "center 35%",
-            filter: "brightness(0.82) contrast(1.05)",
+            position: "absolute",
+            inset: "-10%",
+            background:
+              "radial-gradient(circle at 52% 28%, rgba(255,255,255,0.22) 0%, rgba(212,175,106,0.12) 22%, rgba(21,4,12,0.12) 50%, transparent 72%)",
           }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.55)" }} />
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(ellipse 80% 80% at 50% 40%, transparent 20%, rgba(21,4,12,0.60) 70%, rgba(21,4,12,0.92) 100%)",
+              "radial-gradient(ellipse 80% 76% at 40% 40%, transparent 30%, rgba(21,4,12,0.24) 68%, rgba(21,4,12,0.74) 100%)",
           }}
         />
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to top, rgba(21,4,12,0.95) 0%, transparent 50%)",
+            background: "linear-gradient(90deg, rgba(21,4,12,0.18) 0%, rgba(21,4,12,0.10) 32%, rgba(21,4,12,0.20) 62%, rgba(21,4,12,0.54) 100%)",
           }}
         />
       </div>
@@ -181,7 +237,7 @@ export function AdminLoginPage() {
         style={{
           position: "relative",
           zIndex: 10,
-          minHeight: "100vh",
+          minHeight: "100svh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -189,52 +245,48 @@ export function AdminLoginPage() {
           padding: "24px 20px",
         }}
       >
-        <div className="s1" style={{ textAlign: "center", marginBottom: 32 }}>
-          <Image
-            src="/logo/tribleera-mark-192.png"
-            alt="TRIBLEERA VAIBHAVAM"
-            width={52}
-            height={52}
-            style={{
-              borderRadius: 11,
-              margin: "0 auto 12px",
-              display: "block",
-              boxShadow: "0 0 0 1px rgba(212,175,106,.42), 0 0 28px rgba(212,175,106,.26)",
-            }}
-          />
-          <p className="goldtext" style={{ fontWeight: 700, fontSize: 16, letterSpacing: "0.20em" }}>
-            TRIBLEERA
-          </p>
-          <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 8, letterSpacing: "0.30em", marginTop: 2 }}>
-            VAIBHAVAM
-          </p>
-          <p
-            style={{
-              color: "rgba(247,238,226,0.35)",
-              fontSize: 9,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              marginTop: 8,
-            }}
-          >
-            Secure Admin Portal
-          </p>
-        </div>
+        <div className="auth-shell">
+          <div className="auth-column">
+            <div className="s1" style={{ textAlign: "left", marginBottom: 32, width: "100%" }}>
+              <Image
+                src="/logo/tribleera-mark-192.png"
+                alt="TRIBLEERA VAIBHAVAM"
+                width={52}
+                height={52}
+                style={{
+                  borderRadius: 11,
+                  margin: "0 0 12px",
+                  display: "block",
+                  boxShadow: "0 0 0 1px rgba(212,175,106,.42), 0 0 28px rgba(212,175,106,.26)",
+                }}
+              />
+              <p className="goldtext" style={{ fontWeight: 700, fontSize: 16, letterSpacing: "0.20em" }}>
+                TRIBLEERA
+              </p>
+              <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 8, letterSpacing: "0.30em", marginTop: 2 }}>
+                VAIBHAVAM
+              </p>
+              <p
+                style={{
+                  color: "rgba(247,238,226,0.35)",
+                  fontSize: 9,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  marginTop: 8,
+                }}
+              >
+                Secure Admin Portal
+              </p>
+            </div>
 
-        <div
-          className="s2"
-          style={{
-            width: "100%",
-            maxWidth: 440,
-            background: "rgba(21,4,12,0.72)",
-            border: "1px solid rgba(212,175,106,0.18)",
-            borderRadius: 16,
-            padding: "32px 28px",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.50), 0 0 0 1px rgba(255,255,255,0.05) inset",
-          }}
-        >
+            <div
+              className="s2 auth-card-admin"
+              style={{
+                width: "100%",
+                maxWidth: 440,
+                padding: "32px 28px",
+              }}
+            >
           <h1
             className="s3"
             style={{ color: "#F7EEE2", fontSize: 24, fontWeight: 700, marginBottom: 4, letterSpacing: "-0.01em" }}
@@ -342,6 +394,8 @@ export function AdminLoginPage() {
               {loading ? "Signing in..." : "Sign in to secure admin portal"}
             </button>
           </form>
+            </div>
+          </div>
         </div>
 
         <div className="s5" style={{ marginTop: 20, textAlign: "center" }}>

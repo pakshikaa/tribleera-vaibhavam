@@ -132,6 +132,18 @@ export function readAdminNotifications() {
   return readJson<AdminNotificationItem[]>(ADMIN_NOTIFICATIONS_KEY, []);
 }
 
+/**
+ * Marks every admin notification read. Pending applications and payments are
+ * deliberately untouched — they stay in the badge because they are still
+ * outstanding work, not merely unseen messages.
+ */
+export function markAdminNotificationsRead() {
+  if (typeof window === "undefined") return;
+  const next = readAdminNotifications().map((item) => ({ ...item, read: true }));
+  window.localStorage.setItem(ADMIN_NOTIFICATIONS_KEY, JSON.stringify(next));
+  emitAdminDataChanged();
+}
+
 export function readPendingPayments() {
   return readJson<PendingPaymentRecord[]>(PAYMENTS_PENDING_KEY, []);
 }

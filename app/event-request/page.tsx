@@ -31,14 +31,23 @@ const BUDGET_OPTIONS = [
   { value: "350k-plus", label: "LKR 350K+", midpoint: 400000 },
 ] as const;
 
+// Tamil weddings need vendor lead time — require at least 30 days' notice.
+const MIN_DAYS_AHEAD = 30;
+
+/** Earliest bookable date, as a yyyy-mm-dd string for the date input's `min`. */
+function earliestEventDate() {
+  const date = new Date();
+  date.setDate(date.getDate() + MIN_DAYS_AHEAD);
+  return date.toISOString().split("T")[0];
+}
+
 const eventRequestSchema = z.object({
-  // Tamil weddings need vendor lead time — require at least 30 days' notice.
   eventDate: z
     .string()
     .min(1)
     .refine(
-      (value) => new Date(value).getTime() > Date.now() + 30 * 86400000,
-      "Must be a future date at least 30 days ahead — vendors need notice"
+      (value) => value >= earliestEventDate(),
+      `Please book at least ${MIN_DAYS_AHEAD} days in advance — vendors need notice`
     ),
   eventLocation: z.enum(LOCATIONS),
   guestCount: z.number().int().min(10, "At least 10 guests").max(5000),
@@ -113,7 +122,7 @@ export default function EventRequestPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const today = new Date().toISOString().split("T")[0];
+  const minDateStr = earliestEventDate();
   const {
     register,
     handleSubmit,
@@ -424,16 +433,27 @@ export default function EventRequestPage() {
           {step === 1 && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-start">
-                <Input
-                  label="Wedding date"
-                  id="eventDate"
-                  type="date"
-                  min={today}
-                  required
-                  aria-label="Wedding event date"
-                  error={errors.eventDate?.message}
-                  {...register("eventDate")}
-                />
+                <div>
+                  <Input
+                    label="Wedding date"
+                    id="eventDate"
+                    type="date"
+                    min={minDateStr}
+                    required
+                    aria-label="Wedding event date"
+                    aria-describedby="eventDate-hint"
+                    error={errors.eventDate?.message}
+                    {...register("eventDate")}
+                  />
+                  <p id="eventDate-hint" className="mt-1.5 text-[11px] text-slate-soft">
+                    Vendors require at least {MIN_DAYS_AHEAD} days notice. Earliest date:{" "}
+                    {new Date(minDateStr).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
                 <Select label="Celebration location" required error={errors.eventLocation?.message} {...register("eventLocation")}>
                   {LOCATIONS.map((location) => (
                     <option key={location} value={location}>
