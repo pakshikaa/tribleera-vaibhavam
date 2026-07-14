@@ -1,236 +1,115 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { AlertCircle, Eye, EyeOff } from "lucide-react";
-import { commonLoginImage } from "@/lib/data/images";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { AlertCircle, Eye, EyeOff, ShieldCheck, Sparkles, TimerReset } from "lucide-react";
 import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
-import { readCustomerProfile, writeActiveCustomerProfile } from "@/lib/utils/customer-profile";
+import { fallbackCustomerProfile, writeActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
-export default function LoginPage() {
+type CustomerTab = "signin" | "signup";
+
+const TABS: Array<{ id: CustomerTab; label: string }> = [
+  { id: "signin", label: "Sign in" },
+  { id: "signup", label: "Create account" },
+];
+
+const HIGHLIGHTS = [
+  { icon: ShieldCheck, label: "Secure session" },
+  { icon: TimerReset, label: "Fast booking access" },
+  { icon: Sparkles, label: "Shortlist and planning in one place" },
+];
+
+export default function CustomerLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect") || "/dashboard/customer";
+  const [tab, setTab] = useState<CustomerTab>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const redirectPath = searchParams.get("redirect") || "/";
+  const [error, setError] = useState("");
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setLoading(true);
     setError("");
 
-    setTimeout(() => {
-      if (email && password.length >= 6) {
-        try {
-          const profile = readCustomerProfile(email);
-          writeActiveCustomerProfile(profile);
-        } catch {}
-        router.push(redirectPath);
+    window.setTimeout(() => {
+      if (!email || password.trim().length < 6) {
+        setError("Enter a valid email and a password with at least 6 characters.");
+        setLoading(false);
         return;
       }
 
-      setError("Invalid email or password. Please try again.");
-      setLoading(false);
-    }, 700);
+      try {
+        const profile = fallbackCustomerProfile(email);
+        writeActiveCustomerProfile(profile);
+        window.sessionStorage.setItem("user-auth", "true");
+      } catch {}
+
+      router.push(tab === "signin" ? redirectPath : "/signup");
+    }, 800);
   }
 
   return (
-    <div data-portal="true" className="font-[Arial,sans-serif]">
+    <>
       <style>{`
-        @keyframes kenBurns {
-          0% { transform: scale(1.02) translate3d(0, 0, 0); }
-          50% { transform: scale(1.07) translate3d(-1.2%, -0.8%, 0); }
-          100% { transform: scale(1.10) translate3d(1.2%, 0.8%, 0); }
-        }
-        @keyframes imgReveal {
-          from { opacity: 0; filter: blur(8px); }
-          to { opacity: 1; filter: blur(0); }
-        }
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes goldShimmer {
-          0% { background-position: -300% center; }
-          100% { background-position: 300% center; }
-        }
-        @keyframes auraPulse {
-          0%, 100% { opacity: 0.34; transform: scale(1); }
-          50% { opacity: 0.60; transform: scale(1.08); }
-        }
-        .kb { animation: kenBurns 26s ease-in-out infinite alternate; }
-        .ir { animation: imgReveal .9s cubic-bezier(.16,1,.3,1) both; }
-        .s1 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .10s both; }
-        .s2 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .22s both; }
-        .s3 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .34s both; }
-        .s4 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .46s both; }
-        .s5 { animation: slideUp .6s cubic-bezier(.16,1,.3,1) .58s both; }
-        .scene-aura { animation: auraPulse 11s ease-in-out infinite; }
-        @media (prefers-reduced-motion: reduce) {
-          .kb, .ir, .s1, .s2, .s3, .s4, .s5, .scene-aura { animation: none; }
-        }
-        .goldtext {
-          background: linear-gradient(90deg,#D4AF6A,#E9CE9C,#F7EEE2,#E9CE9C,#D4AF6A);
-          background-size: 300% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: goldShimmer 4s linear infinite;
-        }
-        .scene-photo-common {
-          object-position: center 24%;
-          filter: brightness(0.86) saturate(1.01) contrast(1.01);
-        }
-        .auth-card-common {
-          background: linear-gradient(180deg, rgba(252,248,243,0.94) 0%, rgba(250,247,242,0.90) 100%);
-          border: 1px solid rgba(212,175,106,0.18);
-          border-radius: 24px;
-          backdrop-filter: blur(28px);
-          -webkit-backdrop-filter: blur(28px);
-          box-shadow: 0 30px 80px rgba(21,4,12,0.34), 0 0 0 1px rgba(255,255,255,0.35) inset;
-        }
-        .c-inp {
-          width: 100%;
-          padding: 14px 15px;
-          border: 1.5px solid #E5E7EB;
-          border-radius: 12px;
-          font-size: 16px;
-          color: #1F2937;
-          background: rgba(255,255,255,0.92);
-          outline: none;
-          box-sizing: border-box;
-          font-family: Arial, sans-serif;
-          transition: border-color .2s, box-shadow .2s, background-color .2s;
-        }
-        .c-inp::placeholder { color: rgba(31,41,55,0.35); }
-        .c-inp:focus {
-          border-color: #7A1F3D;
-          box-shadow: 0 0 0 4px rgba(122,31,61,0.10);
-          background: #FFFFFF;
-        }
-        .c-btn {
-          width: 100%;
-          padding: 15px 0;
-          border: none;
-          border-radius: 14px;
-          font-size: 16px;
-          font-weight: 700;
-          cursor: pointer;
-          font-family: Arial, sans-serif;
-          background: linear-gradient(135deg,#7A1F3D 0%,#5C0427 100%);
-          color: #FFFFFF;
-          box-shadow: 0 12px 26px rgba(92,4,39,0.28);
-          transition: transform .16s, box-shadow .16s, opacity .16s;
-        }
-        .c-btn:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 16px 34px rgba(92,4,39,0.34);
-        }
-        .c-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .c-backlink { color: rgba(247,238,226,0.58); text-decoration: none; transition: color .15s; }
-        .c-backlink:hover { color: rgba(212,175,106,0.90); }
-        .c-helper-row {
-          display: grid;
-          gap: 10px;
-          margin-top: 18px;
-        }
-        .c-helper-card {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 14px 16px;
-          border-radius: 14px;
-          border: 1px solid rgba(122,31,61,0.12);
-          background: linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(248,242,236,0.92) 100%);
-          text-decoration: none;
-          transition: transform .16s, box-shadow .16s, border-color .16s;
-        }
-        .c-helper-card:hover {
-          transform: translateY(-1px);
-          border-color: rgba(122,31,61,0.22);
-          box-shadow: 0 12px 24px rgba(92,4,39,0.08);
-        }
-        .c-helper-copy { min-width: 0; }
-        .c-helper-label {
-          display: block;
-          color: #9CA3AF;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          margin-bottom: 3px;
-        }
-        .c-helper-title {
-          display: block;
-          color: #7A1F3D;
-          font-size: 14px;
+        .cust-tab {
+          position: relative;
+          border: 0;
+          background: transparent;
+          padding: 10px 0;
+          color: rgba(75,85,99,.72);
+          font-size: 13px;
           font-weight: 600;
-          line-height: 1.45;
+          letter-spacing: .01em;
+          transition: color .2s ease;
         }
-        .c-helper-arrow {
+        .cust-tab::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -1px;
+          height: 2px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #7A1F3D 0%, #9A2C52 100%);
+          transform: scaleX(0);
+          transition: transform .2s ease;
+        }
+        .cust-tab.active {
           color: #7A1F3D;
-          font-size: 16px;
-          flex: 0 0 auto;
         }
-        .auth-shell {
-          width: 100%;
-          max-width: 1400px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .auth-column {
-          width: 100%;
-          max-width: 420px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        @media (max-width: 767px) {
-          .scene-photo-common { object-position: center 18%; }
-        }
-        @media (min-width: 960px) {
-          .auth-shell {
-            align-items: center;
-            padding-left: 0;
-          }
-          .auth-column {
-            max-width: 420px;
-            align-items: center;
-            padding: 0;
-            background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border-right: none;
-          }
+        .cust-tab.active::after {
+          transform: scaleX(1);
         }
       `}</style>
 
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden" }} aria-hidden="true">
+      <div style={{ position: "fixed", inset: 0, overflow: "hidden" }}>
         <Image
-          src={commonLoginImage}
+          src="/images/portal/testimonials.jpg"
           alt=""
           fill
-          sizes="100vw"
           priority
-          quality={90}
-          className="kb ir scene-photo-common"
-          style={{ objectFit: "cover" }}
+          sizes="100vw"
+          quality={92}
+          className="img-kb img-reveal"
+          style={{
+            objectFit: "cover",
+            objectPosition: "center 22%",
+            filter: "brightness(0.84) saturate(1.04)",
+          }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.10)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,0.18)" }} />
         <div
-          className="scene-aura"
           style={{
             position: "absolute",
-            inset: "-10%",
+            inset: 0,
             background:
-              "radial-gradient(circle at 50% 28%, rgba(247,238,226,0.28) 0%, rgba(233,206,156,0.14) 24%, rgba(122,31,61,0.10) 48%, transparent 72%)",
+              "radial-gradient(circle at 50% 35%, rgba(247,238,226,0.26) 0%, rgba(247,238,226,0.10) 22%, rgba(21,4,12,0.04) 48%, transparent 70%)",
           }}
         />
         <div
@@ -238,7 +117,7 @@ export default function LoginPage() {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(ellipse 82% 78% at 60% 42%, transparent 30%, rgba(21,4,12,0.22) 68%, rgba(21,4,12,0.68) 100%)",
+              "linear-gradient(180deg, rgba(23,7,13,0.44) 0%, rgba(23,7,13,0.12) 24%, rgba(23,7,13,0.16) 55%, rgba(23,7,13,0.66) 100%)",
           }}
         />
         <div
@@ -246,198 +125,252 @@ export default function LoginPage() {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(90deg, rgba(21,4,12,0.48) 0%, rgba(21,4,12,0.26) 26%, rgba(21,4,12,0.10) 54%, rgba(21,4,12,0.34) 100%)",
+              "radial-gradient(ellipse 76% 70% at 50% 48%, transparent 34%, rgba(21,4,12,0.18) 72%, rgba(21,4,12,0.58) 100%)",
           }}
         />
       </div>
 
-      <div
+      <main
         style={{
           position: "relative",
-          zIndex: 10,
+          zIndex: 1,
           minHeight: "100svh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "24px 20px",
+          padding: "28px 18px",
         }}
       >
-        <div className="auth-shell">
-          <div className="auth-column">
-            <div className="s1" style={{ textAlign: "center", marginBottom: 28, width: "100%" }}>
-              <Image
-                src="/logo/tribleera-mark-192.png"
-                alt="TRIBLEERA VAIBHAVAM"
-                width={50}
-                height={50}
-                style={{
-                  borderRadius: 10,
-                  margin: "0 auto 10px",
-                  display: "block",
-                  boxShadow: "0 0 0 1px rgba(212,175,106,.40), 0 0 26px rgba(212,175,106,.24)",
-                }}
-              />
-              <p className="goldtext" style={{ fontWeight: 700, fontSize: 15, letterSpacing: "0.20em" }}>
-                TRIBLEERA
-              </p>
-              <p style={{ color: "rgba(233,206,156,0.55)", fontSize: 7.5, letterSpacing: "0.30em", marginTop: 2 }}>
-                VAIBHAVAM
-              </p>
-            </div>
-
-            <div
-              className="s2 auth-card-common"
-              style={{
-                width: "100%",
-                maxWidth: 420,
-                padding: "32px 28px",
-              }}
-            >
-          <h1
-            className="s3"
-            style={{ color: "#1F2937", fontSize: 23, fontWeight: 700, marginBottom: 4, letterSpacing: "-0.01em" }}
-          >
-            Welcome back
-          </h1>
-          <p className="s3" style={{ color: "#6B7280", fontSize: 13, marginBottom: 22, lineHeight: 1.65 }}>
-            New to TRIBLEERA?{" "}
-            <Link
-              href={`/signup?redirect=${encodeURIComponent(redirectPath)}`}
-              style={{ color: "#7A1F3D", fontWeight: 600, textDecoration: "none" }}
-            >
-              Create an account
-            </Link>
-          </p>
-
-          <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div className="s4">
-              <label
-                htmlFor="c-em"
-                style={{
-                  display: "block",
-                  fontSize: 9.5,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.14em",
-                  color: "#6B7280",
-                  marginBottom: 6,
-                }}
-              >
-                Email
-              </label>
-              <input
-                id="c-em"
-                type="email"
-                value={email}
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                onChange={(e) => setEmail(e.target.value)}
-                className="c-inp"
-              />
-            </div>
-
-            <div className="s4">
-              <label
-                htmlFor="c-pw"
-                style={{
-                  display: "block",
-                  fontSize: 9.5,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.14em",
-                  color: "#6B7280",
-                  marginBottom: 6,
-                }}
-              >
-                Password
-              </label>
-              <div style={{ position: "relative" }}>
-                <input
-                  id="c-pw"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  required
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="c-inp"
-                  style={{ paddingRight: 40 }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((value) => !value)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  style={{
-                    position: "absolute",
-                    right: 12,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "rgba(31,41,55,0.4)",
-                    display: "flex",
-                    padding: 4,
-                  }}
-                >
-                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div
-                className="s4"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: "#FEE2E2",
-                  border: "1px solid #FECACA",
-                  borderRadius: 12,
-                  padding: "11px 12px",
-                  fontSize: 12,
-                  color: "#991B1B",
-                  lineHeight: 1.55,
-                }}
-              >
-                <AlertCircle size={14} aria-hidden="true" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            <button type="submit" disabled={loading} className="s5 c-btn" style={{ marginTop: 4 }}>
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-
-          <div className="c-helper-row">
-            <Link href="/vendor/register" className="c-helper-card">
-              <span className="c-helper-copy">
-                <span className="c-helper-label">Service providers</span>
-                <span className="c-helper-title">Join as a partner and list your services</span>
-              </span>
-              <span className="c-helper-arrow" aria-hidden="true">→</span>
-            </Link>
+        <div className="s1" style={{ textAlign: "center", marginBottom: 24 }}>
+          <Image
+            src="/logo/tribleera-mark-192.png"
+            alt="TRIBLEERA VAIBHAVAM"
+            width={54}
+            height={54}
+            style={{
+              display: "block",
+              margin: "0 auto 12px",
+              borderRadius: 12,
+              boxShadow: "0 0 0 1px rgba(212,175,106,.38), 0 12px 32px rgba(21,4,12,.22)",
+            }}
+          />
+          <div className="gold-shimmer" style={{ fontSize: 18, fontWeight: 700, letterSpacing: ".22em" }}>
+            TRIBLEERA
           </div>
-
-          <p style={{ marginTop: 8, textAlign: "center", fontSize: 11 }}>
-            <Link href={ADMIN_LOGIN_PATH} style={{ color: "#C9BCAF", textDecoration: "none" }}>
-              Admin access
-            </Link>
-          </p>
-            </div>
+          <div style={{ color: "rgba(233,206,156,0.65)", fontSize: 9, letterSpacing: ".34em", marginTop: 4 }}>
+            VAIBHAVAM
           </div>
+          <p style={{ color: "rgba(247,238,226,0.78)", fontSize: 12, marginTop: 10 }}>
+            Warm wedding planning, premium vendors, one elegant flow.
+          </p>
         </div>
 
-        <div className="s5" style={{ marginTop: 18, textAlign: "center" }}>
-          <Link href="/" className="c-backlink" style={{ fontSize: 12 }}>
+        <section
+          className="s2"
+          style={{
+            width: "100%",
+            maxWidth: 470,
+            borderRadius: 26,
+            overflow: "hidden",
+            background: "linear-gradient(180deg, rgba(252,248,243,.90) 0%, rgba(250,247,242,.96) 100%)",
+            border: "1px solid rgba(255,255,255,.38)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "0 32px 90px rgba(21,4,12,.28), inset 0 1px 0 rgba(255,255,255,.45)",
+          }}
+        >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, padding: "20px 26px 0", borderBottom: "1px solid rgba(31,41,55,.08)" }}>
+            {TABS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setTab(item.id);
+                  setError("");
+                }}
+                className={`cust-tab ${tab === item.id ? "active" : ""}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ padding: "28px 26px 24px" }}>
+            <div className="s3">
+              <div style={{ color: "#7A1F3D", fontSize: 10, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase" }}>
+                Customer Access
+              </div>
+              <h1 style={{ color: "#243044", fontFamily: "var(--font-display)", fontSize: 42, lineHeight: 1.02, marginTop: 8 }}>
+                {tab === "signin" ? "Welcome back" : "Create your account"}
+              </h1>
+              <p style={{ color: "#5B6576", fontSize: 14, lineHeight: 1.7, marginTop: 10 }}>
+                {tab === "signin"
+                  ? "Continue to your shortlist, bookings, and wedding planning dashboard without confusion."
+                  : "Start with your email, then move into the full planning experience in a few quick steps."}
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} style={{ display: "grid", gap: 16, marginTop: 24 }}>
+              <div className="s4">
+                <label htmlFor="customer-email" style={{ display: "block", marginBottom: 7, color: "#697386", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
+                  Email
+                </label>
+                <input
+                  id="customer-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  className="vendor-input"
+                  style={{
+                    width: "100%",
+                    padding: "15px 16px",
+                    borderRadius: 15,
+                    border: "1.5px solid #E5E7EB",
+                    background: "rgba(255,255,255,.92)",
+                    color: "#1F2937",
+                  }}
+                />
+              </div>
+
+              <div className="s5">
+                <label htmlFor="customer-password" style={{ display: "block", marginBottom: 7, color: "#697386", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
+                  Password
+                </label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    id="customer-password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={6}
+                    autoComplete={tab === "signin" ? "current-password" : "new-password"}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder={tab === "signin" ? "Enter your password" : "Choose a secure password"}
+                    className="vendor-input"
+                    style={{
+                      width: "100%",
+                      padding: "15px 48px 15px 16px",
+                      borderRadius: 15,
+                      border: "1.5px solid #E5E7EB",
+                      background: "rgba(255,255,255,.92)",
+                      color: "#1F2937",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((value) => !value)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    style={{
+                      position: "absolute",
+                      right: 12,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      border: 0,
+                      background: "transparent",
+                      color: "#8A94A6",
+                      cursor: "pointer",
+                      display: "flex",
+                      padding: 4,
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+              </div>
+
+              {error ? (
+                <div
+                  className="s5"
+                  style={{
+                    display: "flex",
+                    gap: 9,
+                    alignItems: "flex-start",
+                    padding: "12px 14px",
+                    borderRadius: 14,
+                    border: "1px solid #FECACA",
+                    background: "#FEF2F2",
+                    color: "#991B1B",
+                    fontSize: 12.5,
+                    lineHeight: 1.55,
+                  }}
+                >
+                  <AlertCircle size={15} style={{ flex: "0 0 auto", marginTop: 1 }} />
+                  <span>{error}</span>
+                </div>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="s6 portal-btn"
+                style={{
+                  width: "100%",
+                  padding: "15px 0",
+                  border: 0,
+                  borderRadius: 16,
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  background: loading ? "#9CA3AF" : "linear-gradient(135deg, #7A1F3D 0%, #5C0427 55%, #380C1E 100%)",
+                  boxShadow: loading ? "none" : "0 16px 28px rgba(92,4,39,.24)",
+                  cursor: loading ? "not-allowed" : "pointer",
+                }}
+              >
+                {loading ? "Please wait..." : tab === "signin" ? "Sign in" : "Continue to account setup"}
+              </button>
+            </form>
+
+            <div className="s7" style={{ display: "grid", gap: 10, marginTop: 18 }}>
+              {HIGHLIGHTS.map(({ icon: Icon, label }) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "12px 14px",
+                    borderRadius: 14,
+                    background: "rgba(255,255,255,.66)",
+                    border: "1px solid rgba(122,31,61,.08)",
+                    color: "#4B5563",
+                    fontSize: 12.5,
+                  }}
+                >
+                  <Icon size={15} color="#7A1F3D" />
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="s7" style={{ textAlign: "center", marginTop: 18, fontSize: 12.5, color: "#5B6576" }}>
+              Offer wedding services?{" "}
+              <Link href="/vendor/register" style={{ color: "#7A1F3D", fontWeight: 700, textDecoration: "none" }}>
+                Join as a service partner
+              </Link>
+            </div>
+
+            <div className="s7" style={{ textAlign: "center", marginTop: 10 }}>
+              <Link href={ADMIN_LOGIN_PATH} style={{ color: "#C2B3A4", fontSize: 11.5, textDecoration: "none" }}>
+                Admin access
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <div className="s7" style={{ marginTop: 18, textAlign: "center" }}>
+          <Link href="/" style={{ color: "rgba(247,238,226,.72)", fontSize: 12, textDecoration: "none" }}>
             Back to TRIBLEERA VAIBHAVAM
           </Link>
         </div>
-      </div>
-    </div>
+
+        <p className="breathe" style={{ position: "fixed", insetInline: 0, bottom: 18, textAlign: "center", color: "rgba(247,238,226,.38)", fontSize: 11 }}>
+          Premium wedding planning with calm, clear entry.
+        </p>
+      </main>
+    </>
   );
 }

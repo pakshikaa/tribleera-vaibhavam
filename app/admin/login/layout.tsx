@@ -1,11 +1,9 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Admin Login" };
+export const metadata: Metadata = {
+  title: "Admin Login | TRIBLEERA VAIBHAVAM",
+};
 
 export default function AdminLoginLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-ink">
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }

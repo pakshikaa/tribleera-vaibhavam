@@ -1,5 +1,6 @@
-import { AdminLoginPage } from "@/components/admin/AdminLoginPage";
+import { redirect } from "next/navigation";
+import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
 
 export default function SecureAdminLoginRoute() {
-  return <AdminLoginPage />;
+  redirect(ADMIN_LOGIN_PATH);
 }

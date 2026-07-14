@@ -22,7 +22,7 @@ interface AdminLoginAttempts {
   lockedUntil?: string;
 }
 
-export const ADMIN_LOGIN_PATH = "/admin/secure-n7k2xq4m-login";
+export const ADMIN_LOGIN_PATH = "/admin/login";
 export const ADMIN_SESSION_KEY = "tv-admin-session";
 const ADMIN_LOGIN_ATTEMPTS_KEY = "tv-admin-login-attempts";
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;

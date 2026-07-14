@@ -9,10 +9,20 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 
 export function WhatsAppFloat() {
   const pathname = usePathname();
+  const PORTALS = [
+    "/vendor/login",
+    "/vendor/register",
+    "/dashboard/vendor",
+    "/dashboard/admin",
+    "/admin/login",
+    "/login",
+  ];
   const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
 
-  // On a vendor profile, pre-fill the inquiry with that vendor's name and
-  // service so the customer doesn't start from a generic message.
+  if (PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+    return null;
+  }
+
   const vendorSlug = pathname.startsWith("/vendors/") ? pathname.split("/")[2] : "";
   const vendor = vendorSlug ? getVendorBySlug(vendorSlug) : undefined;
   const message = vendor

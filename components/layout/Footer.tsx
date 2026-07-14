@@ -1,5 +1,8 @@
-﻿import Link from "next/link";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { categories } from "@/lib/data/categories";
@@ -46,6 +49,20 @@ const SOCIAL = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+  const PORTALS = [
+    "/vendor/login",
+    "/vendor/register",
+    "/dashboard/vendor",
+    "/dashboard/admin",
+    "/admin/login",
+    "/login",
+  ];
+
+  if (PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-gold/15 bg-ink text-cream">
       <Container className="py-14 md:py-20">
@@ -60,12 +77,12 @@ export function Footer() {
                 className="rounded-md shadow-glow"
               />
               <span className="flex flex-col items-start leading-none">
-                <span className="font-display text-[16px] font-bold text-cream tracking-widest">TRIBLEERA</span>
-                <span className="font-display text-[9px] font-semibold tracking-[0.3em] text-gold/70 mt-0.5">VAIBHAVAM</span>
+                <span className="font-display text-[16px] font-bold tracking-widest text-cream">TRIBLEERA</span>
+                <span className="mt-0.5 font-display text-[9px] font-semibold tracking-[0.3em] text-gold/70">VAIBHAVAM</span>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-faint">
-              Jaffna&rsquo;s premium wedding concierge — verified photographers, decorators, bridal artists,
+              Jaffna&apos;s premium wedding concierge - verified photographers, decorators, bridal artists,
               cake ateliers and invitation houses, bookable with full price transparency.
             </p>
             <div className="mt-5 flex gap-3">
@@ -87,10 +104,10 @@ export function Footer() {
             <div key={col.title}>
               <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-gold">{col.title}</p>
               <ul className="space-y-3">
-                {col.links.map((l) => (
-                  <li key={l.href + l.label}>
-                    <Link href={l.href} className="text-sm text-cream-dim hover:text-cream">
-                      {l.label}
+                {col.links.map((link) => (
+                  <li key={link.href + link.label}>
+                    <Link href={link.href} className="text-sm text-cream-dim hover:text-cream">
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -101,7 +118,7 @@ export function Footer() {
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-cream/10 pt-7 text-xs text-cream-faint md:flex-row">
           <p>© 2026 TRIBLEERA VAIBHAVAM, Jaffna, Sri Lanka. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <p className="font-display text-sm text-cream-dim">தேர்வின் செம்மை, வைபவத்தின் பெருமை</p>
+            <p className="font-display text-sm text-cream-dim">Premium Tamil wedding marketplace</p>
             <Link
               href={ADMIN_LOGIN_PATH}
               aria-label="Admin login"

@@ -2,20 +2,33 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 export function BackToTop() {
   const pathname = usePathname();
+  const PORTALS = [
+    "/vendor/login",
+    "/vendor/register",
+    "/dashboard/vendor",
+    "/dashboard/admin",
+    "/admin/login",
+    "/login",
+  ];
   const [visible, setVisible] = useState(false);
   const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
+  const hideOnPortal = PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (hideOnPortal) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

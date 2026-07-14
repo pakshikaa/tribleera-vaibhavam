@@ -14,7 +14,6 @@ import { useCart } from "@/context/CartContext";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils/cn";
-import { ADMIN_LOGIN_PATH } from "@/lib/utils/adminAuth";
 import { readActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 const NAV_LINKS = [
@@ -26,17 +25,19 @@ const NAV_LINKS = [
 
 export function Header() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { items, hydrated, clear } = useCart();
-  const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
-  const scrolled = useScrolled(40);
-  const isPortalRoute = [
+  const PORTALS = [
     "/vendor/login",
     "/vendor/register",
     "/dashboard/vendor",
     "/dashboard/admin",
-    ADMIN_LOGIN_PATH,
-  ].some((route) => pathname === route || pathname.startsWith(`${route}/`));
+    "/admin/login",
+    "/login",
+  ];
+  const router = useRouter();
+  const { items, hydrated, clear } = useCart();
+  const { count: shortlistCount, hydrated: slHydrated } = useShortlist();
+  const scrolled = useScrolled(40);
+  const isPortalRoute = PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   const [mounted, setMounted] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);

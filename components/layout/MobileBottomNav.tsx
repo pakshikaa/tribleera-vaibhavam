@@ -28,9 +28,21 @@ function getActiveTab(pathname: string): string | null {
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const PORTALS = [
+    "/vendor/login",
+    "/vendor/register",
+    "/dashboard/vendor",
+    "/dashboard/admin",
+    "/admin/login",
+    "/login",
+  ];
   const { items, hydrated } = useCart();
   const { count: shortlistCount, hydrated: shortlistHydrated } = useShortlist();
   const activeHref = getActiveTab(pathname);
+
+  if (PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+    return null;
+  }
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate/10 bg-white/95 backdrop-blur-md md:hidden">
