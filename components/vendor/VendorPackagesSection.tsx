@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { PackageCard } from "@/components/vendor/PackageCard";
 import { getVendorBySlug } from "@/lib/data/vendors";
-import { getVendorPackages } from "@/lib/utils/vendorData";
+import { useVendorPackages } from "@/lib/utils/vendorData";
 import type { MotifTone, MotifVariant, VendorPackage } from "@/types";
 
 interface VendorPackagesSectionProps {
@@ -21,10 +21,7 @@ export function VendorPackagesSection({
   tone,
   seed,
 }: VendorPackagesSectionProps) {
-  const packages = useMemo(
-    () => getVendorPackages(vendorSlug, staticPackages),
-    [staticPackages, vendorSlug]
-  );
+  const packages = useVendorPackages(vendorSlug, staticPackages);
   const vendor = useMemo(() => getVendorBySlug(vendorSlug), [vendorSlug]);
 
   if (packages.length === 0) {

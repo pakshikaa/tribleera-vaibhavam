@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { vendors } from "@/lib/data/vendors";
 import type { VendorPackage } from "@/types";
 
@@ -28,4 +29,24 @@ export function getVendorPackages(slug: string, fallback?: VendorPackage[]): Ven
   }
 
   return staticPackages.filter((pkg) => !pkg.archived);
+}
+
+/**
+ * getVendorPackages branches on `typeof window`, so calling it during render
+ * makes the server and the first client render disagree the moment a vendor has
+ * saved packages — React then throws the whole tree away and re-renders it.
+ * Start from the static packages (what the server sent) and swap in the stored
+ * ones after mount, so the two renders always agree.
+ */
+export function useVendorPackages(slug: string, staticPackages: VendorPackage[]): VendorPackage[] {
+  const [packages, setPackages] = useState<VendorPackage[]>(() =>
+    staticPackages.filter((pkg) => !pkg.archived)
+  );
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPackages(getVendorPackages(slug, staticPackages));
+  }, [slug, staticPackages]);
+
+  return packages;
 }

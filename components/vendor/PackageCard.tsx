@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { Check, MessageCircle, Sparkles } from "lucide-react";
 import { MotifTone, MotifVariant, VendorPackage } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { MotifArt } from "@/components/ui/MotifArt";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { getPackageFieldMeta } from "@/lib/data/packageTemplates";
 import { ADVANCE_RATE } from "@/lib/utils/booking";
 import { cn } from "@/lib/utils/cn";
@@ -44,11 +43,17 @@ export function PackageCard({ pkg, motif = "arch", tone = "gold", seed = 0, sele
       )}
     >
       <div className="relative aspect-[16/9] overflow-hidden">
-        {pkg.coverImageUrl ? (
-          <Image src={pkg.coverImageUrl} alt={`${pkg.name} package`} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
-        ) : (
-          <MotifArt variant={motif} tone={tone} seed={seed} className="h-full w-full" label={`${pkg.name} package artwork`} />
-        )}
+        {/* SmartImage, not next/image: several of the seeded Unsplash photos
+            404, and a raw <Image> leaves a broken tile plus a console error.
+            This falls back to the brand motif instead. */}
+        <SmartImage
+          src={pkg.coverImageUrl}
+          alt={`${pkg.name} package`}
+          fallbackVariant={motif}
+          fallbackTone={tone}
+          fallbackSeed={seed}
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
         {pkg.recommended && (
           <Badge tone="gold" icon={<Sparkles size={12} />} className="absolute left-4 top-4 z-10">

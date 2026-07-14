@@ -11,12 +11,12 @@ import { Button } from "@/components/ui/Button";
 import { Toast } from "@/components/ui/Toast";
 import { useCart } from "@/context/CartContext";
 import { lineItemBreakdown } from "@/lib/utils/booking";
-import { getVendorPackages } from "@/lib/utils/vendorData";
+import { useVendorPackages } from "@/lib/utils/vendorData";
 
 export function PackageSelectionClient({ vendor }: { vendor: Vendor }) {
   const router = useRouter();
   const { addItem, isInCart, items } = useCart();
-  const livePackages = getVendorPackages(vendor.slug, vendor.packages);
+  const livePackages = useVendorPackages(vendor.slug, vendor.packages);
   const alreadyInCart = isInCart(vendor.categorySlug);
   const existingItem = items.find((i) => i.categorySlug === vendor.categorySlug);
   const [selectedId, setSelectedId] = useState<string | null>(
