@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
-import { AlertTriangle, Bell, Eye, ExternalLink, Pencil, Sparkles, TrendingUp, Wallet } from "lucide-react";
+import { AlertTriangle, Bell, Eye, ExternalLink, Pencil, ShieldCheck, Sparkles, TrendingUp, Wallet } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
@@ -54,19 +54,38 @@ export function VendorDashboardClient() {
 
   return (
     <div className="bg-ivory" data-portal="true">
-      <section className="py-10" style={{ background: "linear-gradient(135deg, #15040C 0%, #5C0427 100%)" }}>
-        <Container className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <section
+        className="relative overflow-hidden py-10"
+        style={{ background: "linear-gradient(135deg, #15040C 0%, #380C1E 45%, #5C0427 80%, #7A1F3D 100%)" }}
+      >
+        {/* Mandap-arch watermark — brand texture without competing with the text. */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 200 200"
+          className="pointer-events-none absolute -right-6 -top-8 h-56 w-56 opacity-[0.06]"
+        >
+          <path d="M40 180V100C40 50 65 15 100 15S160 50 160 100v80" stroke="#D4AF6A" strokeWidth="4" fill="none" />
+          <path d="M62 180V104C62 68 78 38 100 38S138 68 138 104v76" stroke="#D4AF6A" strokeWidth="4" fill="none" />
+        </svg>
+
+        <Container className="relative z-[1] flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 overflow-hidden rounded-[8px] shadow-soft">
+            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full shadow-soft ring-2 ring-gold/45 ring-offset-2 ring-offset-burgundy-950">
               <MotifArt variant={vendor.motif} tone={vendor.tone} seed={vendor.id.length} />
             </div>
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gold">Premium Partner Dashboard</p>
-              <div className="flex items-center gap-2">
-                <h1 className="font-display text-2xl text-cream">Welcome back, {vendor.name}</h1>
-                {vendor.verified && <Badge tone="rose">Verified</Badge>}
+              <h1 className="mt-0.5 font-display text-2xl text-cream">
+                Welcome back, <span className="text-gold-light">{vendor.name}</span>
+              </h1>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                {vendor.verified && (
+                  <span className="inline-flex items-center gap-1 rounded-[3px] border border-gold/30 bg-gold/[0.15] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.1em] text-gold">
+                    <ShieldCheck size={11} aria-hidden="true" /> Verified
+                  </span>
+                )}
+                <span className="text-[11px] text-cream-faint">{vendor.location}</span>
               </div>
-              <p className="text-sm text-cream-dim">{vendor.location}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
@@ -77,6 +96,15 @@ export function VendorDashboardClient() {
               </Button>
               <Button href="/dashboard/vendor/packages" variant="gold" fullWidth>
                 Manage packages
+              </Button>
+              <Button
+                href={`/vendors/${vendor.slug}`}
+                target="_blank"
+                variant="glass"
+                icon={<ExternalLink size={15} />}
+                fullWidth
+              >
+                View live profile
               </Button>
             </div>
           </div>

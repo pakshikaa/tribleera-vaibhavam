@@ -24,46 +24,57 @@ function NavItem({ href, label, icon: Icon, active }: { href: string; label: str
     <Link
       href={href}
       className={cn(
-        "flex items-center gap-3 border-l-4 px-4 py-3 text-sm transition-all",
+        "mx-2 flex items-center gap-3 rounded-r-[6px] border-l-[3px] px-3.5 py-2.5 text-sm transition-all",
         active
-          ? "border-[#7A1F3D] bg-[#7A1F3D]/8 font-semibold text-[#7A1F3D]"
+          ? "border-gold bg-gradient-to-r from-burgundy/[0.09] to-transparent font-semibold text-[#5C0427]"
           : "border-transparent text-[#4B5563] hover:bg-[#FAF7F2] hover:text-[#1F2937]"
       )}
     >
-      <Icon size={17} aria-hidden="true" />
+      <Icon size={16} strokeWidth={active ? 2.2 : 1.75} className={active ? "text-burgundy" : "text-[#6B7280]"} aria-hidden="true" />
       {label}
     </Link>
   );
 }
 
-function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: () => void }) {
+function SidebarContent({ pathname, vendorName, onSignOut }: { pathname: string; vendorName: string; onSignOut: () => void }) {
   function isActive(href: string) {
     return href === "/dashboard/vendor" ? pathname === href : pathname.startsWith(href);
   }
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-slate/10 p-5">
-        <div className="flex items-start justify-between gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[6px]" />
-            <span className="font-display text-sm font-bold text-[#5C0427]">TRIBLEERA</span>
-          </Link>
-          <VendorNotificationBell />
-        </div>
-        <p className="mt-3 text-xs text-[#4B5563]">Vendor Portal</p>
+      <div className="flex items-center justify-between gap-2 border-b border-slate/10 px-4 py-4">
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src="/logo/tribleera-mark-192.png" alt="TRIBLEERA" width={32} height={32} className="rounded-[7px]" />
+          <span className="leading-none">
+            <span className="block font-display text-[13px] font-bold tracking-[0.12em] text-[#5C0427]">TRIBLEERA</span>
+            <span className="mt-1 block text-[8.5px] font-medium uppercase tracking-[0.18em] text-slate-soft">Vendor Portal</span>
+          </span>
+        </Link>
+        <VendorNotificationBell />
       </div>
-      <nav className="flex-1 py-3">
+
+      {/* Signed-in identity — grounds the portal in "this is your studio". */}
+      <div className="border-b border-slate/8 bg-[#FAF7F2] px-4 py-3">
+        <p className="text-[10px] text-slate-soft">Signed in as</p>
+        <p className="mt-0.5 truncate text-[13px] font-semibold text-slate">{vendorName}</p>
+        <span className="mt-1.5 flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(34,197,94,0.6)]" />
+          <span className="text-[10px] font-medium text-emerald-600">Active</span>
+        </span>
+      </div>
+
+      <nav className="flex-1 space-y-0.5 py-3">
         {NAV_ITEMS.map((item) => (
           <NavItem key={item.href} {...item} active={isActive(item.href)} />
         ))}
-        <div className="my-3 mx-4 h-px bg-slate/10" />
+        <div className="mx-4 my-3 h-px bg-slate/10" />
         <NavItem href="/dashboard/vendor/support" label="Support" icon={HelpCircle} active={pathname.startsWith("/dashboard/vendor/support")} />
         <button
           type="button"
           onClick={onSignOut}
-          className="flex w-full items-center gap-3 border-l-4 border-transparent px-4 py-3 text-left text-sm text-[#4B5563] transition-all hover:bg-[#FAF7F2] hover:text-[#1F2937]"
+          className="mx-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-r-[6px] border-l-[3px] border-transparent px-3.5 py-2.5 text-left text-sm text-[#4B5563] transition-all hover:bg-red-50 hover:text-red-600"
         >
-          <LogOut size={17} aria-hidden="true" />
+          <LogOut size={16} aria-hidden="true" />
           Log Out
         </button>
       </nav>
@@ -110,7 +121,7 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
     <div className="dashboard-page flex min-h-screen bg-[#FAF7F2]" data-portal="true">
       {/* Desktop sidebar */}
       <aside className="hidden w-56 shrink-0 border-r border-slate/10 bg-white md:flex md:flex-col">
-        <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
+        <SidebarContent pathname={pathname} vendorName={vendorName} onSignOut={handleSignOut} />
       </aside>
 
       {/* Main area */}
