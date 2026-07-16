@@ -48,7 +48,9 @@ export default function ContactPage() {
       {/* HERO */}
       <section className="bg-ink py-20 md:py-28">
         <Container className="max-w-2xl text-center">
-          <BackButton href="/" label="Home" dark className="mb-6" />
+          <div className="mb-8 flex justify-start">
+            <BackButton href="/" label="Home" dark />
+          </div>
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.25em] text-gold">
             Get in touch
           </p>

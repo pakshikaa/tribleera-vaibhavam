@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
+const PREVIOUS_PATH_KEY = "TRIBLEERA-nav-previous";
+
 interface BackButtonProps {
   href: string;
   label?: string;
@@ -25,14 +27,21 @@ export function BackButton({
   const router = useRouter();
 
   function handleBack(e: React.MouseEvent) {
-    if (
-      typeof window !== "undefined" &&
-      window.history.length > 1 &&
-      document.referrer.includes(window.location.origin)
-    ) {
-      e.preventDefault();
-      router.back();
-    }
+    if (typeof window === "undefined") return;
+
+    try {
+      const previousPath = window.sessionStorage.getItem(PREVIOUS_PATH_KEY);
+      const currentPath = `${window.location.pathname}${window.location.search}`;
+      const hasInternalReferrer = document.referrer.includes(window.location.origin);
+      const canGoBack = window.history.length > 1 && (
+        hasInternalReferrer || (previousPath !== null && previousPath !== currentPath)
+      );
+
+      if (canGoBack) {
+        e.preventDefault();
+        router.back();
+      }
+    } catch {}
   }
 
   if (variant === "floating") {
@@ -49,11 +58,11 @@ export function BackButton({
         href={href}
         onClick={handleBack}
         className={cn(
-          "inline-flex items-center gap-1.5 text-sm font-medium transition-all",
+          "inline-flex min-h-11 items-center gap-2 rounded-full border border-transparent px-3 py-2 text-sm font-medium transition-all",
           "hover:-translate-x-0.5",
           dark
-            ? "text-cream/70 hover:text-cream"
-            : "text-slate-soft hover:text-burgundy",
+            ? "text-cream/75 hover:border-white/10 hover:bg-white/5 hover:text-cream"
+            : "text-slate-soft hover:border-burgundy/10 hover:bg-burgundy/5 hover:text-burgundy",
           className
         )}
         aria-label={`Back to ${label}`}
@@ -98,7 +107,7 @@ function FloatingBackButton({
             href={href}
             onClick={onBack}
             className={cn(
-              "flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px]",
+              "flex min-h-11 items-center gap-2 rounded-full px-3.5 py-2 text-[13px]",
               "font-medium shadow-ambient backdrop-blur-md transition-all",
               "hover:shadow-ambient-lg hover:-translate-y-0.5",
               "border",

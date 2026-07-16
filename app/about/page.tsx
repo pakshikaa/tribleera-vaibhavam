@@ -30,7 +30,9 @@ export default function AboutPage() {
       {/* HERO */}
       <section className="bg-ink py-24 md:py-36">
         <Container className="max-w-3xl text-center">
-          <BackButton href="/" label="Home" dark className="mb-6" />
+          <div className="mb-8 flex justify-start">
+            <BackButton href="/" label="Home" dark />
+          </div>
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.25em] text-gold">
             Our Story
           </p>

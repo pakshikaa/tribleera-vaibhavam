@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import { NavigationHistoryTracker } from "@/components/layout/NavigationHistoryTracker";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ShortlistProvider>
                 <CompareProvider>
                   <MotionProvider>
+                    <NavigationHistoryTracker />
                     <SiteShell>{children}</SiteShell>
                   </MotionProvider>
                 </CompareProvider>

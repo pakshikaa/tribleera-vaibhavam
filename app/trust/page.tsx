@@ -34,7 +34,9 @@ export default function TrustPage() {
           <path d="M62 180 V104 C62 68 78 38 100 38 C122 38 138 68 138 104 V180" stroke="currentColor" strokeWidth="5" />
         </svg>
         <Container className="relative z-10 text-center">
-          <BackButton href="/" label="Home" dark className="mb-6" />
+          <div className="mb-8 flex justify-start">
+            <BackButton href="/" label="Home" dark />
+          </div>
           <p className="mb-4 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">
             <span className="h-px w-7 bg-gold" />
             Trust &amp; Safety

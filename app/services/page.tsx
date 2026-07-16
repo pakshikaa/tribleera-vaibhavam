@@ -25,7 +25,9 @@ export default function ServicesPage() {
           </svg>
         </div>
         <Container className="relative z-10 text-center">
-          <BackButton href="/" label="Home" dark className="mb-6" />
+          <div className="mb-8 flex justify-start">
+            <BackButton href="/" label="Home" dark />
+          </div>
           <p className="mb-4 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">
             <span className="h-px w-7 bg-gold" />
             Phase One
