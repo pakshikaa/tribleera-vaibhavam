@@ -17,11 +17,11 @@ const PORTAL_PREFIXES = ["/dashboard/admin", "/admin/", "/dashboard/vendor", "/v
 const AUTH_ROUTES = ["/login", "/signup"];
 
 // Sign-in is asked for at the point of commitment, not at the door. Browsing
-// the directory, a vendor's profile and their packages stays open: couples
-// compare before they commit, and these are the pages that need to be
-// crawlable. Everything that touches money or a customer's own records is
-// behind the wall.
-const PROTECTED_PREFIXES = ["/dashboard/customer", "/booking"];
+// the directory, a vendor's profile, the cart and public tracking pages stays
+// open: couples compare before they commit, and these are the pages that need
+// to be crawlable/shareable. Payment and a customer's own records are behind
+// the wall.
+const PROTECTED_PREFIXES = ["/dashboard/customer", "/booking/payment"];
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

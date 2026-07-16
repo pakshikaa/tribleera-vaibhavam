@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, Eye, Plus, X } from "lucide-react";
+import { Download, Eye, ImagePlus, Plus, X } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { PackageCard } from "@/components/vendor/PackageCard";
 import { Container } from "@/components/ui/Container";
@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { PACKAGE_TEMPLATES, type PackageTemplate } from "@/lib/data/packageTemplates";
 import { readLocalStorage, tryWriteLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
-import { MAX_GALLERY_BYTES, readImageAsDataUrl, validateImageFile } from "@/lib/utils/image-upload";
+import { MAX_GALLERY_BYTES, MAX_PHOTO_BYTES, readImageAsDataUrl, validateImageFile } from "@/lib/utils/image-upload";
 import { markVendorProfileComplete } from "@/lib/utils/vendorPortal";
 import type { VendorPackage } from "@/types";
 import { BackButton } from "@/components/ui/BackButton";
@@ -120,6 +120,30 @@ export default function VendorPackagesPage() {
     );
   }
 
+  async function handlePackageImageChange(packageId: string, fileList: FileList | null) {
+    const file = fileList?.[0];
+    if (!file) return;
+
+    const invalid = validateImageFile(file, MAX_PHOTO_BYTES);
+    if (invalid) {
+      showToast(invalid, "error");
+      return;
+    }
+
+    const imageUrl = await readImageAsDataUrl(file);
+    const nextPackages = packages.map((pkg) =>
+      pkg.id === packageId ? { ...pkg, coverImageUrl: imageUrl } : pkg
+    );
+
+    if (!tryWriteLocalStorage(packageStorageKey, nextPackages)) {
+      showToast("Browser storage is full - remove a few photos or package images first.", "error");
+      return;
+    }
+
+    setPackages(nextPackages);
+    showToast("Package image updated.", "success");
+  }
+
   // Packages live in this browser's storage until backend sync exists —
   // give vendors a portable backup so cleared storage can't wipe their work
   // (V-19).
@@ -209,6 +233,30 @@ export default function VendorPackagesPage() {
               <div key={pkg.id} className="rounded-lg border border-slate/8 bg-white p-5 shadow-soft">
                 <div className="aspect-[4/3] overflow-hidden rounded-[8px]">
                   <SmartImage src={pkg.coverImageUrl} alt={pkg.name} fallbackVariant={vendor.motif} fallbackTone={vendor.tone} />
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <label className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border border-slate/15 bg-ivory px-3 py-2 text-sm font-medium text-slate transition-colors hover:border-burgundy hover:text-burgundy">
+                    <ImagePlus size={15} />
+                    {pkg.coverImageUrl ? "Change image" : "Add image"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="sr-only"
+                      onChange={async (event) => {
+                        await handlePackageImageChange(pkg.id, event.target.files);
+                        event.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {pkg.coverImageUrl && (
+                    <button
+                      type="button"
+                      className="min-h-11 rounded-[4px] border border-slate/15 px-3 text-sm text-slate-soft transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                      onClick={() => updatePackage(pkg.id, { coverImageUrl: undefined })}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
                 <Input
                   className="mt-4"

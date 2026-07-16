@@ -73,12 +73,25 @@ test.describe("Payment", () => {
     }, seedCartItem());
   });
 
-  test("payment page loads", async ({ page }) => {
+  test("payment page redirects signed-out users to login", async ({ page }) => {
+    await page.goto("/booking/payment");
+    await expect(page).toHaveURL(/\/login\?redirect=%2Fbooking%2Fpayment/);
+  });
+
+  test("payment page loads for signed-in users", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("customer-auth", "test@example.com");
+      window.sessionStorage.setItem("user-auth", "true");
+    });
     await page.goto("/booking/payment");
     await expect(page).toHaveTitle(/TRIBLEERA VAIBHAVAM/);
   });
 
   test("bank transfer shows account details", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("customer-auth", "test@example.com");
+      window.sessionStorage.setItem("user-auth", "true");
+    });
     await page.goto("/booking/payment");
     await page.locator("label", { hasText: "Online Bank Transfer" }).click();
     await expect(page.locator("text=People's Bank")).toBeVisible();
@@ -86,6 +99,10 @@ test.describe("Payment", () => {
   });
 
   test("submit disabled without deposit slip for bank transfer", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("customer-auth", "test@example.com");
+      window.sessionStorage.setItem("user-auth", "true");
+    });
     await page.goto("/booking/payment");
     await page.locator("label", { hasText: "Online Bank Transfer" }).click();
     const submitBtn = page.locator("button[type='submit']").first();

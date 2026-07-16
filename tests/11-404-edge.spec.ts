@@ -16,12 +16,21 @@ test.describe("Edge Cases & 404", () => {
     expect(response?.status()).toBe(404);
   });
 
-  test("empty cart: payment page shows an empty-cart state rather than the form", async ({ page }) => {
+  test("empty cart: signed-out payment route redirects to login", async ({ page }) => {
     await page.goto("/");
     await page.evaluate(() => localStorage.removeItem("TRIBLEERA-cart-v1"));
     await page.goto("/booking/payment");
-    // app/booking/payment/page.tsx renders an EmptyState in-place for an empty
-    // cart rather than redirecting — assert the correct real behavior.
+    await expect(page).toHaveURL(/\/login\?redirect=%2Fbooking%2Fpayment/);
+  });
+
+  test("empty cart: signed-in payment page shows an empty-cart state rather than the form", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("customer-auth", "test@example.com");
+      window.sessionStorage.setItem("user-auth", "true");
+    });
+    await page.goto("/");
+    await page.evaluate(() => localStorage.removeItem("TRIBLEERA-cart-v1"));
+    await page.goto("/booking/payment");
     await expect(page.locator("text=Nothing to pay for yet")).toBeVisible();
   });
 
@@ -30,8 +39,6 @@ test.describe("Edge Cases & 404", () => {
     await page.evaluate(() => localStorage.removeItem("TRIBLEERA-shortlist-v1"));
     await page.goto("/shortlist");
     await expect(page.locator("text=No vendors saved yet")).toBeVisible();
-    // ':visible' — Header's desktop nav "Vendors" link shares this href and
-    // is CSS-hidden at the Mobile Safari viewport; the EmptyState CTA isn't.
     await expect(page.locator("a[href='/vendors']:visible").first()).toBeVisible();
   });
 });

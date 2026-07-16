@@ -29,6 +29,7 @@ export function Header() {
     "/vendor/login",
     "/vendor/register",
     "/dashboard/vendor",
+    "/dashboard/customer",
     "/dashboard/admin",
     "/admin/login",
     "/login",
