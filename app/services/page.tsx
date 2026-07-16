@@ -16,7 +16,7 @@ export default function ServicesPage() {
   return (
     <div className="bg-ivory">
       {/* Dark-luxury page hero — consistent with homepage brand */}
-      <section className="relative overflow-hidden bg-ink py-20 md:py-28">
+      <section className="relative overflow-hidden bg-ink py-16 md:py-24">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_50%_0%,rgba(122,31,61,0.35),transparent_65%)]" />
           <svg className="absolute -right-20 top-0 h-[420px] w-[420px] text-gold/[0.08]" viewBox="0 0 200 200" fill="none">
@@ -25,7 +25,7 @@ export default function ServicesPage() {
           </svg>
         </div>
         <Container className="relative z-10 text-center">
-          <div className="mb-8 flex justify-start">
+          <div className="mb-4 flex justify-start md:mb-5">
             <BackButton href="/" label="Home" dark />
           </div>
           <p className="mb-4 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">

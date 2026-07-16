@@ -31,9 +31,7 @@ export default async function VendorsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="bg-ivory">
-      <Container className="py-8 md:py-12">
-        <SearchMemory />
-      </Container>
+      <SearchMemory />
       <VendorsDirectoryClient initialVendors={vendors} searchParams={params} />
     </div>
   );

@@ -12,9 +12,12 @@ export interface EventRequest {
   id: string;
   customerId: string;
   eventDate: string;
+  eventDateLabel?: string;
+  eventMonth?: string;
+  isFlexibleDate?: boolean;
   location: string;
   guestCount: number;
-  budgetRange: string;
+  budgetRange?: string;
   selectedServices: string[];
   priorities: string[];
   specialRequirements?: string;
@@ -28,6 +31,7 @@ export const eventRequests: EventRequest[] = [
     id: "EVT-20260001",
     customerId: "customer-niranjala-kajan",
     eventDate: "2026-12-04",
+    eventDateLabel: "4 December 2026",
     location: "Jaffna",
     guestCount: 450,
     budgetRange: "150k-350k",
@@ -59,6 +63,7 @@ export const eventRequests: EventRequest[] = [
     id: "EVT-20260002",
     customerId: "customer-revathi",
     eventDate: "2026-10-02",
+    eventDateLabel: "2 October 2026",
     location: "Colombo",
     guestCount: 280,
     budgetRange: "50k-150k",
@@ -72,6 +77,7 @@ export const eventRequests: EventRequest[] = [
     id: "EVT-20260003",
     customerId: "customer-subasha",
     eventDate: "2026-08-22",
+    eventDateLabel: "22 August 2026",
     location: "Trincomalee",
     guestCount: 180,
     budgetRange: "under-50k",

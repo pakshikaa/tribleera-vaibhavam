@@ -32,6 +32,20 @@ export function formatDateShort(date: string | Date): string {
   }).format(d);
 }
 
+export function formatMonthYear(monthValue: string): string {
+  const [year, month] = monthValue.split("-").map(Number);
+  if (!year || !month) return monthValue;
+
+  return new Intl.DateTimeFormat("en-LK", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(year, month - 1, 1));
+}
+
+export function formatEventDateLabel(eventDate: string, eventDateLabel?: string): string {
+  return eventDateLabel?.trim() ? eventDateLabel : formatDate(eventDate);
+}
+
 export function relativeTime(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
   const diffMs = Date.now() - d.getTime();

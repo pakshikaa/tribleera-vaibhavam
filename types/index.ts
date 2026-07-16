@@ -123,6 +123,9 @@ export interface VendorBookingRequest {
   customerPhone?: string;
   customerEmail?: string;
   eventDate: string;
+  eventDateLabel?: string;
+  eventMonth?: string;
+  isFlexibleDate?: boolean;
   location?: string;
   guestCount?: number;
   budgetRange?: string;

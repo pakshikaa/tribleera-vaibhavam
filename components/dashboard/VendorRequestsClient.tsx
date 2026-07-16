@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/Toast";
 import { VendorInvoiceUpload } from "@/components/dashboard/VendorInvoiceUpload";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { getVendorBySlug } from "@/lib/data/vendors";
-import { formatDate, formatLKR, relativeTime } from "@/lib/utils/format";
+import { formatEventDateLabel, formatLKR, relativeTime } from "@/lib/utils/format";
 import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
 
 const STATUS_TONE = {
@@ -39,6 +39,9 @@ interface InboxEntry {
   customerPhone?: string;
   customerEmail?: string;
   eventDate: string;
+  eventDateLabel?: string;
+  eventMonth?: string;
+  isFlexibleDate?: boolean;
   location?: string;
   guestCount?: number;
   budgetRange?: string;
@@ -87,6 +90,9 @@ function buildLiveRequests(vendorSlug: string): VendorBookingRequest[] {
     customerPhone: entry.customerPhone,
     customerEmail: entry.customerEmail,
     eventDate: entry.eventDate,
+    eventDateLabel: entry.eventDateLabel,
+    eventMonth: entry.eventMonth,
+    isFlexibleDate: entry.isFlexibleDate,
     location: entry.location,
     guestCount: entry.guestCount,
     budgetRange: entry.budgetRange,
@@ -119,6 +125,10 @@ function isPastDate(dateStr: string) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return new Date(dateStr) < today;
+}
+
+function formatRequestTiming(request: VendorBookingRequest) {
+  return formatEventDateLabel(request.eventDate, request.eventDateLabel);
 }
 
 export function VendorRequestsClient({ initial }: { initial: VendorBookingRequest[] }) {
@@ -183,11 +193,17 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
   function getDateConflicts(request: VendorBookingRequest) {
     const inbox = safeGet<Record<string, InboxEntry[]>>("tv-vendor-inbox", {});
     const acceptedInbox = (inbox[vendorSlug] ?? []).filter(
-      (entry) => entry.id !== request.id && (entry.status === "accepted" || entry.status === "countered") && entry.eventDate === request.eventDate
+      (entry) =>
+        entry.id !== request.id &&
+        (entry.status === "accepted" || entry.status === "countered") &&
+        !entry.isFlexibleDate &&
+        !request.isFlexibleDate &&
+        entry.eventDate === request.eventDate
     );
     const bookings = safeGet<Array<Booking & { customerName?: string }>>("tv-bookings", []);
     const acceptedBookings = bookings.filter(
       (booking) =>
+        !request.isFlexibleDate &&
         booking.eventDate === request.eventDate &&
         booking.status !== "cancelled" &&
         booking.items?.some((item) => item.vendorId === vendorSlug || item.vendorSlug === vendorSlug)
@@ -235,7 +251,7 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
         id: generateId("N"),
         type: "vendor_accepted",
         title: `${vendor.name} accepted your request`,
-        message: `${vendor.name} is available for your event on ${formatDate(acceptTarget.eventDate)}. You can continue coordination through the platform thread.`,
+        message: `${vendor.name} is available for your event ${acceptTarget.isFlexibleDate ? `in ${formatRequestTiming(acceptTarget)}` : `on ${formatRequestTiming(acceptTarget)}`}. You can continue coordination through the platform thread.`,
         href: "/dashboard/customer",
         read: false,
         createdAt: new Date().toISOString(),
@@ -512,7 +528,7 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
               <div>
                 <p className="font-display text-lg text-slate">{request.customerName}</p>
                 <p className="text-xs text-slate-soft">
-                  {getCategoryBySlug(request.categorySlug)?.name} · {request.packageName} · Event {formatDate(request.eventDate)}
+                  {getCategoryBySlug(request.categorySlug)?.name} · {request.packageName} · Event {formatRequestTiming(request)}
                 </p>
               </div>
               <Badge tone={STATUS_TONE[liveEntry?.status === "countered" ? "countered" : request.status]} className="capitalize">
@@ -595,8 +611,8 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
                           vendorName={vendor?.name ?? "Vendor"}
                         />
                       </span>
-                    ) : !isPastDate(request.eventDate) ? (
-                      <p className="text-xs italic text-slate-soft">Available after {formatDate(request.eventDate)}</p>
+                    ) : !request.isFlexibleDate && !isPastDate(request.eventDate) ? (
+                      <p className="text-xs italic text-slate-soft">Available after {formatRequestTiming(request)}</p>
                     ) : (
                       <Button size="sm" variant="secondary" icon={<CheckCircle2 size={14} />} onClick={() => markComplete(request)}>
                         Mark complete
@@ -613,7 +629,7 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
                   <p>Customer name <span className="ml-2 font-medium text-slate">{request.customerName}</span></p>
                   <p>Phone <span className="ml-2 font-medium text-slate">{request.customerPhone ?? "+94 77 000 0000"}</span></p>
                   <p>Email <span className="ml-2 font-medium text-slate">{request.customerEmail ?? "cus***@example.com"}</span></p>
-                  <p>Event date <span className="ml-2 font-medium text-slate">{formatDate(request.eventDate)}</span></p>
+                  <p>Event date <span className="ml-2 font-medium text-slate">{formatRequestTiming(request)}</span></p>
                   <p>Location <span className="ml-2 font-medium text-slate">{request.location ?? "Jaffna"}</span></p>
                   <p>Guest count <span className="ml-2 font-medium text-slate">{request.guestCount ?? 250}</span></p>
                 </div>
@@ -672,7 +688,7 @@ export function VendorRequestsClient({ initial }: { initial: VendorBookingReques
             return conflictCount > 0 ? (
               <div className="rounded-[8px] border border-danger/20 bg-danger-pale p-4 text-sm text-danger">
                 <p className="font-semibold">Warning: double-booking risk</p>
-                <p className="mt-1">You already have {conflictCount} same-date accepted booking or request on {formatDate(acceptTarget.eventDate)}.</p>
+                <p className="mt-1">You already have {conflictCount} same-date accepted booking or request on {formatRequestTiming(acceptTarget)}.</p>
               </div>
             ) : null;
           })()}

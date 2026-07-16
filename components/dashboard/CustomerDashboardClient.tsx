@@ -20,7 +20,7 @@ import { cancelledBookings as seedCancelledBookings, type CancellationRecord } f
 import { eventRequests as seedEventRequests, type EventRequest } from "@/lib/data/eventRequests";
 import { getCategoryBySlug } from "@/lib/data/categories";
 import { getVendorBySlug } from "@/lib/data/vendors";
-import { formatDate, formatLKR } from "@/lib/utils/format";
+import { formatDate, formatEventDateLabel, formatLKR } from "@/lib/utils/format";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 import {
   DEFAULT_CUSTOMER_PROFILE,
@@ -470,7 +470,7 @@ export function CustomerDashboardClient() {
                           <div key={request.id} className="rounded-[8px] bg-ivory px-4 py-3 text-sm text-slate-soft">
                             <p className="font-semibold text-slate">{request.id}</p>
                             <p className="mt-1">
-                              {request.location} · {request.guestCount} guests · {formatDate(request.eventDate)}
+                              {request.location} · {request.guestCount} guests · {formatEventDateLabel(request.eventDate, request.eventDateLabel)}
                             </p>
                           </div>
                         ))}
@@ -482,7 +482,7 @@ export function CustomerDashboardClient() {
                       <div>
                         <p className="font-display text-xl text-slate">{eventRequest.id}</p>
                         <p className="mt-1 text-sm text-slate-soft">
-                          {eventRequest.location} · {eventRequest.guestCount} guests · {eventRequest.budgetRange}
+                          {eventRequest.location} · {eventRequest.guestCount} guests · {eventRequest.budgetRange ?? "Budget not selected"}
                         </p>
                       </div>
                       {requestExpiryDays !== null && (

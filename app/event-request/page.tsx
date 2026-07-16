@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -16,46 +16,65 @@ import { categories } from "@/lib/data/categories";
 import { vendors } from "@/lib/data/vendors";
 import { writeLocalStorage } from "@/lib/utils/browser-storage";
 import { readActiveCustomerProfile } from "@/lib/utils/customer-profile";
-import { formatLKR } from "@/lib/utils/format";
+import { formatEventDateLabel, formatLKR, formatMonthYear } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
 import { BackButton } from "@/components/ui/BackButton";
 
 const SERVICE_OPTIONS = ["photography", "cakes", "decoration", "bridal-makeup", "invitation"] as const;
 const PRIORITIES = ["Quality", "Budget", "Availability", "Heritage Expertise", "Reviews"] as const;
-const LOCATIONS = ["Jaffna", "Colombo", "Trincomalee", "Batticaloa", "Kandy", "Vavuniya", "Other"] as const;
-const BUDGET_OPTIONS = [
-  { value: "under-50k", label: "Under LKR 50,000", midpoint: 50000 },
-  { value: "50k-150k", label: "LKR 50K-150K", midpoint: 100000 },
-  { value: "150k-350k", label: "LKR 150K-350K", midpoint: 250000 },
-  { value: "350k-plus", label: "LKR 350K+", midpoint: 400000 },
+const LOCATIONS = [
+  "Jaffna Town",
+  "Nallur",
+  "Kokuvil",
+  "Kondavil",
+  "Ariyalai",
+  "Chunnakam",
+  "Kopay",
+  "Chavakachcheri",
+  "Point Pedro",
+  "Karainagar",
+  "Other - Jaffna area",
 ] as const;
-
-// Tamil weddings need vendor lead time — require at least 30 days' notice.
-const MIN_DAYS_AHEAD = 30;
-
-/** Earliest bookable date, as a yyyy-mm-dd string for the date input's `min`. */
-function earliestEventDate() {
-  const date = new Date();
-  date.setDate(date.getDate() + MIN_DAYS_AHEAD);
-  return date.toISOString().split("T")[0];
-}
+const BUDGET_VALUES = ["starter", "balanced", "premium", "luxury"] as const;
 
 const eventRequestSchema = z.object({
-  eventDate: z
-    .string()
-    .min(1)
-    .refine(
-      (value) => value >= earliestEventDate(),
-      `Please book at least ${MIN_DAYS_AHEAD} days in advance — vendors need notice`
-    ),
+  eventDate: z.string().optional(),
+  eventMonth: z.string().optional(),
   eventLocation: z.enum(LOCATIONS),
-  guestCount: z.number().int().min(10, "At least 10 guests").max(5000),
-  budgetRange: z.enum(["under-50k", "50k-150k", "150k-350k", "350k-plus"]),
+  guestCount: z.number().int().min(2, "Guest count must be greater than 1").max(5000).optional(),
+  budgetRange: z.enum(BUDGET_VALUES).optional(),
   isFlexibleDate: z.boolean().optional(),
   selectedServices: z.array(z.enum(SERVICE_OPTIONS)).min(1, "Select at least one service"),
   priorities: z.array(z.enum(PRIORITIES)).max(3),
   specialRequirements: z.string().max(400).optional(),
+}).superRefine((values, ctx) => {
+  if (values.isFlexibleDate) {
+    if (!values.eventMonth?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["eventMonth"],
+        message: "Select the wedding month",
+      });
+    }
+    return;
+  }
+
+  if (!values.eventDate?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["eventDate"],
+      message: "Select the wedding date",
+    });
+  }
+
+  if (values.guestCount === undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["guestCount"],
+      message: "Enter guest count",
+    });
+  }
 });
 
 type EventRequestValues = z.infer<typeof eventRequestSchema>;
@@ -63,6 +82,7 @@ type EventRequestValues = z.infer<typeof eventRequestSchema>;
 const STEPS = ["Your Celebration", "Select Services", "Choose Vendors", "Review & Submit"];
 const MAX_PRIORITY_VENDORS = 5;
 type ServiceOption = (typeof SERVICE_OPTIONS)[number];
+type BudgetRangeValue = (typeof BUDGET_VALUES)[number];
 
 type ServiceVendorSelection = {
   categorySlug: ServiceOption;
@@ -70,8 +90,153 @@ type ServiceVendorSelection = {
   primaryVendorSlug: string;
 };
 
-function calculateAdvance(budgetRange: EventRequestValues["budgetRange"]) {
-  const selected = BUDGET_OPTIONS.find((option) => option.value === budgetRange) ?? BUDGET_OPTIONS[1];
+type BudgetGuide = {
+  starterLow: number;
+  starterHigh: number;
+  balancedLow: number;
+  balancedHigh: number;
+  premiumLow: number;
+  premiumHigh: number;
+  luxuryLow: number;
+};
+
+const JAFFNA_SERVICE_BUDGET_GUIDES: Record<ServiceOption, BudgetGuide> = {
+  photography: {
+    starterLow: 15000,
+    starterHigh: 50000,
+    balancedLow: 50000,
+    balancedHigh: 120000,
+    premiumLow: 120000,
+    premiumHigh: 250000,
+    luxuryLow: 250000,
+  },
+  cakes: {
+    starterLow: 5000,
+    starterHigh: 20000,
+    balancedLow: 20000,
+    balancedHigh: 50000,
+    premiumLow: 50000,
+    premiumHigh: 100000,
+    luxuryLow: 100000,
+  },
+  decoration: {
+    starterLow: 15000,
+    starterHigh: 75000,
+    balancedLow: 75000,
+    balancedHigh: 180000,
+    premiumLow: 180000,
+    premiumHigh: 350000,
+    luxuryLow: 350000,
+  },
+  "bridal-makeup": {
+    starterLow: 5000,
+    starterHigh: 25000,
+    balancedLow: 25000,
+    balancedHigh: 60000,
+    premiumLow: 60000,
+    premiumHigh: 120000,
+    luxuryLow: 120000,
+  },
+  invitation: {
+    starterLow: 100,
+    starterHigh: 5000,
+    balancedLow: 5000,
+    balancedHigh: 20000,
+    premiumLow: 20000,
+    premiumHigh: 60000,
+    luxuryLow: 60000,
+  },
+};
+
+function formatBudgetAmount(amount: number) {
+  return new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+    maximumFractionDigits: 0,
+  }).format(amount).replace(".00", "");
+}
+
+function roundBudgetAmount(amount: number) {
+  return Math.max(10000, Math.round(amount / 5000) * 5000);
+}
+
+function buildBudgetOptions(selectedServices: ServiceOption[]) {
+  const servicesToPrice: ServiceOption[] = selectedServices.length > 0 ? selectedServices : ["photography", "decoration"];
+  const totals = servicesToPrice.reduce(
+    (sum, service) => {
+      const guide = JAFFNA_SERVICE_BUDGET_GUIDES[service];
+      return {
+        starterLow: sum.starterLow + guide.starterLow,
+        starterHigh: sum.starterHigh + guide.starterHigh,
+        balancedLow: sum.balancedLow + guide.balancedLow,
+        balancedHigh: sum.balancedHigh + guide.balancedHigh,
+        premiumLow: sum.premiumLow + guide.premiumLow,
+        premiumHigh: sum.premiumHigh + guide.premiumHigh,
+        luxuryLow: sum.luxuryLow + guide.luxuryLow,
+      };
+    },
+    { starterLow: 0, starterHigh: 0, balancedLow: 0, balancedHigh: 0, premiumLow: 0, premiumHigh: 0, luxuryLow: 0 }
+  );
+
+  const starterLow = roundBudgetAmount(totals.starterLow);
+  const starterHigh = roundBudgetAmount(Math.max(totals.starterHigh, starterLow + 5000));
+  const balancedLow = roundBudgetAmount(Math.max(totals.balancedLow, starterHigh));
+  const balancedHigh = roundBudgetAmount(Math.max(totals.balancedHigh, balancedLow + 10000));
+  const premiumLow = roundBudgetAmount(Math.max(totals.premiumLow, balancedHigh));
+  const premiumHigh = roundBudgetAmount(Math.max(totals.premiumHigh, premiumLow + 15000));
+  const luxuryLow = roundBudgetAmount(Math.max(totals.luxuryLow, premiumHigh));
+
+  return [
+    {
+      value: "starter" as BudgetRangeValue,
+      label: `${formatBudgetAmount(starterLow)} - ${formatBudgetAmount(starterHigh)}`,
+      midpoint: roundBudgetAmount((starterLow + starterHigh) / 2),
+      helper: "Best for one or two essential services",
+    },
+    {
+      value: "balanced" as BudgetRangeValue,
+      label: `${formatBudgetAmount(balancedLow)} - ${formatBudgetAmount(balancedHigh)}`,
+      midpoint: roundBudgetAmount((balancedLow + balancedHigh) / 2),
+      helper: "Most common spend for the services you selected",
+    },
+    {
+      value: "premium" as BudgetRangeValue,
+      label: `${formatBudgetAmount(premiumLow)} - ${formatBudgetAmount(premiumHigh)}`,
+      midpoint: roundBudgetAmount((premiumLow + premiumHigh) / 2),
+      helper: "For signature vendors or larger guest counts",
+    },
+    {
+      value: "luxury" as BudgetRangeValue,
+      label: `Above ${formatBudgetAmount(luxuryLow)}`,
+      midpoint: roundBudgetAmount(luxuryLow * 1.18),
+      helper: "For heritage, premium, or multi-vendor setups",
+    },
+  ];
+}
+
+function buildServiceBudgetGuide(service: ServiceOption): BudgetGuide | null {
+  return JAFFNA_SERVICE_BUDGET_GUIDES[service] ?? null;
+}
+
+function matchesBudgetRange(price: number, budgetRange: BudgetRangeValue | undefined, guide: BudgetGuide | null) {
+  if (!guide || !budgetRange) return true;
+
+  switch (budgetRange) {
+    case "starter":
+      return price <= guide.starterHigh;
+    case "balanced":
+      return price <= guide.balancedHigh;
+    case "premium":
+      return price <= guide.premiumHigh;
+    case "luxury":
+      return price >= guide.luxuryLow;
+    default:
+      return true;
+  }
+}
+
+function calculateAdvance(budgetOptions: ReturnType<typeof buildBudgetOptions>, budgetRange?: EventRequestValues["budgetRange"]) {
+  const selected = budgetOptions.find((option) => option.value === budgetRange) ?? budgetOptions[1];
   const advance = Math.round(selected.midpoint * 0.2);
   const fee = Math.round(selected.midpoint * 0.03);
 
@@ -83,6 +248,74 @@ function calculateAdvance(budgetRange: EventRequestValues["budgetRange"]) {
   };
 }
 
+function renderVendorCard({
+  vendor,
+  shortlisted,
+  priorityIndex,
+  onClick,
+  extraBadge,
+}: {
+  vendor: (typeof vendors)[number];
+  shortlisted: boolean;
+  priorityIndex: number;
+  onClick: () => void;
+  extraBadge?: string;
+}) {
+  return (
+    <button
+      key={vendor.slug}
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "overflow-hidden rounded-[10px] border bg-white text-left transition-all",
+        priorityIndex >= 0
+          ? "border-burgundy shadow-lift"
+          : "border-slate/10 hover:border-burgundy/20 hover:shadow-soft"
+      )}
+    >
+      <div className="relative aspect-[4/3]">
+        <SmartImage
+          src={vendor.imageUrl}
+          alt={vendor.name}
+          fallbackVariant={vendor.motif}
+          fallbackTone={vendor.tone}
+          fallbackSeed={vendor.id.length}
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.04)_0%,rgba(21,4,12,0.08)_45%,rgba(21,4,12,0.7)_100%)]" />
+        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+          {shortlisted && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/92 px-2.5 py-1 text-[10.5px] font-semibold text-burgundy">
+              <Heart size={11} className="fill-burgundy text-burgundy" /> Saved
+            </span>
+          )}
+          {extraBadge && (
+            <span className="inline-flex rounded-full bg-white/92 px-2.5 py-1 text-[10.5px] font-semibold text-burgundy">
+              {extraBadge}
+            </span>
+          )}
+          {priorityIndex >= 0 && (
+            <span className="inline-flex rounded-full bg-gold px-2.5 py-1 text-[10.5px] font-bold text-ink">
+              Priority {priorityIndex + 1}
+            </span>
+          )}
+        </div>
+        <div className="absolute bottom-3 left-3 right-3">
+          <p className="font-display text-base text-white">{vendor.name}</p>
+          <p className="mt-1 text-xs text-white/78">{vendor.location}</p>
+        </div>
+      </div>
+      <div className="space-y-3 p-4">
+        <p className="line-clamp-2 text-sm text-slate-soft">{vendor.tagline}</p>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-burgundy-deep">{formatLKR(vendor.startingPrice)}</span>
+          <span className="text-xs font-medium text-slate-soft">Trust {vendor.trustScore.toFixed(1)}</span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
 function createEventRequestRecord(
   formValues: EventRequestValues,
   hasVoiceNote: boolean,
@@ -90,6 +323,12 @@ function createEventRequestRecord(
 ) {
   const createdAt = new Date().toISOString();
   const customerProfile = readActiveCustomerProfile();
+  const resolvedEventDate = formValues.isFlexibleDate
+    ? `${formValues.eventMonth}-01`
+    : formValues.eventDate ?? "";
+  const resolvedEventDateLabel = formValues.isFlexibleDate
+    ? `${formatMonthYear(formValues.eventMonth ?? "")} (date not fixed)`
+    : formatEventDateLabel(formValues.eventDate ?? "");
 
   return {
     id: `EVT-${new Date(createdAt).getFullYear()}${createdAt.replace(/\D/g, "").slice(-5)}`,
@@ -104,6 +343,8 @@ function createEventRequestRecord(
     responses: [],
     serviceSelections,
     ...formValues,
+    eventDate: resolvedEventDate,
+    eventDateLabel: resolvedEventDateLabel,
   };
 }
 
@@ -122,7 +363,6 @@ export default function EventRequestPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const minDateStr = earliestEventDate();
   const {
     register,
     handleSubmit,
@@ -134,9 +374,10 @@ export default function EventRequestPage() {
     resolver: zodResolver(eventRequestSchema),
     defaultValues: {
       eventDate: "",
-      eventLocation: "Jaffna",
-      guestCount: 250,
-      budgetRange: "50k-150k",
+      eventMonth: "",
+      eventLocation: "Jaffna Town",
+      guestCount: undefined,
+      budgetRange: undefined,
       isFlexibleDate: false,
       selectedServices: [],
       priorities: [],
@@ -148,20 +389,23 @@ export default function EventRequestPage() {
     control,
     defaultValue: {
       eventDate: "",
-      eventLocation: "Jaffna",
-      guestCount: 250,
-      budgetRange: "50k-150k",
+      eventMonth: "",
+      eventLocation: "Jaffna Town",
+      guestCount: undefined,
+      budgetRange: undefined,
       isFlexibleDate: false,
       selectedServices: [],
       priorities: [],
       specialRequirements: "",
     },
   });
-  const budgetRange = values.budgetRange ?? "50k-150k";
+  const budgetRange = values.budgetRange;
+  const isFlexibleDate = Boolean(values.isFlexibleDate);
   const selectedServices = useMemo(() => values.selectedServices ?? [], [values.selectedServices]);
   const priorities = useMemo(() => values.priorities ?? [], [values.priorities]);
-  const summary = useMemo(() => calculateAdvance(budgetRange), [budgetRange]);
-  const vendorOptionsByService = useMemo(() => {
+  const budgetOptions = useMemo(() => buildBudgetOptions(selectedServices), [selectedServices]);
+  const summary = useMemo(() => calculateAdvance(budgetOptions, budgetRange), [budgetOptions, budgetRange]);
+  const allVendorOptionsByService = useMemo(() => {
     const shortlistSet = new Set(shortlistedVendorSlugs);
 
     return selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
@@ -177,15 +421,47 @@ export default function EventRequestPage() {
       return acc;
     }, {});
   }, [selectedServices, shortlistedVendorSlugs]);
+  const serviceBudgetGuides = useMemo(
+    () =>
+      selectedServices.reduce<Record<string, BudgetGuide | null>>((acc, service) => {
+        acc[service] = buildServiceBudgetGuide(service);
+        return acc;
+      }, {}),
+    [selectedServices]
+  );
+  const vendorOptionsByService = useMemo(
+    () =>
+      selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
+        const guide = serviceBudgetGuides[service] ?? null;
+        const serviceVendors = allVendorOptionsByService[service] ?? [];
+        const matchingVendors = serviceVendors.filter((vendor) => matchesBudgetRange(vendor.startingPrice, budgetRange, guide));
+        acc[service] = matchingVendors.length > 0 ? matchingVendors : serviceVendors;
+        return acc;
+      }, {}),
+    [allVendorOptionsByService, budgetRange, selectedServices, serviceBudgetGuides]
+  );
+  const stretchVendorOptionsByService = useMemo(
+    () =>
+      selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
+        const serviceVendors = allVendorOptionsByService[service] ?? [];
+        const matchingSlugs = new Set((vendorOptionsByService[service] ?? []).map((vendor) => vendor.slug));
+        acc[service] =
+          (vendorOptionsByService[service] ?? []).length === serviceVendors.length
+            ? []
+            : serviceVendors.filter((vendor) => !matchingSlugs.has(vendor.slug));
+        return acc;
+      }, {}),
+    [allVendorOptionsByService, selectedServices, vendorOptionsByService]
+  );
   const shortlistedVendorsByService = useMemo(
     () =>
       selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
-        acc[service] = (vendorOptionsByService[service] ?? []).filter((vendor) =>
+        acc[service] = (allVendorOptionsByService[service] ?? []).filter((vendor) =>
           shortlistedVendorSlugs.includes(vendor.slug)
         );
         return acc;
       }, {}),
-    [selectedServices, shortlistedVendorSlugs, vendorOptionsByService]
+    [allVendorOptionsByService, selectedServices, shortlistedVendorSlugs]
   );
 
   const rankedSelections = useMemo(
@@ -197,10 +473,23 @@ export default function EventRequestPage() {
     [selectedServices, serviceVendorPriorities]
   );
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, []);
+
+  function goToPreviousStep() {
+    setStep((current) => Math.max(current - 1, 1));
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
   async function nextStep() {
     const fieldsByStep: Record<number, (keyof EventRequestValues)[]> = {
-      1: ["eventDate", "eventLocation", "guestCount", "budgetRange"],
-      2: ["selectedServices"],
+      1: [isFlexibleDate ? "eventMonth" : "eventDate", "eventLocation", "guestCount"],
+      2: ["selectedServices", "budgetRange"],
       3: ["priorities", "specialRequirements"],
       4: [],
     };
@@ -218,6 +507,9 @@ export default function EventRequestPage() {
 
     setServiceSelectionError(null);
     setStep((current) => Math.min(current + 1, 4));
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   function toggleService(service: (typeof SERVICE_OPTIONS)[number]) {
@@ -362,7 +654,10 @@ export default function EventRequestPage() {
       status: "pending" as const,
       submittedAt: record.createdAt,
       deadline: record.deadline,
-      eventDate: formValues.eventDate,
+      eventDate: record.eventDate,
+      eventDateLabel: record.eventDateLabel,
+      eventMonth: formValues.eventMonth,
+      isFlexibleDate: Boolean(formValues.isFlexibleDate),
       location: formValues.eventLocation,
       guestCount: formValues.guestCount,
       budgetRange: formValues.budgetRange,
@@ -417,6 +712,7 @@ export default function EventRequestPage() {
     <div className="bg-ink">
       <section className="border-b border-gold/10 bg-gradient-to-b from-burgundy-950 via-ink to-ink py-16">
         <Container className="space-y-8">
+          <BackButton href="/services" label="Previous page" dark />
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">TRIBLEERA Concierge Flow</p>
             <h1 className="mt-4 font-display text-4xl text-cream md:text-5xl">Tell Us About Your Celebration</h1>
@@ -430,28 +726,53 @@ export default function EventRequestPage() {
 
       <Container className="py-10 md:py-14">
         <form onSubmit={onSubmit} className="rounded-[10px] bg-white p-6 shadow-soft md:p-8">
+          <div className="mb-6">
+            <BackButton href="/services" label="Previous page" />
+          </div>
           {step === 1 && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:items-start">
                 <div>
-                  <Input
-                    label="Wedding date"
-                    id="eventDate"
-                    type="date"
-                    min={minDateStr}
-                    required
-                    aria-label="Wedding event date"
-                    aria-describedby="eventDate-hint"
-                    error={errors.eventDate?.message}
-                    {...register("eventDate")}
-                  />
-                  <p id="eventDate-hint" className="mt-1.5 text-[11px] text-slate-soft">
-                    Vendors require at least {MIN_DAYS_AHEAD} days notice. Earliest date:{" "}
-                    {new Date(minDateStr).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
+                  {isFlexibleDate ? (
+                    <Input
+                      label="Wedding month"
+                      id="eventMonth"
+                      type="month"
+                      aria-label="Wedding month"
+                      error={errors.eventMonth?.message}
+                      {...register("eventMonth")}
+                    />
+                  ) : (
+                    <Input
+                      label="Wedding date"
+                      id="eventDate"
+                      type="date"
+                      aria-label="Wedding event date"
+                      error={errors.eventDate?.message}
+                      {...register("eventDate")}
+                    />
+                  )}
+                  <label className="mt-4 inline-flex items-center gap-3 rounded-[8px] border border-slate/10 bg-ivory px-3.5 py-3 text-sm text-slate">
+                    <input
+                      type="checkbox"
+                      checked={isFlexibleDate}
+                      onChange={(event) => {
+                        const checked = event.target.checked;
+                        setValue("isFlexibleDate", checked, { shouldValidate: true });
+                        if (checked) {
+                          setValue("eventDate", "", { shouldValidate: false });
+                          trigger("eventMonth");
+                        } else {
+                          setValue("eventMonth", "", { shouldValidate: false });
+                          trigger("eventDate");
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-slate/20 accent-burgundy"
+                    />
+                    My dates are flexible within this month
+                  </label>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-soft">
+                    Exact day fixed illenna month mattum select pannunga. Vendors kitta this will appear as a flexible month, not a final date.
                   </p>
                 </div>
                 <Select label="Celebration location" required error={errors.eventLocation?.message} {...register("eventLocation")}>
@@ -464,38 +785,19 @@ export default function EventRequestPage() {
                 <Input
                   label="Estimated guest count"
                   type="number"
-                  min={10}
+                  min={2}
                   required
+                  placeholder="Enter guest count"
                   error={errors.guestCount?.message}
                   {...register("guestCount", { valueAsNumber: true })}
                 />
                 <div className="rounded-[8px] border border-slate/10 bg-ivory p-4">
-                  <p className="mb-3 flex items-center gap-2 text-sm font-medium text-slate">
-                    <Users size={16} className="text-burgundy" />
-                    Budget range
+                  <p className="text-sm font-medium text-slate">Location note</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-soft">
+                    Start with the Jaffna area where the celebration will happen. Vendors can confirm exact travel later.
                   </p>
-                  <div className="grid gap-2">
-                    {BUDGET_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setValue("budgetRange", option.value, { shouldValidate: true })}
-                        className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
-                          budgetRange === option.value
-                            ? "border-burgundy bg-burgundy text-white"
-                            : "border-slate/15 text-slate hover:border-burgundy"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </div>
-              <label className="flex items-center gap-3 text-sm text-slate">
-                <input type="checkbox" {...register("isFlexibleDate")} className="h-4 w-4 rounded border-slate/20 accent-burgundy" />
-                My dates are flexible within this month
-              </label>
             </div>
           )}
 
@@ -523,6 +825,51 @@ export default function EventRequestPage() {
               {errors.selectedServices?.message && (
                 <p className="text-sm font-medium text-danger">{errors.selectedServices.message}</p>
               )}
+              <div className="rounded-[10px] border border-slate/10 bg-ivory p-4 md:p-5">
+                <p className="mb-2 flex items-center gap-2 text-sm font-medium text-slate">
+                  <Users size={16} className="text-burgundy" />
+                  Estimated budget for selected services
+                </p>
+                <p className="mb-4 text-xs leading-relaxed text-slate-soft">
+                  Optional. If you select a budget, vendor filtering applies per service. If you skip it, all approved vendors are shown.
+                </p>
+                {errors.budgetRange?.message && (
+                  <p className="mb-3 text-sm font-medium text-danger">{errors.budgetRange.message}</p>
+                )}
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-xs text-slate-soft">You can leave this empty and decide later.</p>
+                  {budgetRange && (
+                    <button
+                      type="button"
+                      onClick={() => setValue("budgetRange", undefined, { shouldValidate: true })}
+                      className="text-xs font-semibold text-burgundy"
+                    >
+                      Clear budget
+                    </button>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  {budgetOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() =>
+                        setValue("budgetRange", budgetRange === option.value ? undefined : option.value, { shouldValidate: true })
+                      }
+                      className={`rounded-[18px] border px-4 py-3 text-left transition-colors ${
+                        budgetRange === option.value
+                          ? "border-burgundy bg-burgundy text-white"
+                          : "border-slate/15 bg-white text-slate hover:border-burgundy"
+                      }`}
+                    >
+                      <span className="block text-sm font-semibold">{option.label}</span>
+                      <span className={`mt-1 block text-xs ${budgetRange === option.value ? "text-white/80" : "text-slate-soft"}`}>
+                        {option.helper}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {categories
                   .filter((category) => SERVICE_OPTIONS.includes(category.slug as (typeof SERVICE_OPTIONS)[number]))
@@ -627,9 +974,20 @@ export default function EventRequestPage() {
                   const serviceCategory = categories.find((category) => category.slug === service);
                   const rankedVendorSlugs = serviceVendorPriorities[service] ?? [];
                   const rankedVendors = rankedVendorSlugs
-                    .map((slug) => vendorOptionsByService[service]?.find((vendor) => vendor.slug === slug))
+                    .map((slug) => allVendorOptionsByService[service]?.find((vendor) => vendor.slug === slug))
                     .filter((vendor): vendor is NonNullable<typeof vendor> => Boolean(vendor));
                   const serviceVendors = vendorOptionsByService[service] ?? [];
+                  const stretchVendors = stretchVendorOptionsByService[service] ?? [];
+                  const serviceGuide = serviceBudgetGuides[service] ?? null;
+                  const selectedBudgetLabel = budgetRange && serviceGuide
+                    ? budgetRange === "starter"
+                      ? `up to ${formatBudgetAmount(serviceGuide.starterHigh)}`
+                      : budgetRange === "balanced"
+                        ? `up to ${formatBudgetAmount(serviceGuide.balancedHigh)}`
+                        : budgetRange === "premium"
+                          ? `up to ${formatBudgetAmount(serviceGuide.premiumHigh)}`
+                          : `from ${formatBudgetAmount(serviceGuide.luxuryLow)}`
+                    : null;
 
                   return (
                     <div key={service} className="rounded-[10px] border border-slate/10 bg-ivory/60 p-4 md:p-5">
@@ -639,6 +997,11 @@ export default function EventRequestPage() {
                           <p className="text-sm text-slate-soft">
                             Pick 1 to {MAX_PRIORITY_VENDORS} vendors. The first one is mandatory.
                           </p>
+                          {selectedBudgetLabel && (
+                            <p className="mt-1 text-xs font-medium text-burgundy">
+                              Budget filter for this service: {selectedBudgetLabel}
+                            </p>
+                          )}
                         </div>
                         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-burgundy">
                           {rankedVendorSlugs.length}/{MAX_PRIORITY_VENDORS} selected
@@ -696,71 +1059,52 @@ export default function EventRequestPage() {
                       <div className="mt-4">
                         <div className="mb-3 flex items-center justify-between gap-3">
                           <p className="text-sm font-semibold text-slate">
-                            {shortlistHydrated && shortlistedVendorSlugs.some((slug) => serviceVendors.some((vendor) => vendor.slug === slug))
-                              ? "Saved vendors come first"
-                              : "Available vendors"}
+                            {budgetRange
+                              ? shortlistHydrated && shortlistedVendorSlugs.some((slug) => serviceVendors.some((vendor) => vendor.slug === slug))
+                                ? "Matching vendors within your budget - saved vendors come first"
+                                : "Matching vendors within your selected budget"
+                              : shortlistHydrated && shortlistedVendorSlugs.some((slug) => serviceVendors.some((vendor) => vendor.slug === slug))
+                                ? "Available vendors - saved vendors come first"
+                                : "Available vendors"}
                           </p>
                           <p className="text-xs text-slate-soft">Tap a vendor card to add or remove it from the queue</p>
                         </div>
-                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                          {serviceVendors.map((vendor) => {
-                            const shortlisted = shortlistedVendorSlugs.includes(vendor.slug);
-                            const priorityIndex = rankedVendorSlugs.indexOf(vendor.slug);
+                        {serviceVendors.length > 0 ? (
+                          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                            {serviceVendors.map((vendor) =>
+                              renderVendorCard({
+                                vendor,
+                                shortlisted: shortlistedVendorSlugs.includes(vendor.slug),
+                                priorityIndex: rankedVendorSlugs.indexOf(vendor.slug),
+                                onClick: () => toggleVendorPriority(service, vendor.slug),
+                              })
+                            )}
+                          </div>
+                        ) : (
+                          <div className="rounded-[8px] border border-slate/10 bg-white px-4 py-5 text-sm text-slate-soft">
+                            No vendors matched this budget for {serviceCategory?.name ?? service}.
+                          </div>
+                        )}
 
-                            return (
-                              <button
-                                key={vendor.slug}
-                                type="button"
-                                onClick={() => toggleVendorPriority(service, vendor.slug)}
-                                className={cn(
-                                  "overflow-hidden rounded-[10px] border bg-white text-left transition-all",
-                                  priorityIndex >= 0
-                                    ? "border-burgundy shadow-lift"
-                                    : "border-slate/10 hover:border-burgundy/20 hover:shadow-soft"
-                                )}
-                              >
-                                <div className="relative aspect-[4/3]">
-                                  <SmartImage
-                                    src={vendor.imageUrl}
-                                    alt={vendor.name}
-                                    fallbackVariant={vendor.motif}
-                                    fallbackTone={vendor.tone}
-                                    fallbackSeed={vendor.id.length}
-                                    sizes="(max-width: 768px) 100vw, 33vw"
-                                  />
-                                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(21,4,12,0.04)_0%,rgba(21,4,12,0.08)_45%,rgba(21,4,12,0.7)_100%)]" />
-                                  <div className="absolute left-3 top-3 flex gap-2">
-                                    {shortlisted && (
-                                      <span className="inline-flex items-center gap-1 rounded-full bg-white/92 px-2.5 py-1 text-[10.5px] font-semibold text-burgundy">
-                                        <Heart size={11} className="fill-burgundy text-burgundy" /> Saved
-                                      </span>
-                                    )}
-                                    {priorityIndex >= 0 && (
-                                      <span className="inline-flex rounded-full bg-gold px-2.5 py-1 text-[10.5px] font-bold text-ink">
-                                        Priority {priorityIndex + 1}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="absolute bottom-3 left-3 right-3">
-                                    <p className="font-display text-base text-white">{vendor.name}</p>
-                                    <p className="mt-1 text-xs text-white/78">{vendor.location}</p>
-                                  </div>
-                                </div>
-                                <div className="space-y-3 p-4">
-                                  <p className="line-clamp-2 text-sm text-slate-soft">{vendor.tagline}</p>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-sm font-semibold text-burgundy-deep">
-                                      {formatLKR(vendor.startingPrice)}
-                                    </span>
-                                    <span className="text-xs font-medium text-slate-soft">
-                                      Trust {vendor.trustScore.toFixed(1)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
+                        {budgetRange && stretchVendors.length > 0 && (
+                          <div className="mt-5">
+                            <div className="mb-3 flex items-center justify-between gap-3">
+                              <p className="text-sm font-semibold text-slate">Stretch budget options</p>
+                              <p className="text-xs text-slate-soft">These vendors are outside your selected budget for this service</p>
+                            </div>
+                            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                              {stretchVendors.map((vendor) =>
+                                renderVendorCard({
+                                  vendor,
+                                  shortlisted: shortlistedVendorSlugs.includes(vendor.slug),
+                                  priorityIndex: rankedVendorSlugs.indexOf(vendor.slug),
+                                  onClick: () => toggleVendorPriority(service, vendor.slug),
+                                  extraBadge: "Above budget",
+                                })
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -897,11 +1241,18 @@ export default function EventRequestPage() {
               </div>
               <div className="rounded-[10px] border border-slate/10 bg-ivory p-5">
                 <div className="grid gap-4 md:grid-cols-2">
-                  <p className="text-sm text-slate-soft">Date <span className="ml-2 font-medium text-slate">{values.eventDate}</span></p>
-                  <p className="text-sm text-slate-soft">Location <span className="ml-2 font-medium text-slate">{values.eventLocation}</span></p>
-                  <p className="text-sm text-slate-soft">Guests <span className="ml-2 font-medium text-slate">{values.guestCount}</span></p>
                   <p className="text-sm text-slate-soft">
-                    Budget <span className="ml-2 font-medium text-slate">{BUDGET_OPTIONS.find((option) => option.value === budgetRange)?.label}</span>
+                    Date
+                    <span className="ml-2 font-medium text-slate">
+                      {isFlexibleDate
+                        ? `${formatMonthYear(values.eventMonth ?? "")} (date not fixed)`
+                        : formatEventDateLabel(values.eventDate ?? "")}
+                    </span>
+                  </p>
+                  <p className="text-sm text-slate-soft">Location <span className="ml-2 font-medium text-slate">{values.eventLocation}</span></p>
+                  <p className="text-sm text-slate-soft">Guests <span className="ml-2 font-medium text-slate">{values.guestCount ?? "Not set"}</span></p>
+                  <p className="text-sm text-slate-soft">
+                    Services budget <span className="ml-2 font-medium text-slate">{budgetOptions.find((option) => option.value === budgetRange)?.label ?? "Not selected"}</span>
                   </p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -930,30 +1281,35 @@ export default function EventRequestPage() {
                 </div>
                 <div className="mt-5 rounded-[8px] border border-gold/30 bg-white p-4">
                   <p className="text-sm font-semibold text-burgundy-deep">Estimated amount payable now</p>
-                  <div className="mt-3 space-y-2 text-sm text-slate-soft">
-                    <p>Budget midpoint: <span className="font-medium text-slate">{formatLKR(summary.midpoint)}</span></p>
-                    <p>Advance (20%): <span className="font-medium text-slate">{formatLKR(summary.advance)}</span></p>
-                    <p>Platform fee (3%): <span className="font-medium text-slate">{formatLKR(summary.fee)}</span></p>
-                    <p className="border-t border-slate/10 pt-2 text-base font-semibold text-burgundy-deep">
-                      Total payable now: {formatLKR(summary.total)}
+                  {budgetRange ? (
+                    <div className="mt-3 space-y-2 text-sm text-slate-soft">
+                      <p>Budget midpoint: <span className="font-medium text-slate">{formatLKR(summary.midpoint)}</span></p>
+                      <p>Advance (20%): <span className="font-medium text-slate">{formatLKR(summary.advance)}</span></p>
+                      <p>Platform fee (3%): <span className="font-medium text-slate">{formatLKR(summary.fee)}</span></p>
+                      <p className="border-t border-slate/10 pt-2 text-base font-semibold text-burgundy-deep">
+                        Total payable now: {formatLKR(summary.total)}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-soft">
+                      Budget not selected yet. This estimate will appear after you choose a budget range.
                     </p>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
           )}
 
           <div className="mt-8 flex flex-col gap-3 border-t border-slate/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <Button type="button" variant="secondary" onClick={saveForLater}>
-              Save for Later
-            </Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button type="button" variant="secondary" onClick={saveForLater}>
+                Save for Later
+              </Button>
+            </div>
             <div className="flex flex-wrap items-center justify-end gap-3">
-              {step === 1 && (
-                <BackButton href="/" label="Home" />
-              )}
               {step > 1 && (
-                <Button type="button" variant="secondary" onClick={() => setStep((current) => current - 1)}>
-                  Back
+                <Button type="button" variant="secondary" onClick={goToPreviousStep}>
+                  Previous step
                 </Button>
               )}
               {step < 4 ? (
