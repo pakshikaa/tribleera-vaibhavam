@@ -463,6 +463,14 @@ export default function EventRequestPage() {
       }, {}),
     [allVendorOptionsByService, selectedServices, shortlistedVendorSlugs]
   );
+  const vendorPreviewByService = useMemo(
+    () =>
+      selectedServices.reduce<Record<string, typeof vendors>>((acc, service) => {
+        acc[service] = (vendorOptionsByService[service] ?? []).slice(0, 3);
+        return acc;
+      }, {}),
+    [selectedServices, vendorOptionsByService]
+  );
 
   const rankedSelections = useMemo(
     () =>
@@ -472,6 +480,14 @@ export default function EventRequestPage() {
       })),
     [selectedServices, serviceVendorPriorities]
   );
+  const nextStepLabel =
+    step === 1
+      ? "Select services →"
+      : step === 2
+        ? "Choose vendors →"
+        : step === 3
+          ? "Review request →"
+          : "Continue →";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -952,6 +968,53 @@ export default function EventRequestPage() {
                   </div>
                 </div>
               )}
+
+              {selectedServices.length > 0 && (
+                <div className="rounded-[10px] border border-slate/10 bg-white p-4 md:hidden">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-burgundy">
+                      Matching vendors next
+                    </p>
+                    <p className="text-sm text-slate-soft">
+                      After this step, you will rank vendors for each selected service.
+                    </p>
+                  </div>
+                  <div className="mt-4 space-y-4">
+                    {selectedServices.map((service) => {
+                      const serviceCategory = categories.find((category) => category.slug === service);
+                      const previewVendors = vendorPreviewByService[service] ?? [];
+
+                      return (
+                        <div key={service} className="space-y-2">
+                          <p className="text-sm font-semibold text-slate">{serviceCategory?.name ?? service}</p>
+                          {previewVendors.length > 0 ? (
+                            <div className="space-y-2">
+                              {previewVendors.map((vendor) => (
+                                <div
+                                  key={vendor.slug}
+                                  className="flex items-center justify-between gap-3 rounded-[8px] border border-slate/10 bg-ivory/70 px-3 py-2.5"
+                                >
+                                  <div className="min-w-0">
+                                    <p className="truncate text-[13px] font-semibold text-slate">{vendor.name}</p>
+                                    <p className="text-[11px] text-slate-soft">{vendor.city}</p>
+                                  </div>
+                                  <span className="shrink-0 text-[11px] font-semibold text-burgundy">
+                                    {formatLKR(vendor.startingPrice)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-slate-soft">
+                              Vendors will appear in the next step once you continue.
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -1299,27 +1362,29 @@ export default function EventRequestPage() {
             </div>
           )}
 
-          <div className="mt-8 flex flex-col gap-3 border-t border-slate/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <Button type="button" variant="secondary" onClick={saveForLater}>
-                Save for Later
-              </Button>
-            </div>
-            <div className="flex flex-wrap items-center justify-end gap-3">
-              {step > 1 && (
-                <Button type="button" variant="secondary" onClick={goToPreviousStep}>
-                  Previous step
+          <div className="mt-8 border-t border-slate/10 pt-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="w-full sm:w-auto">
+                <Button type="button" variant="secondary" onClick={saveForLater} fullWidth className="sm:w-auto">
+                  Save for Later
                 </Button>
-              )}
-              {step < 4 ? (
-                <Button type="button" variant="gold" onClick={nextStep}>
-                  Continue →
-                </Button>
-              ) : (
-                <Button type="submit" variant="gold" disabled={isSubmitting} className="min-w-48">
-                  {isSubmitting ? "Submitting..." : "Submit Request"}
-                </Button>
-              )}
+              </div>
+              <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+                {step > 1 && (
+                  <Button type="button" variant="secondary" onClick={goToPreviousStep} fullWidth className="sm:w-auto">
+                    Previous step
+                  </Button>
+                )}
+                {step < 4 ? (
+                  <Button type="button" variant="gold" onClick={nextStep} fullWidth className="sm:min-w-48 sm:w-auto">
+                    {nextStepLabel}
+                  </Button>
+                ) : (
+                  <Button type="submit" variant="gold" disabled={isSubmitting} fullWidth className="sm:min-w-48 sm:w-auto">
+                    {isSubmitting ? "Submitting..." : "Submit Request"}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </form>

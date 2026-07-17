@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -9,6 +10,7 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 
 export function WhatsAppFloat() {
   const pathname = usePathname();
+  const [nearBottom, setNearBottom] = useState(false);
   const PORTALS = [
     "/vendor/login",
     "/vendor/register",
@@ -17,9 +19,21 @@ export function WhatsAppFloat() {
     "/admin/login",
     "/login",
   ];
-  const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
+  const hasMobileActionBar =
+    pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart") || pathname.startsWith("/event-request");
 
-  if (PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+  useEffect(() => {
+    const onScroll = () => {
+      const viewportBottom = window.scrollY + window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setNearBottom(viewportBottom >= documentHeight - 220);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  if (nearBottom || PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
     return null;
   }
 

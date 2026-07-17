@@ -17,16 +17,25 @@ export function BackToTop() {
     "/login",
   ];
   const [visible, setVisible] = useState(false);
-  const hasMobileActionBar = pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart");
+  const [nearBottom, setNearBottom] = useState(false);
+  const hasMobileActionBar =
+    pathname.startsWith("/vendors/") || pathname.startsWith("/booking/cart") || pathname.startsWith("/event-request");
   const hideOnPortal = PORTALS.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 400);
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      const viewportBottom = scrollTop + window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setVisible(scrollTop > 400);
+      setNearBottom(viewportBottom >= documentHeight - 220);
+    };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (hideOnPortal) {
+  if (hideOnPortal || nearBottom) {
     return null;
   }
 
@@ -40,7 +49,7 @@ export function BackToTop() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label="Back to top"
           className={cn(
-            "fixed bottom-44 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-ink/80 text-gold backdrop-blur-sm transition-colors hover:bg-gold hover:text-ink md:bottom-24 md:right-8",
+            "fixed bottom-28 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-ink/80 text-gold backdrop-blur-sm transition-colors hover:bg-gold hover:text-ink md:bottom-24 md:right-8",
             hasMobileActionBar && "hidden md:flex"
           )}
         >

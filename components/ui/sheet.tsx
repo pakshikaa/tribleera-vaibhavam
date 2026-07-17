@@ -32,7 +32,7 @@ function SheetContent({
       <SheetOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "fixed inset-y-0 right-0 z-[61] flex h-full w-[82%] max-w-xs flex-col bg-ivory p-6 shadow-lift",
+          "fixed inset-y-0 right-0 z-[61] flex h-full w-[min(88vw,24rem)] max-w-[24rem] flex-col overflow-y-auto overscroll-contain bg-ivory px-6 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-lift sm:w-[24rem]",
           "data-[state=open]:animate-slide-up",
           "focus:outline-none",
           className

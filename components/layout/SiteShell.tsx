@@ -87,7 +87,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <>
       <ScrollProgress />
       <Header />
-      <main id="main-content" className="min-h-screen pb-20 md:pb-0">
+      <main id="main-content" className="min-h-screen pb-24 md:pb-0">
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
