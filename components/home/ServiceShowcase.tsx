@@ -98,7 +98,6 @@ function ShowcaseCard({
         {big ? (
           <>
             <h3 className="text-display-sm mt-2" style={{ color: "#F7EEE2", textShadow: "0 2px 16px rgba(21,4,12,1)" }}>{category.name}</h3>
-            <p className="mt-1 font-display text-base italic" style={{ color: "#E9CE9C", fontFamily: "'Playfair Display', Georgia, serif", textShadow: "0 1px 8px rgba(21,4,12,1)" }}>{category.tamilName}</p>
           </>
         ) : null}
         <span className="mt-2 flex translate-y-1.5 items-center gap-1 text-xs opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100" style={{ color: "#E9CE9C", textShadow: "0 1px 6px rgba(21,4,12,0.9)" }}>
