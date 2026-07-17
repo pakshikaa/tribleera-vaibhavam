@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ShieldCheck, ShoppingBag, Star, TimerReset, TrendingUp, Users } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, ShieldCheck, ShoppingBag, Star, TimerReset, TrendingUp, Users } from "lucide-react";
 import {
   authenticateAdmin,
   formatLockoutRemaining,
@@ -23,6 +23,7 @@ export function AdminLoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   // The lockout lives in localStorage. Reading it in the initializer made the
@@ -210,24 +211,49 @@ export function AdminLoginPage() {
               <label htmlFor="admin-password" style={{ display: "block", marginBottom: 7, color: "rgba(212,175,106,.68)", fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase" }}>
                 Password
               </label>
-              <input
-                id="admin-password"
-                type="password"
-                required
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Enter password"
-                className="admin-input"
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: 14,
-                  border: "1px solid rgba(255,255,255,.14)",
-                  background: "rgba(247,238,226,.07)",
-                  color: "#F7EEE2",
-                }}
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  id="admin-password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Enter password"
+                  className="admin-input"
+                  style={{
+                    width: "100%",
+                    padding: "14px 44px 14px 16px",
+                    borderRadius: 14,
+                    border: "1px solid rgba(255,255,255,.14)",
+                    background: "rgba(247,238,226,.07)",
+                    color: "#F7EEE2",
+                    boxSizing: "border-box",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  style={{
+                    position: "absolute",
+                    right: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    display: "grid",
+                    placeItems: "center",
+                    width: 28,
+                    height: 28,
+                    border: 0,
+                    borderRadius: 999,
+                    background: "transparent",
+                    color: "rgba(247,238,226,.55)",
+                    cursor: "pointer",
+                  }}
+                >
+                  {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+                </button>
+              </div>
             </div>
 
             {lockoutMessage ? (

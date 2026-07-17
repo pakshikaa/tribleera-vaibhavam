@@ -364,40 +364,5 @@ export function calculateRefundFromBooking(booking: Booking) {
   return { daysBeforeEvent, refundPercent, refundAmount };
 }
 
-export function downloadInvoice(filename: string, html: string) {
-  if (typeof window === "undefined") return;
-  const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
-  const url = window.URL.createObjectURL(blob);
-  const link = window.document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  window.URL.revokeObjectURL(url);
-}
-
-export function buildInvoiceHtml(params: {
-  invoiceId: string;
-  title: string;
-  billTo: string;
-  issuedAt: string;
-  rows: Array<{ label: string; amount: number }>;
-  note: string;
-}) {
-  const total = params.rows.reduce((sum, row) => sum + row.amount, 0);
-  const rows = params.rows
-    .map((row) => `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${row.label}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">LKR ${row.amount.toLocaleString()}</td></tr>`)
-    .join("");
-
-  return `<!doctype html>
-  <html><head><meta charset="utf-8"><title>${params.invoiceId}</title></head>
-  <body style="font-family:Arial,sans-serif;padding:32px;color:#1f2937">
-    <h1 style="color:#5c0427;margin-bottom:4px;">${params.title}</h1>
-    <p style="margin:0 0 16px 0;">Invoice ID: ${params.invoiceId}<br/>Issued: ${params.issuedAt}<br/>Bill to: ${params.billTo}</p>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
-      <thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid #ddd;">Item</th><th style="text-align:right;padding:8px;border-bottom:2px solid #ddd;">Amount</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr><td style="padding:8px;font-weight:bold;">Total</td><td style="padding:8px;text-align:right;font-weight:bold;">LKR ${total.toLocaleString()}</td></tr></tfoot>
-    </table>
-    <p style="font-size:12px;color:#6b7280;">${params.note}</p>
-  </body></html>`;
-}
+// Invoice/bill generation moved to lib/utils/reportExport.ts — branded PDFs
+// with the standard TRIBLEERA letterhead replaced the old bare-HTML files.

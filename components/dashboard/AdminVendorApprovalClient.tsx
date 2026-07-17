@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { Check, ChevronDown, ChevronUp, Download, Mail, Phone, Search, TrendingUp, X } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Download, FileText, Mail, Phone, Search, TrendingUp, X } from "lucide-react";
 import { VendorApplication } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -21,6 +21,7 @@ import {
   subscribeAdminData,
   type ApprovedVendorRecord,
 } from "@/lib/utils/adminLiveData";
+import { downloadReportPdf } from "@/lib/utils/reportExport";
 
 type FilterTab = "all" | "pending" | "approved" | "rejected";
 
@@ -298,6 +299,31 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
   const pendingCount = apps.filter((app) => app.status === "pending").length;
   const cityOptions = Array.from(new Set([...apps.map((app) => app.city), ...liveVendors.map((vendor) => vendor.city)])).sort();
 
+  const applicationRows = filtered.map((app) => ({
+    business_name: app.businessName,
+    owner_name: app.ownerName,
+    category: getCategoryBySlug(app.categorySlug)?.name ?? app.categorySlug,
+    city: app.city,
+    status: app.status,
+    submitted_at: app.submittedAt,
+    phone: app.phone,
+    email: app.email,
+  }));
+
+  const liveVendorRows = liveVendors.map((vendor) => {
+    const perf = computeVendorPerformance(snapshot, vendor.slug);
+    return {
+      vendor: vendor.name,
+      category: getCategoryBySlug(vendor.categorySlug)?.name ?? vendor.categorySlug,
+      city: vendor.city,
+      requests_received: perf.received,
+      accepted: perf.accepted,
+      response_rate: perf.responseRate,
+      avg_review: perf.averageReview.toFixed(2),
+      revenue_generated: perf.revenueGenerated,
+    };
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 rounded-[10px] border border-slate/10 bg-white p-4 md:flex-row md:items-center md:justify-between">
@@ -323,42 +349,66 @@ export function AdminVendorApprovalClient({ initial }: { initial: VendorApplicat
             size="sm"
             variant="secondary"
             icon={<Download size={14} />}
+            onClick={() => downloadCsv("tribleera-vendor-applications.csv", applicationRows)}
+          >
+            Applications CSV
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={<FileText size={14} />}
             onClick={() =>
-              downloadCsv("tribleera-vendor-applications.csv", filtered.map((app) => ({
-                business_name: app.businessName,
-                owner_name: app.ownerName,
-                category: getCategoryBySlug(app.categorySlug)?.name ?? app.categorySlug,
-                city: app.city,
-                status: app.status,
-                submitted_at: app.submittedAt,
-                phone: app.phone,
-                email: app.email,
-              })))
+              void downloadReportPdf({
+                filename: "tribleera-vendor-applications.pdf",
+                title: "Vendor Applications Report",
+                subtitle: `${filtered.length} application${filtered.length !== 1 ? "s" : ""}`,
+                columns: [
+                  { header: "Business", key: "business_name" },
+                  { header: "Owner", key: "owner_name" },
+                  { header: "Category", key: "category" },
+                  { header: "City", key: "city" },
+                  { header: "Status", key: "status" },
+                  { header: "Submitted", key: "submitted_at" },
+                  { header: "Phone", key: "phone" },
+                ],
+                rows: applicationRows,
+              })
             }
           >
-            Export applications
+            Applications PDF
           </Button>
           <Button
             size="sm"
             variant="secondary"
             icon={<Download size={14} />}
+            onClick={() => downloadCsv("tribleera-live-vendors.csv", liveVendorRows)}
+          >
+            Vendors CSV
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={<FileText size={14} />}
             onClick={() =>
-              downloadCsv("tribleera-live-vendors.csv", liveVendors.map((vendor) => {
-                const perf = computeVendorPerformance(snapshot, vendor.slug);
-                return {
-                  vendor: vendor.name,
-                  category: getCategoryBySlug(vendor.categorySlug)?.name ?? vendor.categorySlug,
-                  city: vendor.city,
-                  requests_received: perf.received,
-                  accepted: perf.accepted,
-                  response_rate: perf.responseRate,
-                  avg_review: perf.averageReview.toFixed(2),
-                  revenue_generated: perf.revenueGenerated,
-                };
-              }))
+              void downloadReportPdf({
+                filename: "tribleera-live-vendors.pdf",
+                title: "Live Vendors Performance Report",
+                subtitle: `${liveVendors.length} live vendor${liveVendors.length !== 1 ? "s" : ""}`,
+                columns: [
+                  { header: "Vendor", key: "vendor" },
+                  { header: "Category", key: "category" },
+                  { header: "City", key: "city" },
+                  { header: "Requests", key: "requests_received", align: "right" },
+                  { header: "Accepted", key: "accepted", align: "right" },
+                  { header: "Response %", key: "response_rate", align: "right" },
+                  { header: "Avg review", key: "avg_review", align: "right" },
+                  { header: "Revenue", key: "revenue_generated", align: "right" },
+                ],
+                rows: liveVendorRows,
+              })
             }
           >
-            Export live vendors
+            Vendors PDF
           </Button>
         </div>
       </div>

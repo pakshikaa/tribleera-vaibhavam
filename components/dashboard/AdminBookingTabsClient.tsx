@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { Download, Search } from "lucide-react";
+import { Download, FileText, Search } from "lucide-react";
 import { Tabs } from "@/components/ui/Tabs";
 import { Table, THead, Th, Td, Tr } from "@/components/ui/Table";
 import { BookingStatusBadge } from "@/components/dashboard/StatusBadge";
@@ -10,6 +10,7 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 import type { Booking, BookingLineItem } from "@/types";
 import { Button } from "@/components/ui/Button";
 import { DateRangeFilter, downloadCsv, getAdminSnapshot, isInDateRange, subscribeAdminData } from "@/lib/utils/adminLiveData";
+import { downloadReportPdf } from "@/lib/utils/reportExport";
 import { cn } from "@/lib/utils/cn";
 
 export function AdminBookingTabsClient({ bookings }: { bookings: Booking[] }) {
@@ -34,6 +35,18 @@ export function AdminBookingTabsClient({ bookings }: { bookings: Booking[] }) {
     const haystack = `${booking.id} ${booking.customerName} ${booking.customerCity} ${booking.items.map((item) => item.vendorName).join(" ")}`.toLowerCase();
     return haystack.includes(query.toLowerCase());
   }), [liveSnapshot.bookings, range, query]);
+
+  const exportRows = filteredBookings.map((booking) => ({
+    booking_id: booking.id,
+    customer: booking.customerName,
+    city: booking.customerCity,
+    created_at: booking.createdAt,
+    event_date: booking.eventDate,
+    status: booking.status,
+    service_total: booking.serviceTotal,
+    platform_fee: booking.platformFee,
+    payable_now: booking.payableNow,
+  }));
 
   const byService = filteredBookings.reduce<Record<string, { categoryName: string; rows: { booking: Booking; item: BookingLineItem }[] }>>(
     (acc, booking) => {
@@ -161,21 +174,44 @@ export function AdminBookingTabsClient({ bookings }: { bookings: Booking[] }) {
             size="sm"
             variant="secondary"
             icon={<Download size={14} />}
+            onClick={() => downloadCsv("tribleera-bookings.csv", exportRows)}
+          >
+            CSV
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={<FileText size={14} />}
             onClick={() =>
-              downloadCsv("tribleera-bookings.csv", filteredBookings.map((booking) => ({
-                booking_id: booking.id,
-                customer: booking.customerName,
-                city: booking.customerCity,
-                created_at: booking.createdAt,
-                event_date: booking.eventDate,
-                status: booking.status,
-                service_total: booking.serviceTotal,
-                platform_fee: booking.platformFee,
-                payable_now: booking.payableNow,
-              })))
+              void downloadReportPdf({
+                filename: "tribleera-bookings.pdf",
+                title: "Bookings Report",
+                subtitle: `${filteredBookings.length} booking${filteredBookings.length !== 1 ? "s" : ""}${query ? ` · Search: "${query}"` : ""}`,
+                columns: [
+                  { header: "Booking", key: "booking_id" },
+                  { header: "Customer", key: "customer" },
+                  { header: "City", key: "city" },
+                  { header: "Created", key: "created_at" },
+                  { header: "Event date", key: "event_date" },
+                  { header: "Status", key: "status" },
+                  { header: "Service total", key: "service_total", align: "right" },
+                  { header: "Payable now", key: "payable_now", align: "right" },
+                ],
+                rows: exportRows,
+                summary: [
+                  {
+                    label: "Total service value",
+                    value: formatLKR(filteredBookings.reduce((sum, booking) => sum + booking.serviceTotal, 0)),
+                  },
+                  {
+                    label: "Total platform fees",
+                    value: formatLKR(filteredBookings.reduce((sum, booking) => sum + booking.platformFee, 0)),
+                  },
+                ],
+              })
             }
           >
-            Export CSV
+            PDF
           </Button>
         </div>
       </div>

@@ -4,13 +4,12 @@ import { useMemo, useSyncExternalStore } from "react";
 import { Download, FileText, Landmark, Wallet } from "lucide-react";
 import { formatDateShort, formatLKR } from "@/lib/utils/format";
 import {
-  buildInvoiceHtml,
   calculateRefundFromBooking,
   downloadCsv,
-  downloadInvoice,
   getAdminSnapshot,
   subscribeAdminData,
 } from "@/lib/utils/adminLiveData";
+import { downloadInvoicePdf, downloadReportPdf } from "@/lib/utils/reportExport";
 import { cn } from "@/lib/utils/cn";
 import { AdminPendingVerificationClient } from "@/components/dashboard/AdminPendingVerificationClient";
 import { Button } from "@/components/ui/Button";
@@ -46,6 +45,17 @@ export function AdminPaymentsClient() {
 
   const refundable = snapshot.bookings.filter((booking) => booking.status === "cancellation_requested");
 
+  const financeRows = sorted.map((booking) => ({
+    booking_id: booking.id,
+    created_at: booking.createdAt,
+    customer: booking.customerName,
+    service_total: booking.serviceTotal,
+    advance_paid: booking.payableNow,
+    platform_fee: booking.platformFee,
+    vendor_payout_due: booking.remainingBalance,
+    status: booking.status,
+  }));
+
   return (
     <div className="space-y-6">
       <div>
@@ -73,25 +83,47 @@ export function AdminPaymentsClient() {
             <h2 className="font-display text-lg text-slate">Financial dashboard</h2>
             <p className="mt-1 text-sm text-slate-soft">Track the 3% platform fee, vendor payouts, and refunds from a single view.</p>
           </div>
-          <Button
-            size="sm"
-            variant="secondary"
-            icon={<Download size={14} />}
-            onClick={() =>
-              downloadCsv("tribleera-financial-dashboard.csv", sorted.map((booking) => ({
-                booking_id: booking.id,
-                created_at: booking.createdAt,
-                customer: booking.customerName,
-                service_total: booking.serviceTotal,
-                advance_paid: booking.payableNow,
-                platform_fee: booking.platformFee,
-                vendor_payout_due: booking.remainingBalance,
-                status: booking.status,
-              })))
-            }
-          >
-            Export finance CSV
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<Download size={14} />}
+              onClick={() => downloadCsv("tribleera-financial-dashboard.csv", financeRows)}
+            >
+              Finance CSV
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<FileText size={14} />}
+              onClick={() =>
+                void downloadReportPdf({
+                  filename: "tribleera-financial-dashboard.pdf",
+                  title: "Financial Dashboard Report",
+                  subtitle: `${sorted.length} booking${sorted.length !== 1 ? "s" : ""} · Advance, platform fee, and payout view`,
+                  columns: [
+                    { header: "Booking", key: "booking_id" },
+                    { header: "Created", key: "created_at" },
+                    { header: "Customer", key: "customer" },
+                    { header: "Service total", key: "service_total", align: "right" },
+                    { header: "Advance paid", key: "advance_paid", align: "right" },
+                    { header: "Platform fee", key: "platform_fee", align: "right" },
+                    { header: "Payout due", key: "vendor_payout_due", align: "right" },
+                    { header: "Status", key: "status" },
+                  ],
+                  rows: financeRows,
+                  summary: [
+                    { label: "Total collected", value: formatLKR(totalCollected) },
+                    { label: "Platform revenue", value: formatLKR(totalFees) },
+                    { label: "Vendor payouts due", value: formatLKR(vendorPayouts) },
+                    { label: "Refunds tracked", value: formatLKR(totalRefunds) },
+                  ],
+                })
+              }
+            >
+              Finance PDF
+            </Button>
+          </div>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <div className="rounded-[8px] border border-slate/10 bg-ivory p-4">
@@ -188,17 +220,15 @@ export function AdminPaymentsClient() {
                       size="sm"
                       variant="secondary"
                       onClick={() =>
-                        downloadInvoice(
-                          `${booking.id}-customer-invoice.html`,
-                          buildInvoiceHtml({
-                            invoiceId: `${booking.id}-CUS`,
-                            title: "Customer Invoice",
-                            billTo: booking.customerName,
-                            issuedAt: booking.createdAt,
-                            rows: invoiceRows(booking),
-                            note: "Customer copy. Use for booking and payment reference within Sri Lanka accounting records.",
-                          })
-                        )
+                        void downloadInvoicePdf({
+                          filename: `${booking.id}-customer-invoice.pdf`,
+                          invoiceId: `${booking.id}-CUS`,
+                          title: "Customer Invoice",
+                          billTo: booking.customerName,
+                          issuedAt: booking.createdAt,
+                          rows: invoiceRows(booking),
+                          note: "Customer copy. Use for booking and payment reference within Sri Lanka accounting records.",
+                        })
                       }
                     >
                       Customer
@@ -207,20 +237,18 @@ export function AdminPaymentsClient() {
                       size="sm"
                       variant="secondary"
                       onClick={() =>
-                        downloadInvoice(
-                          `${booking.id}-vendor-invoice.html`,
-                          buildInvoiceHtml({
-                            invoiceId: `${booking.id}-VND`,
-                            title: "Vendor Payout Statement",
-                            billTo: booking.items.map((item) => item.vendorName).join(", "),
-                            issuedAt: booking.createdAt,
-                            rows: [
-                              { label: "Vendor service value", amount: booking.serviceTotal - booking.platformFee },
-                              { label: "Outstanding payout", amount: booking.remainingBalance },
-                            ],
-                            note: "Vendor-facing payout statement generated by TRIBLEERA VAIBHAVAM.",
-                          })
-                        )
+                        void downloadInvoicePdf({
+                          filename: `${booking.id}-vendor-invoice.pdf`,
+                          invoiceId: `${booking.id}-VND`,
+                          title: "Vendor Payout Statement",
+                          billTo: booking.items.map((item) => item.vendorName).join(", "),
+                          issuedAt: booking.createdAt,
+                          rows: [
+                            { label: "Vendor service value", amount: booking.serviceTotal - booking.platformFee },
+                            { label: "Outstanding payout", amount: booking.remainingBalance },
+                          ],
+                          note: "Vendor-facing payout statement generated by TRIBLEERA VAIBHAVAM.",
+                        })
                       }
                     >
                       Vendor
@@ -229,17 +257,15 @@ export function AdminPaymentsClient() {
                       size="sm"
                       variant="secondary"
                       onClick={() =>
-                        downloadInvoice(
-                          `${booking.id}-platform-invoice.html`,
-                          buildInvoiceHtml({
-                            invoiceId: `${booking.id}-PLT`,
-                            title: "Platform Fee Invoice",
-                            billTo: "TRIBLEERA VAIBHAVAM Internal Accounts",
-                            issuedAt: booking.createdAt,
-                            rows: [{ label: "Platform fee earned", amount: booking.platformFee }],
-                            note: "Internal platform revenue record. Review against Sri Lanka tax filing requirements before official submission.",
-                          })
-                        )
+                        void downloadInvoicePdf({
+                          filename: `${booking.id}-platform-invoice.pdf`,
+                          invoiceId: `${booking.id}-PLT`,
+                          title: "Platform Fee Invoice",
+                          billTo: "TRIBLEERA VAIBHAVAM Internal Accounts",
+                          issuedAt: booking.createdAt,
+                          rows: [{ label: "Platform fee earned", amount: booking.platformFee }],
+                          note: "Internal platform revenue record. Review against Sri Lanka tax filing requirements before official submission.",
+                        })
                       }
                     >
                       Platform

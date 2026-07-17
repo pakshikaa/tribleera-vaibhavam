@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { CalendarCheck, CalendarDays, Clock, Inbox, MapPin, Phone, User, Wallet } from "lucide-react";
+import { CalendarCheck, CalendarDays, Inbox, MapPin, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatCard } from "@/components/ui/StatCard";
+import { VendorBookingsRequests } from "@/components/dashboard/VendorBookingsRequests";
 import { VendorPageHeader } from "@/components/dashboard/VendorPageHeader";
 import { formatDate, formatLKR } from "@/lib/utils/format";
 import { getVendorBySlug } from "@/lib/data/vendors";
@@ -57,7 +57,7 @@ export default function VendorBookingsPage() {
       </div>
 
       <div>
-        {/* Incoming requests */}
+        {/* Incoming requests — full live workflow: accept, reject, counter-offer, threads */}
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-lg text-slate">
@@ -69,71 +69,7 @@ export default function VendorBookingsPage() {
               )}
             </h2>
           </div>
-
-          {newRequests.length === 0 ? (
-            <EmptyState
-              icon={<CalendarDays size={24} />}
-              title="No new requests"
-              description="New booking requests from customers will appear here."
-            />
-          ) : (
-            <div className="space-y-3">
-              {newRequests.map((req) => (
-                <div
-                  key={req.id}
-                  className="rounded-[8px] border border-gold/20 bg-white p-5 shadow-soft"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-burgundy/10 text-burgundy">
-                        <User size={18} />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate">{req.customerName}</p>
-                        <p className="text-xs text-slate-soft">{req.packageName}</p>
-                      </div>
-                    </div>
-                    <Badge tone="warning">New request</Badge>
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-soft">
-                    <span className="flex items-center gap-1">
-                      <CalendarDays size={11} /> {formatDate(req.eventDate)}
-                    </span>
-                    {req.location && (
-                      <span className="flex items-center gap-1">
-                        <MapPin size={11} /> {req.location}
-                      </span>
-                    )}
-                    {req.customerPhone && (
-                      <span className="flex items-center gap-1">
-                        <Phone size={11} /> {req.customerPhone}
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Clock size={11} /> Received {formatDate(req.receivedAt)}
-                    </span>
-                  </div>
-
-                  {req.message && (
-                    <p className="mt-3 rounded-[6px] bg-ivory px-3 py-2 text-sm italic text-slate-soft">
-                      &ldquo;{req.message}&rdquo;
-                    </p>
-                  )}
-
-                  <div className="mt-4 flex flex-col gap-3 border-t border-slate/8 pt-3 sm:flex-row sm:items-center sm:justify-between sm:border-0 sm:pt-0">
-                    <p className="font-display text-lg font-semibold text-burgundy-deep">
-                      {formatLKR(req.price)}
-                    </p>
-                    <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto">
-                      <Button size="sm" variant="secondary" fullWidth>Decline</Button>
-                      <Button size="sm" variant="primary" fullWidth>Accept</Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <VendorBookingsRequests />
         </section>
 
         {/* Confirmed / active bookings */}
