@@ -191,7 +191,7 @@ export default function VendorLoginPage() {
               <>
                 <h2 style={{ color: "#1F2937", fontSize: 28, margin: 0 }}>Reset password</h2>
                 <p style={{ color: "#5B6576", fontSize: 13.5, lineHeight: 1.75, marginTop: 10 }}>
-                  Enter your registered email or phone number to receive a secure reset link.
+                  Enter your registered email to receive a secure reset link.
                 </p>
                 <form onSubmit={handleReset} style={{ display: "grid", gap: 12, marginTop: 18 }}>
                   <input
@@ -199,7 +199,7 @@ export default function VendorLoginPage() {
                     required
                     value={resetIdentifier}
                     onChange={(event) => setResetIdentifier(event.target.value)}
-                    placeholder="you@studio.com or +94 77 123 4567"
+                    placeholder="you@studio.com"
                     className="vendor-input"
                     style={{
                       width: "100%",
@@ -395,7 +395,7 @@ export default function VendorLoginPage() {
                   textTransform: "uppercase",
                 }}
               >
-                Email or phone number
+                Email address
               </label>
               <input
                 id="vendor-identifier"
@@ -404,7 +404,7 @@ export default function VendorLoginPage() {
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
                 autoComplete="username"
-                placeholder="you@studio.com or +94 77 123 4567"
+                placeholder="you@studio.com"
                 className="admin-input"
                 style={{
                   width: "100%",

@@ -35,7 +35,7 @@ export default function VendorForgotPasswordPage() {
             </div>
             <div>
               <h1 className="font-display text-2xl text-burgundy-deep">Reset vendor password</h1>
-              <p className="text-sm text-slate-soft">Enter your registered email or phone number.</p>
+              <p className="text-sm text-slate-soft">Enter your registered email address.</p>
             </div>
           </div>
 
@@ -57,10 +57,10 @@ export default function VendorForgotPasswordPage() {
           ) : (
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <Input
-                label="Registered email or phone"
+                label="Registered email"
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
-                placeholder="business@example.com or +94 77..."
+                placeholder="business@example.com"
                 required
               />
               <Button type="submit" variant="gold" fullWidth>

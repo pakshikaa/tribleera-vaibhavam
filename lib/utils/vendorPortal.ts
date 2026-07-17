@@ -285,11 +285,7 @@ export function verifyVendorEmailToken(rawToken: string) {
 export function createVendorPasswordReset(identifier: string) {
   const approved = [DEMO_VENDOR, ...readApprovedVendors()];
   const value = identifier.trim().toLowerCase();
-  const vendor = approved.find(
-    (item) =>
-      item.email?.toLowerCase() === value ||
-      normalisePhone(item.phone) === normalisePhone(identifier)
-  );
+  const vendor = approved.find((item) => item.email?.toLowerCase() === value);
   if (!vendor?.email) return { ok: false as const };
 
   const record: PasswordResetTokenRecord = {
@@ -353,11 +349,7 @@ export function clearVendorSession() {
 
 function matchesIdentifier(record: ApprovedVendorRecord, identifier: string) {
   const email = identifier.trim().toLowerCase();
-  const phone = normalisePhone(identifier);
-  return (
-    (Boolean(record.email) && record.email!.toLowerCase() === email) ||
-    (phone.length > 5 && Boolean(record.phone) && normalisePhone(record.phone) === phone)
-  );
+  return Boolean(record.email) && record.email!.toLowerCase() === email;
 }
 
 export function loginVendor(identifier: string, password: string) {
@@ -371,9 +363,8 @@ export function loginVendor(identifier: string, password: string) {
     return { ok: true as const, vendor: DEMO_VENDOR };
   }
 
-  // Vendors sign in with the email they registered with, or their phone
-  // number — both identify the same account. Vendors onboarded before email
-  // sign-in existed only ever had a phone, so dropping it locks them out.
+  // Vendor sign-in is email-based so the demo and the live portal use the
+  // same single credential format across devices.
   const match = readApprovedVendors().find(
     (item) => matchesIdentifier(item, identifier) && item.password === password
   );
