@@ -52,9 +52,10 @@ export const commonLoginImage = "/images/portal/testimonials.jpg";
 // jewellery against a bright ground. The timeless monochrome mood suits
 // the admin portal's authority feel.
 export const adminLoginImage = "/images/portal/admin-hero.jpg";
-// Warm full-body portrait with a clean, premium frame and better subject
-// separation for vendor portal overlays than the previous over-bright crop.
-export const vendorLoginImage = "/images/portal/vendor-hero.jpg";
+// Dark, gold-toned close-up — engagement rings and henna against a moody
+// backdrop. The low-key exposure keeps the panel's gold headline and gradient
+// overlays legible, unlike the previous over-bright crop.
+export const vendorLoginImage = "/images/portal/gallery-feature.jpg";
 
 export const galleryImages = [
   u("photo-1606216794074-735e91aa2c92"),

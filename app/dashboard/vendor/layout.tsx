@@ -117,15 +117,35 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
     router.push("/vendor/login");
   }
 
+  const pageLabel =
+    pathname === "/dashboard/vendor"
+      ? "Overview"
+      : pathname.split("/").pop()?.replace(/-/g, " ") || "Overview";
+
   return (
     <div className="dashboard-page flex min-h-screen bg-[#FAF7F2]" data-portal="true">
       {/* Desktop sidebar */}
-      <aside className="hidden w-56 shrink-0 border-r border-slate/10 bg-white md:flex md:flex-col">
+      <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-r border-slate/10 bg-white md:flex md:flex-col">
         <SidebarContent pathname={pathname} vendorName={vendorName} onSignOut={handleSignOut} />
       </aside>
 
       {/* Main area */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Desktop top bar — breadcrumb + live status, mirrors the admin portal chrome. */}
+        <header className="sticky top-0 z-40 hidden h-14 shrink-0 items-center justify-between border-b border-slate/10 bg-white px-5 md:flex">
+          <div className="flex items-center gap-1.5 text-xs text-slate-soft">
+            <span>Vendor Portal</span>
+            <span>/</span>
+            <span className="font-medium capitalize text-slate">{pageLabel}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 rounded-[8px] bg-burgundy/5 px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="max-w-[220px] truncate text-xs font-medium text-burgundy-deep">{vendorName}</span>
+            </div>
+          </div>
+        </header>
+
         {/* Mobile top bar */}
         <div className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-slate/10 bg-white px-4 md:hidden">
           <div className="flex items-center gap-2">
@@ -201,7 +221,7 @@ export default function VendorDashboardLayout({ children }: { children: React.Re
           </>
         )}
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+        <main className="flex-1 overflow-x-hidden p-4 md:p-8">{children}</main>
       </div>
     </div>
   );

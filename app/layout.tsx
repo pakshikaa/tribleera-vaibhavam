@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import { Suspense } from "react";
 import { NavigationHistoryTracker } from "@/components/layout/NavigationHistoryTracker";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { MotionProvider } from "@/components/layout/MotionProvider";
@@ -17,17 +18,17 @@ export const metadata: Metadata = {
     template: "%s | TRIBLEERA VAIBHAVAM",
   },
   description:
-    "Discover and book verified photographers, cake artists, decorators, bridal makeup artists and invitation designers for your Jaffna wedding. Transparent pricing, secure milestone payments, curated for the discerning couple.",
+    "Discover and book verified photographers, cake artists, decorators, makeup artists, and invitation designers for weddings and milestone celebrations in Jaffna.",
   keywords: [
     "Jaffna wedding planning",
-    "wedding vendors Jaffna",
+    "celebration vendors Jaffna",
     "Tamil wedding marketplace Sri Lanka",
-    "Jaffna bridal makeup",
+    "Jaffna makeup artists",
     "Sri Lanka wedding photography",
   ],
   openGraph: {
     title: "TRIBLEERA VAIBHAVAM | Premium Tamil Wedding Marketplace",
-    description: "Jaffna's most trusted wedding vendors — verified, bookable, secure.",
+    description: "Jaffna's most trusted wedding vendors — verified, bookable, secure, and suitable for milestone celebrations.",
     type: "website",
     locale: "en_LK",
   },
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               url: "https://tribleera-vaibhavam.vercel.app",
               logo: "https://tribleera-vaibhavam.vercel.app/logo/tribleera-mark-512.png",
               description:
-                "A curated wedding services marketplace for Jaffna, Sri Lanka — verified photographers, decorators, bridal makeup artists, cake ateliers and invitation designers.",
+                "A curated wedding services marketplace for Jaffna, Sri Lanka — verified photographers, decorators, makeup artists, cake studios, and invitation designers, also suitable for milestone celebrations.",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Jaffna",
@@ -79,7 +80,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ShortlistProvider>
                 <CompareProvider>
                   <MotionProvider>
-                    <NavigationHistoryTracker />
+                    {/* useSearchParams inside — needs a Suspense boundary so static pages can prerender. */}
+                    <Suspense fallback={null}>
+                      <NavigationHistoryTracker />
+                    </Suspense>
                     <SiteShell>{children}</SiteShell>
                   </MotionProvider>
                 </CompareProvider>

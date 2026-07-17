@@ -2,7 +2,6 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { AlertTriangle, Bell, Eye, ExternalLink, Pencil, ShieldCheck, Sparkles, TrendingUp, Wallet } from "lucide-react";
-import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
 import { Tabs } from "@/components/ui/Tabs";
 import { Badge } from "@/components/ui/Badge";
@@ -53,9 +52,9 @@ export function VendorDashboardClient() {
   if (!vendor) return null;
 
   return (
-    <div className="bg-ivory" data-portal="true">
+    <div data-portal="true">
       <section
-        className="relative overflow-hidden py-10"
+        className="relative overflow-hidden rounded-[12px] px-5 py-8 shadow-ambient md:px-8"
         style={{ background: "linear-gradient(135deg, #15040C 0%, #380C1E 45%, #5C0427 80%, #7A1F3D 100%)" }}
       >
         {/* Mandap-arch watermark — brand texture without competing with the text. */}
@@ -68,7 +67,7 @@ export function VendorDashboardClient() {
           <path d="M62 180V104C62 68 78 38 100 38S138 68 138 104v76" stroke="#D4AF6A" strokeWidth="4" fill="none" />
         </svg>
 
-        <Container className="relative z-[1] flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="relative z-[1] flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full shadow-soft ring-2 ring-gold/45 ring-offset-2 ring-offset-burgundy-950">
               <MotifArt variant={vendor.motif} tone={vendor.tone} seed={vendor.id.length} />
@@ -108,10 +107,10 @@ export function VendorDashboardClient() {
               </Button>
             </div>
           </div>
-        </Container>
+        </div>
       </section>
 
-      <Container className="py-10 md:py-14">
+      <div className="mt-8">
         <VendorOnboardingCard />
 
         {upcomingSoon.length > 0 && (
@@ -279,7 +278,7 @@ export function VendorDashboardClient() {
             }}
           />
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

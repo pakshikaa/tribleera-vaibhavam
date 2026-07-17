@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { CalendarDays, Clock, MapPin, Phone, User } from "lucide-react";
-import { Container } from "@/components/ui/Container";
+import { CalendarCheck, CalendarDays, Clock, Inbox, MapPin, Phone, User, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { StatCard } from "@/components/ui/StatCard";
+import { VendorPageHeader } from "@/components/dashboard/VendorPageHeader";
 import { formatDate, formatLKR } from "@/lib/utils/format";
 import { getVendorBySlug } from "@/lib/data/vendors";
 import { bookings } from "@/lib/data/bookings";
@@ -36,20 +37,26 @@ export default function VendorBookingsPage() {
   );
   const newRequests = vendorRequests.filter((r) => r.status === "new");
   const acceptedRequests = vendorRequests.filter((r) => r.status === "accepted");
+  const confirmedValue = vendorBookings.reduce(
+    (sum, b) => sum + b.items.filter((i) => i.vendorId === vendor.id).reduce((s, i) => s + i.price, 0),
+    0
+  );
 
   return (
-    <div className="bg-ivory" data-portal="true">
-      {/* Page header */}
-      <section className="border-b border-slate/8 bg-white py-8">
-        <Container>
-          <h1 className="font-display text-2xl text-burgundy-deep">Bookings</h1>
-          <p className="mt-1 text-sm text-slate-soft">
-            Manage your booking requests and confirmed events.
-          </p>
-        </Container>
-      </section>
+    <div className="space-y-8" data-portal="true">
+      <VendorPageHeader
+        title="Bookings"
+        description="Manage your booking requests and confirmed events."
+      />
 
-      <Container className="py-8 md:py-12">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="New requests" value={String(newRequests.length)} icon={<Inbox size={18} />} accent="burgundy" />
+        <StatCard label="Accepted requests" value={String(acceptedRequests.length)} icon={<CalendarDays size={18} />} accent="gold" />
+        <StatCard label="Confirmed bookings" value={String(vendorBookings.length)} icon={<CalendarCheck size={18} />} accent="info" />
+        <StatCard label="Confirmed value" value={formatLKR(confirmedValue)} icon={<Wallet size={18} />} accent="success" />
+      </div>
+
+      <div>
         {/* Incoming requests */}
         <section>
           <div className="mb-4 flex items-center justify-between">
@@ -194,7 +201,7 @@ export default function VendorBookingsPage() {
             </div>
           )}
         </section>
-      </Container>
+      </div>
     </div>
   );
 }

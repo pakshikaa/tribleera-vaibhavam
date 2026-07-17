@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Clock, LifeBuoy, Send } from "lucide-react";
-import { Container } from "@/components/ui/Container";
+import { CheckCircle2, Clock, Send } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
-import { BackButton } from "@/components/ui/BackButton";
+import { VendorPageHeader } from "@/components/dashboard/VendorPageHeader";
 import { readLocalStorage } from "@/lib/utils/browser-storage";
 import { generateId, safePush } from "@/lib/utils/store";
 import { getCurrentVendorSlug } from "@/lib/utils/vendorPortal";
@@ -80,18 +79,13 @@ export default function VendorSupportPage() {
   }
 
   return (
-    <div className="bg-ivory py-8 md:py-10">
-      <Container className="max-w-3xl">
-        <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
-        <div className="mb-6">
-          <h1 className="flex items-center gap-2 font-display text-2xl text-burgundy-deep">
-            <LifeBuoy size={22} aria-hidden="true" /> Vendor support
-          </h1>
-          <p className="mt-1 text-sm text-slate-soft">
-            Platform problem? Raise a ticket — replies land in your notifications within 24 hours.
-          </p>
-        </div>
+    <div className="space-y-8" data-portal="true">
+      <VendorPageHeader
+        title="Support"
+        description="Platform problem? Raise a ticket — replies land in your notifications within 24 hours."
+      />
 
+      <div className="max-w-3xl">
         <form onSubmit={handleSubmit} className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -158,7 +152,7 @@ export default function VendorSupportPage() {
             </div>
           )}
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

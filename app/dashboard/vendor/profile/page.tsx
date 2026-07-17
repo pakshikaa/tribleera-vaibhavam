@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import { Camera, ImagePlus, Trash2 } from "lucide-react";
-import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { VendorPageHeader } from "@/components/dashboard/VendorPageHeader";
 import { Input, Textarea } from "@/components/ui/Field";
 import { useToast } from "@/components/ui/Toast";
 import { getVendorBySlug } from "@/lib/data/vendors";
@@ -15,7 +15,6 @@ import {
   validateImageFile,
 } from "@/lib/utils/image-upload";
 import { generateId, safePush } from "@/lib/utils/store";
-import { BackButton } from "@/components/ui/BackButton";
 import { cn } from "@/lib/utils/cn";
 import {
   getCurrentVendorSlug,
@@ -197,14 +196,16 @@ export default function VendorProfilePage() {
   }
 
   return (
-    <div className="bg-ivory py-8 md:py-10" data-portal="true">
-      <Container className="max-w-4xl">
-        <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
-        <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
-          <h1 className="font-display text-3xl text-burgundy-deep">Edit Vendor Profile</h1>
+    <div className="space-y-8" data-portal="true">
+      <VendorPageHeader
+        title="Edit profile"
+        description="Keep your public profile fresh — photos and details here power what customers see."
+      />
 
+      <div className="max-w-4xl">
+        <div className="rounded-[12px] border border-slate/8 bg-white p-6 shadow-soft md:p-8">
           {/* Photo upload */}
-          <div className="mt-6 flex flex-wrap items-center gap-4 md:gap-5">
+          <div className="flex flex-wrap items-center gap-4 md:gap-5">
             <button
               type="button"
               aria-label="Change profile photo"
@@ -394,7 +395,7 @@ export default function VendorProfilePage() {
             Save changes
           </Button>
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

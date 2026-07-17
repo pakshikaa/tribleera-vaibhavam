@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Download, Eye, ImagePlus, Plus, X } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { PackageCard } from "@/components/vendor/PackageCard";
-import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { VendorPageHeader } from "@/components/dashboard/VendorPageHeader";
 import { Input, Select } from "@/components/ui/Field";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { SmartImage } from "@/components/ui/SmartImage";
@@ -16,7 +16,6 @@ import { readLocalStorage, tryWriteLocalStorage, writeLocalStorage } from "@/lib
 import { MAX_GALLERY_BYTES, MAX_PHOTO_BYTES, readImageAsDataUrl, validateImageFile } from "@/lib/utils/image-upload";
 import { markVendorProfileComplete } from "@/lib/utils/vendorPortal";
 import type { VendorPackage } from "@/types";
-import { BackButton } from "@/components/ui/BackButton";
 
 const FALLBACK_VENDOR_SLUG = "pushpa-florals-and-decor";
 
@@ -168,19 +167,23 @@ export default function VendorPackagesPage() {
   }
 
   return (
-    <div className="bg-ivory py-8 md:py-10" data-portal="true">
-      <Container>
-        <BackButton href="/dashboard/vendor" label="Dashboard" className="mb-4" />
-        <div className="mb-6 flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
-          <h1 className="font-display text-3xl text-burgundy-deep">Package Management</h1>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button variant="secondary" fullWidth icon={<Download size={15} />} onClick={exportPackages} className="sm:w-auto">
-              Download backup
-            </Button>
-            <Button variant="gold" fullWidth onClick={() => setCreateOpen(true)} className="sm:w-auto">
-              Add New Package
-            </Button>
-          </div>
+    <div data-portal="true">
+      <div>
+        <div className="mb-6">
+          <VendorPageHeader
+            title="Packages"
+            description="Build and price the packages customers can book from your public profile."
+            actions={
+              <>
+                <Button variant="secondary" fullWidth icon={<Download size={15} />} onClick={exportPackages} className="sm:w-auto">
+                  Download backup
+                </Button>
+                <Button variant="gold" fullWidth onClick={() => setCreateOpen(true)} className="sm:w-auto">
+                  Add New Package
+                </Button>
+              </>
+            }
+          />
         </div>
 
         <div className="mb-6 rounded-[8px] border border-[#E8D5BF] bg-[#F5EDE3] px-4 py-3 text-[13px] text-burgundy">
@@ -371,7 +374,7 @@ export default function VendorPackagesPage() {
             );
           })}
         </div>
-      </Container>
+      </div>
 
       <Sheet open={createOpen} onOpenChange={setCreateOpen}>
         <SheetContent className="w-full max-w-lg">
