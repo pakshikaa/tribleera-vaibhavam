@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AdminNotificationBell } from "@/components/dashboard/AdminNotificationBell";
 import { AdminAuthProvider } from "@/components/dashboard/AdminAuthContext";
+import { getAdminSnapshot, subscribeAdminData } from "@/lib/utils/adminLiveData";
 import { cn } from "@/lib/utils/cn";
 import {
   ADMIN_LOGIN_PATH,
@@ -51,6 +52,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [authChecked, setAuthChecked] = useState(false);
   const [session, setSession] = useState<AdminSession | null>(null);
   const [mobileMenuPath, setMobileMenuPath] = useState<string | null>(null);
+  const snapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, getAdminSnapshot);
+  const pendingApps = snapshot.applications.filter((item) => item.status === "pending").length;
 
   const visibleNav = useMemo(
     () => (session ? NAV.filter((item) => item.roles.includes(session.role)) : []),
@@ -150,7 +153,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <item.icon size={17} strokeWidth={active ? 2 : 1.75} />
                 {item.label}
               </span>
-              {item.href === "/dashboard/admin/vendors" && <span className="h-2 w-2 rounded-full bg-gold" />}
+              {item.href === "/dashboard/admin/vendors" && pendingApps > 0 && (
+                <span
+                  className={cn(
+                    "flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold",
+                    active ? "bg-white/20 text-white" : "bg-gold/20 text-gold-deep"
+                  )}
+                >
+                  {pendingApps}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -199,12 +211,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               href={item.href}
               onClick={() => setMobileMenuPath(null)}
               className={cn(
-                "flex min-h-11 items-center gap-3 rounded-[8px] px-3 py-3 text-sm font-medium",
+                "flex min-h-11 items-center justify-between gap-3 rounded-[8px] px-3 py-3 text-sm font-medium",
                 active ? "bg-burgundy text-cream" : "text-cream-faint"
               )}
             >
-              <item.icon size={17} strokeWidth={active ? 2 : 1.75} />
-              {item.label}
+              <span className="flex items-center gap-3">
+                <item.icon size={17} strokeWidth={active ? 2 : 1.75} />
+                {item.label}
+              </span>
+              {item.href === "/dashboard/admin/vendors" && pendingApps > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-ink">
+                  {pendingApps}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -41,7 +41,7 @@ export interface AuditLogEntry {
   id: string;
   actor: string;
   action: string;
-  entityType: "vendor" | "payment" | "booking" | "profile" | "system";
+  entityType: "vendor" | "payment" | "booking" | "profile" | "category" | "system";
   entityId: string;
   entityLabel: string;
   at: string;

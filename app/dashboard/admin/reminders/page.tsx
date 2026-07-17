@@ -1,8 +1,11 @@
-import { bookings } from "@/lib/data/bookings";
+"use client";
+
+import { useSyncExternalStore } from "react";
 import { Calendar } from "lucide-react";
 import { formatLKR } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
-import { BackButton } from "@/components/ui/BackButton";
+import { getAdminSnapshot, subscribeAdminData } from "@/lib/utils/adminLiveData";
+import type { Booking } from "@/types";
 
 function getDaysUntil(dateStr: string): number {
   const today = new Date();
@@ -12,9 +15,17 @@ function getDaysUntil(dateStr: string): number {
   return Math.ceil((event.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
+// Live bookings written by payment verification carry amounts under `totals`
+// instead of the static shape's top-level fields — read both.
+function bookingAmount(booking: Booking & { totals?: { serviceTotal?: number } }) {
+  return booking.serviceTotal ?? booking.totals?.serviceTotal ?? 0;
+}
+
 export default function RemindersPage() {
-  const upcoming = bookings
-    .filter((b) => b.status === "confirmed")
+  const snapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, getAdminSnapshot);
+
+  const upcoming = snapshot.bookings
+    .filter((b) => (b.status === "confirmed" || b.status === "advance_paid") && b.eventDate)
     .map((b) => ({ ...b, daysUntil: getDaysUntil(b.eventDate) }))
     .filter((b) => b.daysUntil >= 0 && b.daysUntil <= 7)
     .sort((a, b) => a.daysUntil - b.daysUntil);
@@ -33,11 +44,10 @@ export default function RemindersPage() {
 
   return (
     <div>
-      <BackButton href="/dashboard/admin" label="Admin" className="mb-4" />
       <div className="mb-8">
         <h1 className="font-display text-2xl font-bold text-slate">Upcoming Event Reminders</h1>
         <p className="mt-1 text-sm text-slate-soft">
-          Events in the next 7 days — {upcoming.length} total
+          Confirmed events in the next 7 days — {upcoming.length} total, live from bookings and verified payments
         </p>
       </div>
 
@@ -81,10 +91,10 @@ export default function RemindersPage() {
                       </div>
                       <div>
                         <p className="font-semibold text-slate">
-                          {b.vendorName ?? b.items[0]?.vendorName ?? "—"}
+                          {b.vendorName ?? b.items?.[0]?.vendorName ?? "—"}
                         </p>
                         <p className="text-xs text-slate-soft">
-                          {b.categorySlug ?? b.items[0]?.categorySlug ?? "—"} · {b.customerName}
+                          {b.categorySlug ?? b.items?.[0]?.categorySlug ?? "—"} · {b.customerName}
                         </p>
                         <p className="mt-0.5 text-xs text-slate-soft">
                           {b.location ?? b.customerCity}
@@ -93,7 +103,7 @@ export default function RemindersPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-display text-base font-semibold text-burgundy">{b.eventDate}</p>
-                      <p className="text-xs text-slate-soft">{formatLKR(b.serviceTotal)} booking</p>
+                      <p className="text-xs text-slate-soft">{formatLKR(bookingAmount(b))} booking</p>
                     </div>
                   </div>
                 ))}

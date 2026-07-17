@@ -6,14 +6,41 @@ import { Category } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { MotifArt } from "@/components/ui/MotifArt";
+import { useToast } from "@/components/ui/Toast";
+import { appendAuditLog } from "@/lib/utils/adminLiveData";
+import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
+
+// Visibility overrides survive refresh and are audit-logged — the old
+// in-memory toggle silently reset every time the page reloaded.
+const VISIBILITY_KEY = "tv-category-visibility";
 
 export function AdminCategoriesClient({ active, comingSoon }: { active: Category[]; comingSoon: Category[] }) {
-  const [enabled, setEnabled] = useState<Record<string, boolean>>(
-    Object.fromEntries([...active.map((c) => [c.slug, true]), ...comingSoon.map((c) => [c.slug, false])])
-  );
+  const { showToast } = useToast();
+  const [enabled, setEnabled] = useState<Record<string, boolean>>(() => {
+    const defaults = Object.fromEntries([
+      ...active.map((c) => [c.slug, true]),
+      ...comingSoon.map((c) => [c.slug, false]),
+    ]);
+    if (typeof window === "undefined") return defaults;
+    return { ...defaults, ...readLocalStorage<Record<string, boolean>>(VISIBILITY_KEY, {}) };
+  });
 
-  function toggle(slug: string) {
-    setEnabled((prev) => ({ ...prev, [slug]: !prev[slug] }));
+  function toggle(category: Category) {
+    setEnabled((prev) => {
+      const nextValue = !prev[category.slug];
+      const next = { ...prev, [category.slug]: nextValue };
+      writeLocalStorage(VISIBILITY_KEY, next);
+      appendAuditLog({
+        actor: "Admin",
+        action: nextValue ? "Enabled category" : "Hid category",
+        entityType: "category",
+        entityId: category.slug,
+        entityLabel: category.name,
+        details: `${category.name} is now ${nextValue ? "visible to" : "hidden from"} customers.`,
+      });
+      showToast(`${category.name} is now ${nextValue ? "live" : "hidden"}.`, "success");
+      return next;
+    });
   }
 
   const all = [...active, ...comingSoon];
@@ -42,7 +69,7 @@ export function AdminCategoriesClient({ active, comingSoon }: { active: Category
                 fullWidth
                 className="mt-4"
                 icon={isOn ? <ToggleRight size={15} /> : <ToggleLeft size={15} />}
-                onClick={() => toggle(cat.slug)}
+                onClick={() => toggle(cat)}
               >
                 {isOn ? "Visible to customers" : "Hidden from customers"}
               </Button>

@@ -1,12 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Clock, Eye, Landmark, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Clock, Eye, Landmark, ShieldCheck, XCircle } from "lucide-react";
 import { formatLKR } from "@/lib/utils/format";
 import { generateId, safeGet, safePush, safeSet } from "@/lib/utils/store";
-import { appendAuditLog } from "@/lib/utils/adminLiveData";
+import { appendAuditLog, emitAdminDataChanged } from "@/lib/utils/adminLiveData";
+import { Button } from "@/components/ui/Button";
+import { Select, Textarea } from "@/components/ui/Field";
 import { Modal } from "@/components/ui/Modal";
 import type { BookingLineItem } from "@/types";
+
+const REJECT_REASONS = [
+  "Deposit slip unreadable or missing",
+  "Bank reference does not match",
+  "Amount transferred is incorrect",
+  "Suspected duplicate or fraudulent proof",
+  "Other",
+];
 
 interface PendingPayment {
   id: string;
@@ -32,6 +42,9 @@ export function AdminPendingVerificationClient() {
   const [pending, setPending] = useState<PendingPayment[]>(() => readPending());
   const [viewer, setViewer] = useState<PendingPayment | null>(null);
   const [checkedRefs, setCheckedRefs] = useState<Record<string, boolean>>({});
+  const [rejectTarget, setRejectTarget] = useState<PendingPayment | null>(null);
+  const [rejectReason, setRejectReason] = useState(REJECT_REASONS[0]);
+  const [rejectNote, setRejectNote] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => setPending(readPending()), 10000);
@@ -99,6 +112,50 @@ export function AdminPendingVerificationClient() {
     setPending((prev) => prev.filter((p) => p.id !== payment.id));
   }
 
+  // A bad slip must be rejectable — without this path fake or wrong proofs
+  // sat in the queue forever with "verify" as the only way out.
+  function rejectPayment() {
+    if (!rejectTarget) return;
+    const reason = rejectReason === "Other" && rejectNote.trim() ? rejectNote.trim() : rejectReason;
+    const detail = rejectNote.trim() && rejectReason !== "Other" ? `${reason} — ${rejectNote.trim()}` : reason;
+
+    const remaining = readPending().filter((p) => p.id !== rejectTarget.id);
+    safeSet("tv-payments-pending", remaining);
+
+    safePush("tv-notifications-cust-demo", {
+      id: generateId("N"),
+      type: "payment_rejected",
+      title: "Payment proof rejected",
+      message: `Your advance payment proof for ${rejectTarget.bookingId} was rejected: ${detail}. Please re-upload a valid deposit slip or contact support.`,
+      href: "/dashboard/customer",
+      read: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    safePush("tv-admin-notifications", {
+      id: generateId("AN"),
+      type: "payment",
+      message: `Payment proof rejected: ${rejectTarget.customerName} — ${rejectTarget.bookingId}`,
+      time: new Date().toISOString(),
+      icon: "🚫",
+    });
+
+    appendAuditLog({
+      actor: "Admin",
+      action: "Rejected payment proof",
+      entityType: "payment",
+      entityId: rejectTarget.id,
+      entityLabel: rejectTarget.bookingId,
+      details: `Rejected ${formatLKR(rejectTarget.totals.payableNow)} from ${rejectTarget.customerName}. Reason: ${detail}.`,
+    });
+    emitAdminDataChanged();
+
+    setPending((prev) => prev.filter((p) => p.id !== rejectTarget.id));
+    setRejectTarget(null);
+    setRejectReason(REJECT_REASONS[0]);
+    setRejectNote("");
+  }
+
   return (
     <div className="rounded-[10px] border border-amber-200 bg-amber-50 p-5">
       <div className="mb-3 flex items-center gap-2">
@@ -131,6 +188,13 @@ export function AdminPendingVerificationClient() {
                     className="flex items-center gap-1.5 rounded-[6px] border border-slate/15 px-3.5 py-2 text-xs font-semibold text-slate transition-colors hover:bg-ivory"
                   >
                     <Eye size={14} /> View proof
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRejectTarget(payment)}
+                    className="flex items-center gap-1.5 rounded-[6px] border border-danger/30 px-3.5 py-2 text-xs font-semibold text-danger transition-colors hover:bg-danger-pale"
+                  >
+                    <XCircle size={14} /> Reject
                   </button>
                   <button
                     type="button"
@@ -180,6 +244,45 @@ export function AdminPendingVerificationClient() {
             )}
           </div>
         )}
+      </Modal>
+
+      <Modal
+        open={Boolean(rejectTarget)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRejectTarget(null);
+            setRejectReason(REJECT_REASONS[0]);
+            setRejectNote("");
+          }
+        }}
+        title="Reject payment proof?"
+        description="The customer is notified with the reason and asked to re-submit valid proof."
+      >
+        <div className="space-y-4">
+          {rejectTarget && (
+            <div className="rounded-[8px] border border-slate/10 bg-ivory p-4 text-sm">
+              <p className="font-semibold text-slate">{rejectTarget.customerName}</p>
+              <p className="mt-1 text-slate-soft">
+                {rejectTarget.bookingId} · {formatLKR(rejectTarget.totals.payableNow)} · Ref {rejectTarget.bankTransferReference ?? "not provided"}
+              </p>
+            </div>
+          )}
+          <Select label="Reason" value={rejectReason} onChange={(event) => setRejectReason(event.target.value)}>
+            {REJECT_REASONS.map((reason) => (
+              <option key={reason} value={reason}>{reason}</option>
+            ))}
+          </Select>
+          <Textarea
+            label="Additional notes (sent to the customer)"
+            rows={3}
+            value={rejectNote}
+            onChange={(event) => setRejectNote(event.target.value)}
+            placeholder="e.g. the slip shows LKR 5,000 but the advance due is LKR 12,500"
+          />
+          <Button variant="secondary" fullWidth onClick={rejectPayment}>
+            Confirm rejection
+          </Button>
+        </div>
       </Modal>
     </div>
   );
