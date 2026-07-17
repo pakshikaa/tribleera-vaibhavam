@@ -249,10 +249,12 @@ export default function VendorLoginPage() {
       )}
 
       {/* Full-bleed photo backdrop — same treatment as the admin portal, kept
-          warm (no grayscale) so the vendor portal reads gold and celebratory. */}
+          warm (no grayscale) so the vendor portal reads gold and celebratory.
+          Overlays stay light enough that the couple remains recognizable; the
+          card's own glass blur is what protects form legibility. */}
       <div className="dark-section" data-portal="true" style={{ position: "fixed", inset: 0, overflow: "hidden" }}>
         <Image
-          src="/images/portal/gallery-feature.jpg"
+          src="/images/portal/home-hero.jpg"
           alt=""
           fill
           priority
@@ -261,25 +263,17 @@ export default function VendorLoginPage() {
           className="img-kb img-reveal"
           style={{
             objectFit: "cover",
-            objectPosition: "center 32%",
-            filter: "brightness(0.9) saturate(1.06) contrast(1.03)",
+            objectPosition: "center 26%",
+            filter: "brightness(0.96) saturate(1.08) contrast(1.02)",
           }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,.52)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(21,4,12,.32)" }} />
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(circle at 50% 34%, rgba(233,206,156,.14) 0%, rgba(212,175,106,.10) 22%, rgba(21,4,12,.08) 46%, transparent 68%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(180deg, rgba(21,4,12,.78) 0%, rgba(21,4,12,.26) 26%, rgba(21,4,12,.28) 58%, rgba(21,4,12,.94) 100%)",
+              "radial-gradient(circle at 50% 34%, rgba(233,206,156,.10) 0%, rgba(212,175,106,.06) 22%, transparent 52%)",
           }}
         />
         <div
@@ -287,7 +281,15 @@ export default function VendorLoginPage() {
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(ellipse 78% 72% at 50% 46%, transparent 28%, rgba(21,4,12,.22) 68%, rgba(21,4,12,.72) 100%)",
+              "linear-gradient(180deg, rgba(21,4,12,.62) 0%, rgba(21,4,12,.14) 26%, rgba(21,4,12,.16) 58%, rgba(21,4,12,.82) 100%)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 78% 72% at 50% 46%, transparent 40%, rgba(21,4,12,.16) 72%, rgba(21,4,12,.5) 100%)",
           }}
         />
       </div>
@@ -541,45 +543,6 @@ export default function VendorLoginPage() {
               {loading ? "Signing in..." : "Sign in to vendor portal"}
             </button>
           </form>
-
-          <div
-            className="s6"
-            style={{
-              marginTop: 16,
-              padding: "10px 12px",
-              borderRadius: 14,
-              border: "1px solid rgba(212,175,106,.25)",
-              background: "rgba(212,175,106,.08)",
-              color: "rgba(247,238,226,.62)",
-              fontSize: 11.5,
-              lineHeight: 1.65,
-            }}
-          >
-            <strong style={{ color: "#E9CE9C" }}>Demo login:</strong> Phone{" "}
-            <code
-              style={{
-                padding: "1px 5px",
-                borderRadius: 4,
-                background: "rgba(21,4,12,.55)",
-                color: "#E9CE9C",
-                border: "1px solid rgba(212,175,106,.25)",
-              }}
-            >
-              +94771000001
-            </code>{" "}
-            Password{" "}
-            <code
-              style={{
-                padding: "1px 5px",
-                borderRadius: 4,
-                background: "rgba(21,4,12,.55)",
-                color: "#E9CE9C",
-                border: "1px solid rgba(212,175,106,.25)",
-              }}
-            >
-              vendor2026
-            </code>
-          </div>
         </section>
 
         <div
