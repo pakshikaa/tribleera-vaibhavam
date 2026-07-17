@@ -57,7 +57,7 @@ export const categories: Category[] = [
     motif: "knot",
     tone: "gold",
     vendorCount: 5,
-    imageUrl: img("photo-1606293459339-aa5ce4a2d8c8"),
+    imageUrl: "/images/portal/invitation-card.svg",
   },
 ];
 

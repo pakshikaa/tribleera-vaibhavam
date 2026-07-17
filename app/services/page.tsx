@@ -16,7 +16,7 @@ export default function ServicesPage() {
   return (
     <div className="bg-ivory">
       {/* Dark-luxury page hero — consistent with homepage brand */}
-      <section className="relative overflow-hidden bg-ink py-16 md:py-24">
+      <section className="relative overflow-hidden bg-ink py-10 md:py-14">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_50%_0%,rgba(122,31,61,0.35),transparent_65%)]" />
           <svg className="absolute -right-20 top-0 h-[420px] w-[420px] text-gold/[0.08]" viewBox="0 0 200 200" fill="none">
@@ -25,10 +25,10 @@ export default function ServicesPage() {
           </svg>
         </div>
         <Container className="relative z-10 text-center">
-          <div className="mb-4 flex justify-start md:mb-5">
+          <div className="mb-3 flex justify-start md:mb-4">
             <BackButton href="/" label="Home" dark />
           </div>
-          <p className="mb-4 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">
+          <p className="mb-3 inline-flex items-center justify-center gap-2.5 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-gold">
             <span className="h-px w-7 bg-gold" />
             Phase One
             <span className="h-px w-7 bg-gold" />
@@ -36,11 +36,11 @@ export default function ServicesPage() {
           <h1 className="font-display text-[34px] font-bold leading-[1.1] text-cream md:text-[54px]" style={{ textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}>
             What does your<br />celebration need?
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-cream-dim" style={{ textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}>
+          <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-cream-dim" style={{ textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}>
             Five curated service categories — each hand-vetted for craftsmanship, cultural understanding
             and reliability. Choose a category to see matching Jaffna studios.
           </p>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-4 text-xs text-cream-faint">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs text-cream-faint">
             <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-gold" /> Every vendor background-checked</span>
             <span className="text-cream/20">·</span>
             <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-gold" /> Advance held in escrow</span>

@@ -17,10 +17,11 @@ import { cn } from "@/lib/utils/cn";
 import { readActiveCustomerProfile } from "@/lib/utils/customer-profile";
 
 const NAV_LINKS = [
+  { href: "/",              label: "Home",              gold: false },
   { href: "/services",      label: "Services",          gold: false },
   { href: "/vendors",       label: "Vendors",           gold: false },
   { href: "/#how-it-works", label: "How it works",      gold: false },
-  { href: "/event-request", label: "Plan Your Wedding", gold: true  },
+  { href: "/event-request", label: "Plan Your Celebration", gold: true  },
 ];
 
 export function Header() {

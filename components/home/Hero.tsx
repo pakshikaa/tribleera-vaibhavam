@@ -7,7 +7,15 @@ import { HeroSearch } from "@/components/home/HeroSearch";
 import { Button } from "@/components/ui/Button";
 import { heroImage } from "@/lib/data/images";
 
-const PARTICLES = [
+const PARTICLES: Array<{
+  size: string;
+  top: string;
+  left?: string;
+  right?: string;
+  path: number[];
+  duration: number;
+  delay: number;
+}> = [
   { size: "h-2.5 w-2.5", top: "14%", left: "10%", path: [-8, 12, -8], duration: 5.5, delay: 0.2 },
   { size: "h-3 w-3", top: "24%", right: "12%", path: [-12, 8, -12], duration: 6.4, delay: 0.8 },
   { size: "h-2 w-2", top: "40%", left: "18%", path: [-10, 10, -10], duration: 4.8, delay: 0.1 },
@@ -43,7 +51,7 @@ export function Hero() {
         >
           <Image
             src={heroImage}
-            alt="Luxury Tamil wedding celebration"
+            alt="Luxury Tamil celebration"
             fill
             priority
             sizes="100vw"
@@ -107,11 +115,11 @@ export function Hero() {
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="mx-auto mt-5 max-w-[500px] leading-relaxed"
+          className="mx-auto mt-5 max-w-[520px] leading-relaxed"
           style={{ fontSize: "clamp(0.95rem, 1.6vw, 1.125rem)", color: "rgba(247,238,226,0.85)", textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}
         >
-          Jaffna&apos;s most trusted photographers, decorators, bridal artists, cake ateliers and invitation houses -
-          verified, bookable, secure.
+          Trusted photographers, decorators, makeup artists, cake studios, and invitation designers for weddings
+          and other milestone celebrations.
         </motion.p>
 
         <motion.p
@@ -122,7 +130,7 @@ export function Hero() {
           className="mt-4 font-display text-[1.05rem] italic"
           style={{ color: "#D4AF6A", textShadow: "0 1px 12px rgba(21,4,12,0.7)" }}
         >
-          தேர்வின் செம்மை, வைபவத்தின் பெருமை
+          Wedding-first planning, with room for every milestone
         </motion.p>
 
         <motion.div
@@ -145,7 +153,7 @@ export function Hero() {
               variant="glass"
               className="min-h-0 border-white/20 bg-white/10 px-8 py-[13px] text-[15px] font-semibold text-[#F7EEE2] hover:bg-white/15 hover:text-[#F7EEE2]"
             >
-              Plan Your Wedding
+              Plan Your Celebration
             </Button>
           </div>
         </motion.div>
@@ -172,7 +180,7 @@ export function Hero() {
             href="/event-request"
             className="font-semibold text-gold/80 underline underline-offset-2 transition-colors hover:text-gold"
           >
-            Take our 2-minute wedding setup →
+            Start your 2-minute celebration setup →
           </Link>
         </motion.p>
 

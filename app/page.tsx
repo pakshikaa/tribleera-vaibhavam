@@ -14,11 +14,11 @@ export const metadata: Metadata = {
   // relying on template substitution (confirmed live via Playwright).
   title: { absolute: "TRIBLEERA VAIBHAVAM | Plan Your Perfect Celebration" },
   description:
-    "Jaffna's premium wedding concierge — verified photographers, decorators, bridal makeup artists, cake ateliers and invitation designers, bookable with secure milestone payments.",
+    "Jaffna's premium wedding marketplace — verified photographers, decorators, makeup artists, cake studios, and invitation designers for weddings and milestone celebrations.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "TRIBLEERA VAIBHAVAM | Plan Your Perfect Celebration",
-    description: "Jaffna's premium wedding concierge — curated, verified vendors, transparent pricing.",
+    description: "Jaffna's premium wedding marketplace — curated, verified vendors, transparent pricing.",
     url: "/",
   },
 };

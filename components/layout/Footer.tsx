@@ -12,33 +12,33 @@ const COLUMNS = [
   {
     title: "Platform",
     links: [
-      { href: "/services", label: "Browse services" },
-      { href: "/vendors", label: "All vendors" },
-      { href: "/vendor/register", label: "Register as a vendor" },
+      { href: "/services", label: "Services" },
+      { href: "/vendors", label: "Vendors" },
+      { href: "/vendor/register", label: "Become a vendor" },
     ],
   },
   {
-    title: "Phase 1 categories",
+    title: "Phase 1 Categories",
     links: categories.map((c) => ({ href: `/vendors?category=${c.slug}`, label: c.name })),
   },
   {
     title: "Company",
     links: [
-      { href: "/about", label: "About us" },
+      { href: "/about", label: "About Us" },
       { href: "/contact", label: "Contact" },
       { href: "/faq", label: "FAQ" },
-      { href: "/#how-it-works", label: "How it works" },
+      { href: "/#how-it-works", label: "How It Works" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { href: "/terms", label: "Terms & Conditions" },
+      { href: "/terms", label: "Terms and Conditions" },
       { href: "/privacy", label: "Privacy Policy" },
-      { href: "/trust", label: "Escrow protection" },
+      { href: "/trust", label: "Trust and Safety" },
     ],
   },
-];
+] as const;
 
 const SOCIAL = [
   {
@@ -46,7 +46,7 @@ const SOCIAL = [
     label: "TRIBLEERA on WhatsApp",
     Icon: ({ size }: { size?: number }) => <MessageCircle size={size} aria-hidden="true" />,
   },
-];
+] as const;
 
 export function Footer() {
   const pathname = usePathname();
@@ -82,8 +82,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-faint">
-              Jaffna&apos;s premium wedding concierge - verified photographers, decorators, bridal artists,
-              cake ateliers and invitation houses, bookable with full price transparency.
+              Jaffna&apos;s premium wedding marketplace for verified photographers, decorators, makeup artists,
+              cake studios, and invitation designers, also suited to milestone celebrations.
             </p>
             <div className="mt-5 flex gap-3">
               {SOCIAL.map(({ href, label, Icon }) => (
@@ -116,15 +116,15 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-cream/10 pt-7 text-xs text-cream-faint md:flex-row">
-          <p>© 2026 TRIBLEERA VAIBHAVAM, Jaffna, Sri Lanka. All rights reserved.</p>
+          <p>&copy; 2026 TRIBLEERA VAIBHAVAM, Jaffna, Sri Lanka. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <p className="font-display text-sm text-cream-dim">Premium Tamil wedding marketplace</p>
+            <p className="font-display text-sm text-cream-dim">Curated Tamil wedding services in Jaffna</p>
             <Link
               href={ADMIN_LOGIN_PATH}
               aria-label="Admin login"
               className="text-[11px] text-cream-faint opacity-20 transition-opacity hover:opacity-60"
             >
-              <span aria-hidden="true">⚙</span>
+              <span aria-hidden="true">&#9881;</span>
             </Link>
           </div>
         </div>

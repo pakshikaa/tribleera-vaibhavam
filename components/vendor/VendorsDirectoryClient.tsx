@@ -61,10 +61,10 @@ export function VendorsDirectoryClient({
 
   return (
     <>
-      <section className="relative overflow-hidden bg-ink pb-12 pt-16 md:pb-16 md:pt-20">
+      <section className="relative overflow-hidden bg-ink pb-10 pt-10 md:pb-14 md:pt-14">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_30%_0%,rgba(122,31,61,0.3),transparent_60%)]" />
         <Container className="relative z-10">
-          <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+          <p className="mb-2 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
             <span className="h-px w-5 bg-gold" />
             Vendor Directory
           </p>
@@ -74,13 +74,13 @@ export function VendorsDirectoryClient({
           {activeCategory && (
             <p className="mt-2 font-display text-base italic text-gold/80">{activeCategory.name}</p>
           )}
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-cream-dim drop-shadow-[0_2px_12px_rgba(21,4,12,0.8)]">
+          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-cream-dim drop-shadow-[0_2px_12px_rgba(21,4,12,0.8)]">
             {activeCategory
               ? activeCategory.description
               : "All verified studios across Jaffna, Colombo and beyond — filtered by trust score, city and price."}
           </p>
 
-          <div className="mt-6 -mx-4 flex gap-2 overflow-x-auto scrollbar-hide px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+          <div className="mt-4 -mx-4 flex gap-2 overflow-x-auto scrollbar-hide px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
             <Button href="/vendors" variant={!searchParams.category ? "gold" : "glass"} size="sm" className="shrink-0">
               All
             </Button>

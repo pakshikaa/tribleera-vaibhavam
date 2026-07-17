@@ -710,8 +710,8 @@ export default function EventRequestPage() {
 
   return (
     <div className="bg-ink">
-      <section className="border-b border-gold/10 bg-gradient-to-b from-burgundy-950 via-ink to-ink py-16">
-        <Container className="space-y-8">
+      <section className="border-b border-gold/10 bg-gradient-to-b from-burgundy-950 via-ink to-ink py-10 md:py-12">
+        <Container className="space-y-5 md:space-y-6">
           <BackButton href="/services" label="Previous page" dark />
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold">TRIBLEERA Concierge Flow</p>
