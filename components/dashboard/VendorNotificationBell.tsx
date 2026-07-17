@@ -5,6 +5,7 @@ import { Bell } from "lucide-react";
 import { readLocalStorage, writeLocalStorage } from "@/lib/utils/browser-storage";
 import { getCurrentVendorSlug } from "@/lib/utils/vendorPortal";
 import { formatDateShort } from "@/lib/utils/format";
+import { cn } from "@/lib/utils/cn";
 
 interface VendorNotification {
   id: string;
@@ -27,6 +28,10 @@ export function VendorNotificationBell() {
   const [slug, setSlug] = useState("");
   const [items, setItems] = useState<VendorNotification[]>([]);
   const [open, setOpen] = useState(false);
+  // Sidebar placement (desktop) needs the panel to open rightward; the mobile
+  // top-bar placement needs it leftward — pick based on where the bell sits.
+  const [alignLeft, setAlignLeft] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const knownIds = useRef<Set<string> | null>(null);
 
   const refresh = useCallback((vendorSlug: string) => {
@@ -60,6 +65,8 @@ export function VendorNotificationBell() {
   const unread = items.filter((n) => !n.read).length;
 
   function handleToggle() {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) setAlignLeft(rect.left + rect.width / 2 < window.innerWidth / 2);
     const next = !open;
     setOpen(next);
     if (typeof Notification !== "undefined" && Notification.permission === "default") {
@@ -74,7 +81,7 @@ export function VendorNotificationBell() {
   }
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
         type="button"
         onClick={handleToggle}
@@ -92,7 +99,12 @@ export function VendorNotificationBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[300px] overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.14)]">
+          <div
+            className={cn(
+              "absolute top-[calc(100%+8px)] z-50 w-[300px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[10px] border border-slate/10 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.14)]",
+              alignLeft ? "left-0" : "right-0"
+            )}
+          >
             <div className="border-b border-slate/10 bg-ivory px-4 py-3">
               <p className="text-[13px] font-semibold text-slate">Notifications</p>
               <p className="mt-0.5 text-[11px] text-slate-soft">

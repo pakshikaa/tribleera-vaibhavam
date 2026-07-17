@@ -43,17 +43,27 @@ export function NotificationPanel({ triggerClassName }: { triggerClassName?: str
         )}
       </SheetTrigger>
       <SheetContent className="w-full max-w-md">
-        <div className="mb-6 flex items-center justify-between gap-3">
+        {/* pr-10 keeps "Mark all read" clear of the sheet's absolute ✕ button. */}
+        <div className="mb-6 flex items-center justify-between gap-3 pr-10">
           <SheetTitle>Notifications</SheetTitle>
-          <button
-            type="button"
-            onClick={markAllRead}
-            className="text-sm font-semibold text-burgundy hover:text-burgundy-deep"
-          >
-            Mark all read
-          </button>
+          {unreadCount > 0 && (
+            <button
+              type="button"
+              onClick={markAllRead}
+              className="text-sm font-semibold text-burgundy hover:text-burgundy-deep"
+            >
+              Mark all read
+            </button>
+          )}
         </div>
-        <div className="space-y-3 overflow-y-auto pr-1">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+          {notifications.length === 0 && (
+            <div className="rounded-[8px] border border-dashed border-slate/20 bg-white px-5 py-10 text-center">
+              <Bell size={22} className="mx-auto mb-2 text-slate/30" />
+              <p className="text-sm font-medium text-slate">No notifications yet</p>
+              <p className="mt-1 text-xs text-slate-soft">Booking updates and vendor replies land here.</p>
+            </div>
+          )}
           {notifications
             .slice()
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())

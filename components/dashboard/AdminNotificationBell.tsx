@@ -16,7 +16,16 @@ export function AdminNotificationBell() {
   const adminSession = useAdminAuth();
   const snapshot = useSyncExternalStore(subscribeAdminData, getAdminSnapshot, getAdminSnapshot);
   const [open, setOpen] = useState(false);
+  // The bell sits in the left sidebar on desktop — anchoring the panel to the
+  // bell's right edge pushed it off-screen. Anchor toward the roomier side.
+  const [alignLeft, setAlignLeft] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  function toggleOpen() {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) setAlignLeft(rect.left + rect.width / 2 < window.innerWidth / 2);
+    setOpen((value) => !value);
+  }
 
   const canSeeFinance = adminSession?.role === "super_admin" || adminSession?.role === "finance_admin";
   const canSeeContent = adminSession?.role === "super_admin" || adminSession?.role === "content_admin";
@@ -87,7 +96,7 @@ export function AdminNotificationBell() {
     <div ref={containerRef} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((value) => !value)}
+        onClick={toggleOpen}
         aria-label={
           badgeCount > 0 ? `Admin notifications (${badgeCount} pending)` : "Admin notifications"
         }
@@ -103,7 +112,12 @@ export function AdminNotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-50 w-80 rounded-[12px] border border-slate/10 bg-white p-3 shadow-lift">
+        <div
+          className={cn(
+            "absolute top-12 z-50 w-80 max-w-[calc(100vw-24px)] rounded-[12px] border border-slate/10 bg-white p-3 shadow-lift",
+            alignLeft ? "left-0" : "right-0"
+          )}
+        >
           <div className="mb-2 flex items-center justify-between px-1">
             <p className="text-sm font-semibold text-slate">Admin alerts</p>
             {unreadNotifications.length > 0 && (
